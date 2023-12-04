@@ -175,17 +175,9 @@ export const DeveloperToolsFragment = fragment(() => {
                         <View style={{ marginHorizontal: 16, width: '100%' }}>
                             <ItemButton title={"Test Sentry events"} onPress={() => Sentry.captureException(new Error('First error'))} />
                         </View>
-
-                        {!(
-                            Application.applicationId === 'com.tonhub.app.testnet' ||
-                            Application.applicationId === 'com.tonhub.app.debug.testnet' ||
-                            Application.applicationId === 'com.tonhub.wallet.testnet' ||
-                            Application.applicationId === 'com.tonhub.wallet.testnet.debug'
-                        ) && (
-                                <View style={{ marginHorizontal: 16, width: '100%' }}>
-                                    <ItemButton title={t('devTools.switchNetwork')} onPress={switchNetwork} hint={isTestnet ? 'Testnet' : 'Mainnet'} />
-                                </View>
-                            )}
+                        <View style={{ marginHorizontal: 16, width: '100%' }}>
+                            <ItemButton title={t('devTools.switchNetwork')} onPress={switchNetwork} hint={isTestnet ? 'Testnet' : 'Mainnet'} />
+                        </View>
                     </View>
                     <View style={{
                         marginTop: 16,

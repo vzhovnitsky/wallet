@@ -8,8 +8,11 @@ export const isTestnetKey = 'isTestnet';
 
 export const IS_SANDBOX = Application.applicationId === 'com.tonhub.app.testnet' ||
     Application.applicationId === 'com.tonhub.app.debug.testnet' ||
+    Application.applicationId === 'com.tonhub.app.debug.testnet.vz' ||
     Application.applicationId === 'com.tonhub.wallet.testnet' ||
-    Application.applicationId === 'com.tonhub.wallet.testnet.debug';
+    Application.applicationId === 'com.tonhub.wallet.testnet.vz' ||
+    Application.applicationId === 'com.tonhub.wallet.testnet.debug' ||
+    Application.applicationId === 'com.tonhub.wallet.testnet.debug.vz';
 
 const isTestnetAtom = atom({
     key: 'wallet/network/isTestnet',
@@ -19,10 +22,6 @@ const isTestnetAtom = atom({
 export const networkSelector = selector({
     key: 'wallet/network',
     get: ({ get }) => {
-        if (IS_SANDBOX) {
-            return { isTestnet: true };
-        }
-
         return { isTestnet: get(isTestnetAtom) || false };
     },
     set: ({ set }, newValue) => {
