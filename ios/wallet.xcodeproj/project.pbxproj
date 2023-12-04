@@ -177,6 +177,7 @@
 				LastUpgradeCheck = 1130;
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
+						DevelopmentTeam = 6WGTUU3SQ7;
 						LastSwiftMigration = 1250;
 						ProvisioningStyle = Automatic;
 					};
@@ -383,7 +384,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tonhub.app.debug.vz;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tonhub.app.zenpay.demo.debug;
 				PRODUCT_NAME = "Tonhub [d]";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "wallet/wallet-Bridging-Header.h";
@@ -421,7 +422,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tonhub.app.vz;
+				PRODUCT_BUNDLE_IDENTIFIER = com.tonhub.app.zenpay.demo;
 				PRODUCT_NAME = Tonhub;
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "wallet/wallet-Bridging-Header.h";
@@ -669,8 +670,8 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tonhub.app.debug.testnet.vz;
-				PRODUCT_NAME = "Sandbox [d]";
+				PRODUCT_BUNDLE_IDENTIFIER = com.sandbox.app.zenpay.demo.debug;
+				PRODUCT_NAME = "Sandbox Demo [d]";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "wallet/wallet-Bridging-Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
@@ -773,8 +774,8 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = com.tonhub.app.testnet.vz;
-				PRODUCT_NAME = Sandbox;
+				PRODUCT_BUNDLE_IDENTIFIER = com.sandbox.app.zenpay.demo;
+				PRODUCT_NAME = "Sandbox Demo";
 				PROVISIONING_PROFILE_SPECIFIER = "";
 				SWIFT_OBJC_BRIDGING_HEADER = "wallet/wallet-Bridging-Header.h";
 				SWIFT_VERSION = 5.0;

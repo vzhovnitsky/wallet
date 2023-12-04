@@ -8,11 +8,10 @@ export const isTestnetKey = 'isTestnet';
 
 export const IS_SANDBOX = Application.applicationId === 'com.tonhub.app.testnet' ||
     Application.applicationId === 'com.tonhub.app.debug.testnet' ||
-    Application.applicationId === 'com.tonhub.app.debug.testnet.vz' ||
     Application.applicationId === 'com.tonhub.wallet.testnet' ||
-    Application.applicationId === 'com.tonhub.wallet.testnet.vz' ||
     Application.applicationId === 'com.tonhub.wallet.testnet.debug' ||
-    Application.applicationId === 'com.tonhub.wallet.testnet.debug.vz';
+    Application.applicationId === 'com.sandbox.app.zenpay.demo' ||
+    Application.applicationId === 'com.sandbox.app.zenpay.demo.debug';
 
 const isTestnetAtom = atom({
     key: 'wallet/network/isTestnet',
