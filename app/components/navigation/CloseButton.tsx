@@ -25,6 +25,7 @@ export const CloseButton = memo((props: {
             onPress={() => {
                 (props.onPress ?? navigation.goBack)();
             }}
+            hitSlop={16}
         >
             <Image
                 style={{

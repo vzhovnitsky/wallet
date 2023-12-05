@@ -124,7 +124,8 @@ function modalScreen(name: string, component: React.ComponentType<any>, safeArea
                 contentStyle: {
                     paddingBottom: Platform.OS === 'ios' ? (safeArea.bottom === 0 ? 24 : safeArea.bottom) + 16 : undefined,
                     backgroundColor: Platform.OS === 'ios' ? theme.elevation : theme.backgroundPrimary
-                }
+                },
+                animation: 'none'
             }}
         />
     );
@@ -144,7 +145,8 @@ function lockedModalScreen(name: string, component: React.ComponentType<any>, sa
                 contentStyle: {
                     paddingBottom: Platform.OS === 'ios' ? safeArea.bottom + 16 : undefined,
                     backgroundColor: Platform.OS === 'ios' ? theme.elevation : theme.backgroundPrimary
-                }
+                },
+                animation: 'none'
             }}
         />
     );
@@ -161,6 +163,7 @@ function transparentModalScreen(name: string, component: React.ComponentType<any
                 presentation: 'modal',
                 headerShown: false,
                 contentStyle: { backgroundColor: Platform.OS === 'ios' ? 'transparent' : theme.backgroundPrimary },
+                animation: 'none'
             }}
         />
     );
