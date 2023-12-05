@@ -2,7 +2,6 @@ import { DefaultValue, atom, selector } from 'recoil';
 import { persistedBooleanEffect } from '../utils/mmkvPersistanceEffects';
 import { storage } from '../../storage/storage';
 import * as Application from 'expo-application';
-import { log } from '../../utils/log';
 
 export const isTestnetKey = 'isTestnet';
 
@@ -21,13 +20,9 @@ const isTestnetAtom = atom({
 export const networkSelector = selector({
     key: 'wallet/network',
     get: ({ get }) => {
-        return { isTestnet: get(isTestnetAtom) || false };
+        return { isTestnet: get(isTestnetAtom) || IS_SANDBOX || false };
     },
     set: ({ set }, newValue) => {
-        if (IS_SANDBOX) {
-            log('[network] attempt to change network in Sandbox');
-            return; // ignore
-        }
         if (newValue instanceof DefaultValue) {
             newValue = { isTestnet: false };
         }
