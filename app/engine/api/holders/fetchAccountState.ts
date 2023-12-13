@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { z } from 'zod';
+import { getHoldersUrl } from '../../../fragments/dev/DeveloperToolsFragment';
 
 export const holdersEndpoint = 'card-staging.whales-api.com';
-export const holdersUrl = 'https://tonhub-preview.holders.io';
+export const holdersUrl = getHoldersUrl();
 
 export type AccountState = z.infer<typeof accountStateCodec>;
 

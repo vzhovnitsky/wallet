@@ -1,9 +1,9 @@
 import * as React from 'react';
-import { Alert, Platform, ScrollView, ToastAndroid, View } from "react-native";
+import { Alert, Platform, ScrollView, ToastAndroid, View, Text } from "react-native";
 import { ItemButton } from "../../components/ItemButton";
 import { useReboot } from '../../utils/RebootContext';
 import { fragment } from '../../fragment';
-import { storagePersistence, storageQuery } from '../../storage/storage';
+import { storage, storagePersistence, storageQuery } from '../../storage/storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTypedNavigation } from '../../utils/useTypedNavigation';
 import * as Application from 'expo-application';
@@ -31,6 +31,20 @@ import { useHoldersAccountStatus } from '../../engine/hooks';
 import { KeyboardAvoidingView } from 'react-native';
 import { ScreenHeader } from '../../components/ScreenHeader';
 import * as Sentry from '@sentry/react-native';
+import { ATextInput } from '../../components/ATextInput';
+import { RoundButton } from '../../components/RoundButton';
+import { useToaster } from '../../components/toast/ToastProvider';
+import { Typography } from '../../components/styles';
+
+export function getHoldersUrl() {
+    const stored = storage.getString('holdersUrl');
+    if (!stored) return 'https://tonhub-preview.holders.io';
+    return stored;
+}
+
+function setHoldersUrl(url: string) {
+    storage.set('holdersUrl', url);
+}
 
 export const DeveloperToolsFragment = fragment(() => {
     const theme = useTheme();
@@ -40,6 +54,7 @@ export const DeveloperToolsFragment = fragment(() => {
     const navigation = useTypedNavigation();
     const safeArea = useSafeAreaInsets();
     const offlineApp = useOfflineApp();
+    const toaster = useToaster();
 
     const acc = useMemo(() => getCurrentAddress(), []);
 
@@ -50,6 +65,16 @@ export const DeveloperToolsFragment = fragment(() => {
 
     const [offlineAppReady, setOfflineAppReady] = useState<{ version: string } | false>();
     const [prevOfflineVersion, setPrevOfflineVersion] = useState<{ version: string } | false>();
+
+    const [holdersUrlState, setHoldersUrlState] = useState(getHoldersUrl);
+    const validHoldersUrl = useMemo(() => {
+        try {
+            new URL(holdersUrlState);
+            return true;
+        } catch (e) {
+            return false;
+        }
+    }, [holdersUrlState]);
 
     const [themeStyle, setThemeStyle] = useThemeStyle();
     const [lang, setLang] = useLanguage();
@@ -187,8 +212,9 @@ export const DeveloperToolsFragment = fragment(() => {
                         justifyContent: 'center',
                         alignItems: 'center',
                         flexShrink: 1,
+                        padding: 20
                     }}>
-                        <View style={{ marginHorizontal: 16, width: '100%' }}>
+                        {/* <View style={{ marginHorizontal: 16, width: '100%' }}>
                             <ItemButton title={t('devTools.holdersOfflineApp')} hint={offlineApp.version ? offlineApp.version : 'Not loaded'} />
                         </View>
 
@@ -198,7 +224,43 @@ export const DeveloperToolsFragment = fragment(() => {
 
                         <View style={{ marginHorizontal: 16, width: '100%' }}>
                             <ItemButton title={t('devTools.holdersOfflineApp') + ' (Prev.)'} hint={prevOfflineVersion ? `Ready: ${prevOfflineVersion.version}` : 'Not ready'} />
+                        </View> */}
+                        <Text style={[{ marginBottom: 8, color: theme.textPrimary }, Typography.medium15_20]}>
+                            {'Holders URL'}
+                        </Text>
+                        <View style={{
+                            width: '100%', borderRadius: 16,
+                            backgroundColor: theme.backgroundPrimary,
+                            marginBottom: 16
+                        }}>
+                            <ATextInput
+                                value={holdersUrlState}
+                                onValueChange={setHoldersUrlState}
+                                keyboardType={'url'}
+                                style={{ paddingHorizontal: 16, paddingVertical: 14 }}
+                                inputStyle={{
+                                    fontSize: 17, fontWeight: '400',
+                                    textAlignVertical: 'top',
+                                    color: theme.textPrimary,
+                                    width: 'auto',
+                                    flexShrink: 1
+                                }}
+                                placeholder='Holders URL'
+                                hideClearButton
+                            />
                         </View>
+                        <RoundButton
+                            disabled={!validHoldersUrl}
+                            onPress={() => {
+                                setHoldersUrl(holdersUrlState);
+                                toaster.show({
+                                    type: 'success',
+                                    message: 'Saved! Restart app to apply changes',
+                                });
+                            }}
+                            style={{ width: '100%' }}
+                            title={t('common.save')}
+                        />
                     </View>
                     <View style={{
                         marginTop: 16,
