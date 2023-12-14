@@ -338,8 +338,9 @@ export const HoldersLandingFragment = fragment(() => {
                                     marginTop: Platform.OS === 'ios' ? 0 : 8,
                                 }}
                                 onLoadEnd={() => {
-                                    setLoaded(true);
-                                    opacity.value = 0;
+                                    setTimeout(() => {
+                                        onLoadEnd();
+                                    }, 100);
                                 }}
                                 onLoadProgress={(event) => {
                                     if (Platform.OS === 'android' && event.nativeEvent.progress === 1) {
