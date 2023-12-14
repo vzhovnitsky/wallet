@@ -20,5 +20,8 @@ export function protectNavigation(url: string, app: string) {
     if (pageDomain.endsWith('verify.walletconnect.com')) {
         return true;
     }
+    if (pageDomain.endsWith('verify.walletconnect.org')) {
+        return true;
+    }
     return false;
 }
