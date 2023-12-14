@@ -524,7 +524,9 @@ export const HoldersAppComponent = memo((
     const [offlineRender, setOfflineRender] = useState(0);
 
     const onLoadEnd = useCallback(() => {
-        setLoaded(true);
+        setTimeout(() => {
+            setLoaded(true);
+        }, 100);
     }, []);
 
     const onContentProcessDidTerminate = useCallback(() => {
