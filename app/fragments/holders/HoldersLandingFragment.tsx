@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ActivityIndicator, Platform, View, Alert } from 'react-native';
+import { ActivityIndicator, Platform, View, Alert, StyleSheet } from 'react-native';
 import WebView from 'react-native-webview';
 import Animated, { Easing, FadeIn, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview/lib/WebViewTypes';
@@ -9,7 +9,7 @@ import { warn } from '../../utils/log';
 import { extractDomain } from '../../engine/utils/extractDomain';
 import { useParams } from '../../utils/useParams';
 import { HoldersAppParams } from './HoldersAppFragment';
-import { HoldersParams, extractHoldersQueryParams } from './utils';
+import { HoldersParams, extractHoldersQueryParams, processStatusBarMessage } from './utils';
 import { getLocales } from 'react-native-localize';
 import { fragment } from '../../fragment';
 import { useKeysAuth } from '../../components/secure/AuthWalletKeys';
@@ -24,9 +24,11 @@ import { getCurrentAddress } from '../../storage/appState';
 import { getAppData } from '../../engine/getters/getAppData';
 import { ScreenHeader } from '../../components/ScreenHeader';
 import { normalizePath } from './components/HoldersAppComponent';
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar, setStatusBarBackgroundColor, setStatusBarStyle } from 'expo-status-bar';
 import { openWithInApp } from '../../utils/openWithInApp';
 import { HoldersEnrollErrorType } from '../../engine/hooks/holders/useHoldersEnroll';
+import { statusBarAPI } from '../apps/components/inject/createInjectSource';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 export const HoldersLandingFragment = fragment(() => {
     const acc = useMemo(() => getCurrentAddress(), []);
@@ -35,6 +37,7 @@ export const HoldersLandingFragment = fragment(() => {
     const webRef = useRef<WebView>(null);
     const authContext = useKeysAuth();
     const navigation = useTypedNavigation();
+    const safeArea = useSafeAreaInsets();
     const [currency,] = usePrimaryCurrency();
     const [holdersParams, setHoldersParams] = useState<Omit<HoldersParams, 'openEnrollment' | 'openUrl' | 'closeApp'>>({
         backPolicy: 'back',
@@ -182,6 +185,12 @@ export const HoldersLandingFragment = fragment(() => {
         let id: number;
         try {
             let parsed = JSON.parse(nativeEvent.data);
+            // Header API
+            const processed = processStatusBarMessage(parsed, setStatusBarStyle, setStatusBarBackgroundColor);
+            if (processed) {
+                return;
+            }
+
             if (typeof parsed.id !== 'number') {
                 warn('Invalid operation id');
                 return;
@@ -237,11 +246,7 @@ export const HoldersLandingFragment = fragment(() => {
 
     const injectSource = useMemo(() => {
         return `
-        window['tonhub'] = (() => {
-            const obj = {};
-            Object.freeze(obj);
-            return obj;
-        })();
+        ${statusBarAPI(safeArea)}
         true;
         `
     }, []);
@@ -267,7 +272,6 @@ export const HoldersLandingFragment = fragment(() => {
     return (
         <View style={{
             flex: 1,
-            paddingTop: 36,
             backgroundColor: theme.backgroundPrimary
         }}>
             <StatusBar style={theme.style === 'dark' ? 'light' : 'dark'} />
@@ -326,7 +330,7 @@ export const HoldersLandingFragment = fragment(() => {
                     />
                 )
                     : (
-                        <Animated.View style={{ flexGrow: 1, flexBasis: 0, height: '100%', }} entering={FadeIn}>
+                        <Animated.View style={{ flexGrow: 1, flexBasis: 0, height: '100%' }} entering={FadeIn}>
                             <WebView
                                 ref={webRef}
                                 source={{ uri: source.url }}

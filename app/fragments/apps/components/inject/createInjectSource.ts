@@ -1,3 +1,4 @@
+import { EdgeInsets } from "react-native-safe-area-context";
 import WebView from "react-native-webview";
 
 const mainButtonAPI = `
@@ -74,10 +75,33 @@ window['main-button'] = (() => {
 })();
 `
 
-export function createInjectSource(config: any, additionalInjections?: string, useMainButtonAPI?: boolean) {
+export const statusBarAPI = (safeArea: EdgeInsets) => {
+    return `
+    window['tonhub'] = (() => {
+        let __STATUS_BAR_AVAILIBLE = true;
+        const safeArea = ${JSON.stringify(safeArea)};
+    
+        const setStatusBarStyle = (style) => {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ data: { name: 'status-bar.setStatusBarStyle', args: [style] } }));
+        };
+    
+        const setStatusBarBackgroundColor = (backgroundColor) => {
+            window.ReactNativeWebView.postMessage(JSON.stringify({ data: { name: 'status-bar.setStatusBarBackgroundColor', args: [backgroundColor] } }));
+        };
+    
+        const obj = { __STATUS_BAR_AVAILIBLE, statusBar: { setStatusBarStyle, setStatusBarBackgroundColor }, safeArea };
+    
+        Object.freeze(obj);
+        return obj;
+    })();
+    `
+}
+
+export function createInjectSource(config: any, safeArea: EdgeInsets, additionalInjections?: string, useMainButtonAPI?: boolean, useStatusBarAPI?: boolean) {
     return `
     ${additionalInjections || ''}
     ${useMainButtonAPI ? mainButtonAPI : ''}
+    ${useStatusBarAPI ? statusBarAPI(safeArea) : ''}
     window['ton-x'] = (() => {
         let requestId = 0;
         let callbacks = {};
