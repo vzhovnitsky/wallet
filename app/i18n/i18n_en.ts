@@ -225,8 +225,8 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         completed: 'This authentication request already completed',
         authorized: 'Authorization request approved',
         authorizedDescription: 'Now you can get back the app.',
-        noExtensions: 'You don\'t have any extensions installed yet',
-        noApps: 'You don\'t have any connected apps yet',
+        noExtensions: 'No extensions yet',
+        noApps: 'No connected apps yet',
         name: 'Connected apps',
         yourWallet: 'Your wallet',
         revoke: {
@@ -753,6 +753,10 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
                 messageLogout: 'Unfortunately, your wallet is no longer available, to restore your wallet, tap \"Logout\" (you will be logged out of you current wallet) and add your wallet again',
                 logout: 'Logout',
                 restore: 'Restore',
+            },
+            canceled: {
+                title: 'Canceled',
+                message: 'Authentication was canceled, please try again',
             }
         }
     },
