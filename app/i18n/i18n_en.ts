@@ -288,7 +288,8 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         },
         transactionRequest: {
             title: 'Transaction requested',
-            subtitle: 'Press to view request'
+            subtitle: 'Press to view request',
+            groupTitle: 'Transaction requests',
         },
         signatureRequest: {
             title: 'Signature requested',
@@ -481,7 +482,7 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
                 setUpCard: 'Set up the card',
                 pin: 'Change PIN',
             },
-            hiddenCards: 'Hidden cards',
+            hiddenCards: 'Hidden accounts',
             card: {
                 card: 'Card',
                 cards: 'Holders cards',
@@ -738,10 +739,10 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
                 authenticate: 'Authenticate with Passcode',
             },
             biometricsSetupAgain: {
-                title: 'Biometrics setup',
-                message: 'Please, setup biometrics again with passcode',
+                title: 'New biometrics detected',
+                message: 'Please, setup biometrics again in security settings',
                 setup: 'Setup',
-                authenticate: 'Authenticate with Passcode',
+                authenticate: 'Continue with Passcode',
             },
             biometricsCooldown: {
                 title: 'Biometrics cooldown',
