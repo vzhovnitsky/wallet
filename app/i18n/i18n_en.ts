@@ -144,7 +144,7 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
     txPreview: {
         sendAgain: 'Send again',
         blockchainFee: 'Network fee',
-        blockchainFeeDescription: 'All fees are calculated in Gas. It\'s a special currency for fees in TON. All fees are nominated and fixed in a certain gas amount, but the gas price itself is not fixed. Even if TON price increases 100 times, transactions will remain ultra-cheap; less than $0.01. Moreover, validators may lower this value if they see commissions have become expensive. The gas fee, like many other parameters of TON, is configurable and may be changed by a special vote made in the mainnet. Fees on TON are difficult to calculate in advance, as their amount depends on transaction run time, account status, message content and size, blockchain network settings, and a number of other variables that cannot be calculated until the transaction is sent.',
+        blockchainFeeDescription: 'This fee is also referred to as GAS. It is required for a transaction to be successfully processed in blockchain. The size of the GAS depends on the amount of work that validators need to do to include a transaction in the block.',
     },
     receive: {
         title: 'Receive',
@@ -288,7 +288,8 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         },
         transactionRequest: {
             title: 'Transaction requested',
-            subtitle: 'Press to view request'
+            subtitle: 'Press to view request',
+            groupTitle: 'Transaction requests',
         },
         signatureRequest: {
             title: 'Signature requested',
@@ -481,7 +482,7 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
                 setUpCard: 'Set up the card',
                 pin: 'Change PIN',
             },
-            hiddenCards: 'Hidden cards',
+            hiddenCards: 'Hidden accounts',
             card: {
                 card: 'Card',
                 cards: 'Holders cards',
@@ -738,10 +739,10 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
                 authenticate: 'Authenticate with Passcode',
             },
             biometricsSetupAgain: {
-                title: 'Biometrics setup',
-                message: 'Please, setup biometrics again with passcode',
+                title: 'New biometrics detected',
+                message: 'Please, setup biometrics again in security settings',
                 setup: 'Setup',
-                authenticate: 'Authenticate with Passcode',
+                authenticate: 'Continue with Passcode',
             },
             biometricsCooldown: {
                 title: 'Biometrics cooldown',
