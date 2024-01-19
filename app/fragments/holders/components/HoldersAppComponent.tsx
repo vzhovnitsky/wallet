@@ -13,7 +13,7 @@ import { createInjectSource, dispatchResponse } from '../../apps/components/inje
 import { useInjectEngine } from '../../apps/components/inject/useInjectEngine';
 import { warn } from '../../../utils/log';
 import { openWithInApp } from '../../../utils/openWithInApp';
-import { HoldersParams, extractHoldersQueryParams } from '../utils';
+import { HoldersParams, extractHoldersQueryParams, processStatusBarMessage } from '../utils';
 import { getLocales } from 'react-native-localize';
 import { useLinkNavigator } from '../../../useLinkNavigator';
 import * as FileSystem from 'expo-file-system';
@@ -38,7 +38,9 @@ import { OfflineWebView } from './OfflineWebView';
 import { getDomainKey } from '../../../engine/state/domainKeys';
 import { ScreenHeader } from '../../../components/ScreenHeader';
 import { onHoldersInvalidate } from '../../../engine/effects/onHoldersInvalidate';
+import { ThemeType } from '../../../engine/state/theme';
 import DeviceInfo from 'react-native-device-info';
+import { setStatusBarBackgroundColor, setStatusBarStyle } from 'expo-status-bar';
 
 export function normalizePath(path: string) {
     return path.replaceAll('.', '_');
@@ -478,7 +480,11 @@ export const HoldersAppComponent = memo((
             }
 
             // Header API
-            processed = processStatusBarMessage(parsed, setStatusBarStyle, setStatusBarBackgroundColor);
+            processed = processStatusBarMessage(
+                parsed,
+                setStatusBarStyle,
+                setStatusBarBackgroundColor
+            );
 
             if (processed) {
                 return;

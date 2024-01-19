@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { ActivityIndicator, Platform, View, Alert, StyleSheet } from 'react-native';
+import { ActivityIndicator, Platform, View, Alert } from 'react-native';
 import WebView from 'react-native-webview';
 import Animated, { Easing, FadeIn, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { WebViewMessageEvent, WebViewNavigation } from 'react-native-webview/lib/WebViewTypes';
@@ -23,12 +23,13 @@ import { useHoldersEnroll } from '../../engine/hooks';
 import { getCurrentAddress } from '../../storage/appState';
 import { getAppData } from '../../engine/getters/getAppData';
 import { ScreenHeader } from '../../components/ScreenHeader';
-import { WebViewLoader, normalizePath } from './components/HoldersAppComponent';
-import { StatusBar } from 'expo-status-bar';
+import { StatusBar, setStatusBarBackgroundColor, setStatusBarStyle } from 'expo-status-bar';
 import { openWithInApp } from '../../utils/openWithInApp';
 import { HoldersEnrollErrorType } from '../../engine/hooks/holders/useHoldersEnroll';
+import { statusBarAPI } from '../apps/components/inject/createInjectSource';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { WebViewLoader, normalizePath } from './components/HoldersAppComponent';
 import DeviceInfo from 'react-native-device-info';
-
 
 export const HoldersLandingFragment = fragment(() => {
     const acc = useMemo(() => getCurrentAddress(), []);

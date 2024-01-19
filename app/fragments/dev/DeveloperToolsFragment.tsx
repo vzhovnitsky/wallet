@@ -6,7 +6,6 @@ import { fragment } from '../../fragment';
 import { storage, storagePersistence, storageQuery } from '../../storage/storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTypedNavigation } from '../../utils/useTypedNavigation';
-import * as Application from 'expo-application';
 import { t } from '../../i18n/t';
 import { WalletKeys } from '../../storage/walletKeys';
 import { warn } from '../../utils/log';
@@ -30,6 +29,20 @@ import { useHoldersAccounts } from '../../engine/hooks';
 import { useHoldersAccountStatus } from '../../engine/hooks';
 import { KeyboardAvoidingView } from 'react-native';
 import { ScreenHeader } from '../../components/ScreenHeader';
+import { ATextInput } from '../../components/ATextInput';
+import { RoundButton } from '../../components/RoundButton';
+import { useToaster } from '../../components/toast/ToastProvider';
+import { Typography } from '../../components/styles';
+
+export function getHoldersUrl() {
+    const stored = storage.getString('holdersUrl');
+    if (!stored) return 'https://tonhub-preview.holders.io';
+    return stored;
+}
+
+function setHoldersUrl(url: string) {
+    storage.set('holdersUrl', url);
+}
 
 export const DeveloperToolsFragment = fragment(() => {
     const theme = useTheme();
@@ -170,17 +183,9 @@ export const DeveloperToolsFragment = fragment(() => {
                         <View style={{ marginHorizontal: 16, width: '100%' }}>
                             <ItemButton title={"Counter"} hint={counter.counter.toString()} onPress={() => setCounter((value) => value.counter++)} />
                         </View>
-
-                        {!(
-                            Application.applicationId === 'com.tonhub.app.testnet' ||
-                            Application.applicationId === 'com.tonhub.app.debug.testnet' ||
-                            Application.applicationId === 'com.tonhub.wallet.testnet' ||
-                            Application.applicationId === 'com.tonhub.wallet.testnet.debug'
-                        ) && (
-                                <View style={{ marginHorizontal: 16, width: '100%' }}>
-                                    <ItemButton title={t('devTools.switchNetwork')} onPress={switchNetwork} hint={isTestnet ? 'Testnet' : 'Mainnet'} />
-                                </View>
-                            )}
+                        <View style={{ marginHorizontal: 16, width: '100%' }}>
+                            <ItemButton title={t('devTools.switchNetwork')} onPress={switchNetwork} hint={isTestnet ? 'Testnet' : 'Mainnet'} />
+                        </View>
                     </View>
                     <View style={{
                         marginTop: 16,
