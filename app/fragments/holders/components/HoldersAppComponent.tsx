@@ -13,7 +13,7 @@ import { createInjectSource, dispatchResponse } from '../../apps/components/inje
 import { useInjectEngine } from '../../apps/components/inject/useInjectEngine';
 import { warn } from '../../../utils/log';
 import { openWithInApp } from '../../../utils/openWithInApp';
-import { HoldersParams, extractHoldersQueryParams, processStatusBarMessage } from '../utils';
+import { HoldersParams, extractHoldersQueryParams } from '../utils';
 import { getLocales } from 'react-native-localize';
 import { useLinkNavigator } from '../../../useLinkNavigator';
 import * as FileSystem from 'expo-file-system';
@@ -21,7 +21,7 @@ import { DappMainButton, processMainButtonMessage, reduceMainButton } from '../.
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
 import { HoldersAppParams } from '../HoldersAppFragment';
-import Animated, { Easing, Extrapolation, FadeIn, FadeInDown, FadeOutDown, cancelAnimation, interpolate, interpolateColor, runOnJS, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
+import Animated, { Easing, Extrapolation, FadeIn, FadeInDown, FadeOutDown, interpolate, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { WebViewErrorComponent } from './WebViewErrorComponent';
 import { useOfflineApp, usePrimaryCurrency } from '../../../engine/hooks';
 import { useTheme } from '../../../engine/hooks';
@@ -38,14 +38,13 @@ import { OfflineWebView } from './OfflineWebView';
 import { getDomainKey } from '../../../engine/state/domainKeys';
 import { ScreenHeader } from '../../../components/ScreenHeader';
 import { onHoldersInvalidate } from '../../../engine/effects/onHoldersInvalidate';
-import { ThemeType } from '../../../engine/state/theme';
+import DeviceInfo from 'react-native-device-info';
 
 export function normalizePath(path: string) {
     return path.replaceAll('.', '_');
 }
 
 import IcHolders from '../../../../assets/ic_holders.svg';
-import { StatusBar, setStatusBarBackgroundColor, setStatusBarStyle } from 'expo-status-bar';
 
 function PulsingCardPlaceholder(theme: ThemeType) {
     const safeArea = useSafeAreaInsets();
@@ -64,6 +63,12 @@ function PulsingCardPlaceholder(theme: ThemeType) {
     }, []);
 
     const animatedStyles = useAnimatedStyle(() => {
+        const opacity = interpolate(
+            animation.value,
+            [0, 1],
+            [1, 0.75],
+            Extrapolation.CLAMP
+        );
         const scale = interpolate(
             animation.value,
             [0, 1],
@@ -209,7 +214,7 @@ function HoldersPlaceholder() {
     );
 }
 
-function WebViewLoader({ loaded, type }: { loaded: boolean, type: 'account' | 'create' }) {
+export function WebViewLoader({ loaded, type }: { loaded: boolean, type: 'account' | 'create' }) {
     const theme = useTheme();
     const navigation = useTypedNavigation();
     const safeArea = useSafeAreaInsets();
@@ -227,7 +232,6 @@ function WebViewLoader({ loaded, type }: { loaded: boolean, type: 'account' | 'c
             bottom: 0,
             backgroundColor: theme.backgroundPrimary,
             alignItems: 'center',
-            justifyContent: 'center',
             opacity: withTiming(opacity.value, { duration: 150, easing: Easing.bezier(0.42, 0, 1, 1) }),
         };
     });
@@ -259,7 +263,7 @@ function WebViewLoader({ loaded, type }: { loaded: boolean, type: 'account' | 'c
         >
             <ScreenHeader
                 onBackPressed={showClose ? navigation.goBack : undefined}
-                style={{ paddingTop: safeArea.top, paddingHorizontal: 16 }}
+                style={{ paddingHorizontal: 16, width: '100%' }}
             />
             {type === 'account' ? <PulsingCardPlaceholder {...theme} /> : <HoldersPlaceholder />}
 
@@ -503,8 +507,8 @@ export const HoldersAppComponent = memo((
                     openWithInApp(data.args.url);
                     return;
                 }
-            } catch (e) {
-                console.warn(e);
+            } catch {
+                warn('Failed to open url');
             }
         }
         if (data.name === 'closeApp') {
@@ -517,8 +521,8 @@ export const HoldersAppComponent = memo((
             let res = { type: 'error', message: 'Unknown error' };
             try {
                 res = await injectionEngine.execute(data);
-            } catch (e) {
-                warn(e);
+            } catch {
+                warn('Failed to execute inject engine operation');
             }
             dispatchResponse(webRef, { id, data: res });
         })();
@@ -543,9 +547,7 @@ export const HoldersAppComponent = memo((
                 openWithInApp(url);
                 return;
             }
-        } catch (e) {
-            warn(e);
-        }
+        } catch { }
     }, []);
 
     const onNavigation = useCallback((url: string) => {
@@ -596,9 +598,13 @@ export const HoldersAppComponent = memo((
     const [offlineRender, setOfflineRender] = useState(0);
 
     const onLoadEnd = useCallback(() => {
-        setTimeout(() => {
-            setLoaded(true);
-        }, 100);
+        try {
+            const powerState = DeviceInfo.getPowerStateSync();
+            const biggerDelay = powerState.lowPowerMode || (powerState.batteryLevel ?? 0) <= 0.2;
+            setTimeout(() => setLoaded(true), biggerDelay ? 180 : 100);
+        } catch {
+            setTimeout(() => setLoaded(true), 100);
+        }
     }, []);
 
     const onContentProcessDidTerminate = useCallback(() => {
