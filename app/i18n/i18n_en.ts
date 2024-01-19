@@ -144,7 +144,7 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
     txPreview: {
         sendAgain: 'Send again',
         blockchainFee: 'Network fee',
-        blockchainFeeDescription: 'All fees are calculated in Gas. It\'s a special currency for fees in TON. All fees are nominated and fixed in a certain gas amount, but the gas price itself is not fixed. Even if TON price increases 100 times, transactions will remain ultra-cheap; less than $0.01. Moreover, validators may lower this value if they see commissions have become expensive. The gas fee, like many other parameters of TON, is configurable and may be changed by a special vote made in the mainnet. Fees on TON are difficult to calculate in advance, as their amount depends on transaction run time, account status, message content and size, blockchain network settings, and a number of other variables that cannot be calculated until the transaction is sent.',
+        blockchainFeeDescription: 'This fee is also referred to as GAS. It is required for a transaction to be successfully processed in blockchain. The size of the GAS depends on the amount of work that validators need to do to include a transaction in the block.',
     },
     receive: {
         title: 'Receive',
@@ -164,6 +164,7 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
             invalidDomainString: 'Minimum 4 characters, maximum 126 characters. Latin letters (a-z), numbers (0-9) and a hyphen (-) are allowed. A hyphen cannot be at the beginning or end.',
             sendingToYourself: 'You can\'t send coins to yourself',
             zeroCoins: 'Unfortunately you can\'t send zero coins',
+            zeroCoinsAlert: 'You are trying to send zero coins',
             notEnoughCoins: 'You don\'t have enough TON on your wallets balance',
             addressIsForTestnet: 'This address is for testnet',
             addressCantReceive: 'This address can\'t receive coins',
@@ -225,8 +226,8 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         completed: 'This authentication request already completed',
         authorized: 'Authorization request approved',
         authorizedDescription: 'Now you can get back the app.',
-        noExtensions: 'You don\'t have any extensions installed yet',
-        noApps: 'You don\'t have any connected apps yet',
+        noExtensions: 'No extensions yet',
+        noApps: 'No connected apps yet',
         name: 'Connected apps',
         yourWallet: 'Your wallet',
         revoke: {
@@ -288,7 +289,8 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         },
         transactionRequest: {
             title: 'Transaction requested',
-            subtitle: 'Press to view request'
+            subtitle: 'Press to view request',
+            groupTitle: 'Transaction requests',
         },
         signatureRequest: {
             title: 'Signature requested',
@@ -467,6 +469,7 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
                 account: 'Account',
                 basicAccount: 'Basic account',
                 proAccount: 'Pro account',
+                noCards: 'No cards',
             },
             pageTitles: {
                 general: 'Tonhub Cards',
@@ -481,7 +484,7 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
                 setUpCard: 'Set up the card',
                 pin: 'Change PIN',
             },
-            hiddenCards: 'Hidden cards',
+            hiddenCards: 'Hidden accounts',
             card: {
                 card: 'Card',
                 cards: 'Holders cards',
@@ -738,10 +741,10 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
                 authenticate: 'Authenticate with Passcode',
             },
             biometricsSetupAgain: {
-                title: 'Biometrics setup',
-                message: 'Please, setup biometrics again with passcode',
+                title: 'New biometrics detected',
+                message: 'Please, setup biometrics again in security settings',
                 setup: 'Setup',
-                authenticate: 'Authenticate with Passcode',
+                authenticate: 'Continue with Passcode',
             },
             biometricsCooldown: {
                 title: 'Biometrics cooldown',
@@ -753,6 +756,10 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
                 messageLogout: 'Unfortunately, your wallet is no longer available, to restore your wallet, tap \"Logout\" (you will be logged out of you current wallet) and add your wallet again',
                 logout: 'Logout',
                 restore: 'Restore',
+            },
+            canceled: {
+                title: 'Canceled',
+                message: 'Authentication was canceled, please try again',
             }
         }
     },
@@ -851,13 +858,15 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         ledger: 'Ledger',
         title: 'Connect Ledger',
         description: 'Your hardware Ledger wallet',
-        installation: 'If this is your first time, then you can read',
+        installation: 'Make sure that Ledger is unlocked and Bluetooth enabled, learn more at',
         installationGuide: 'TON ledger connection guide',
         connectionDescriptionAndroid: 'Connect your Ledger via USB or Bluetooth',
         connectionDescriptionIOS: 'Connect your Ledger via Bluetooth',
         connectionHIDDescription_1: '1. Turn your ledger on and unlock it',
         connectionHIDDescription_2: '2. Press \"Continue\"',
-        chooseAccountDescription: 'Open the app on your Ledger and select the account you want to use',
+        openTheAppDescription: 'Open the TON app on your Ledger',
+        unlockLedgerDescription: 'Unlock your Ledger',
+        chooseAccountDescription: 'Select the account you want to use',
         bluetoothScanDescription_1: '1. Turn your ledger on and unlock it',
         bluetoothScanDescription_2: '2. Make sure that you have bluetooth enabled',
         bluetoothScanDescription_3: '3. Press \"Scan\" to search for available devices and select suitable Ledger Nano X',

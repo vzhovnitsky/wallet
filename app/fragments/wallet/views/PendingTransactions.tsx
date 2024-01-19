@@ -1,8 +1,8 @@
 import React, { useCallback, useEffect } from "react";
 import { memo } from "react";
-import { View, Text } from "react-native";
+import { View, Text, Pressable, StyleProp, ViewStyle } from "react-native";
 import { usePendingTransactions } from "../../../engine/hooks/transactions/usePendingTransactions";
-import { PendingTransaction, pendingTransactionsState } from "../../../engine/state/pending";
+import { PendingTransaction } from "../../../engine/state/pending";
 import { useTheme } from "../../../engine/hooks/theme/useTheme";
 import { PendingTransactionAvatar } from "../../../components/PendingTransactionAvatar";
 import { useNetwork } from "../../../engine/hooks/network/useNetwork";
@@ -17,7 +17,9 @@ import { PriceComponent } from "../../../components/PriceComponent";
 import { ItemDivider } from "../../../components/ItemDivider";
 import { formatTime } from "../../../utils/dates";
 import { Avatar } from "../../../components/Avatar";
-import { useSetRecoilState } from "recoil";
+import { useTypedNavigation } from "../../../utils/useTypedNavigation";
+import { useSelectedAccount } from "../../../engine/hooks";
+import { ThemeType } from "../../../engine/state/theme";
 
 const PendingTransactionView = memo(({
     tx,
@@ -34,6 +36,7 @@ const PendingTransactionView = memo(({
 }) => {
     const theme = useTheme();
     const { isTestnet } = useNetwork();
+    const navigation = useTypedNavigation();
     const body = tx.body;
     const targetFriendly = body?.type === 'token' ? body.target.toString({ testOnly: isTestnet }) : tx.address?.toString({ testOnly: isTestnet });
     const contact = useContact(targetFriendly);
@@ -68,15 +71,19 @@ const PendingTransactionView = memo(({
             entering={FadeInDown}
             exiting={FadeOutUp}
             style={{
-                paddingHorizontal: 20, paddingVertical: 20, paddingBottom: tx.body?.type === 'comment' ? 0 : undefined
+                paddingHorizontal: 20, paddingVertical: 20,
+                maxHeight: 86
             }}
         >
-            <View style={{
-                alignSelf: 'stretch',
-                flexDirection: 'row',
-                justifyContent: 'center',
-                alignItems: 'center',
-            }}>
+            <Pressable
+                style={{
+                    alignSelf: 'stretch',
+                    flexDirection: 'row',
+                    justifyContent: 'center',
+                    alignItems: 'center'
+                }}
+                onPress={() => navigation.navigate('PendingTransaction', { transaction: tx })}
+            >
                 <View style={{
                     width: 46, height: 46,
                     borderRadius: 23,
@@ -97,8 +104,9 @@ const PendingTransactionView = memo(({
                             borderWith={0}
                             id={targetFriendly ?? 'batch'}
                             theme={theme}
-                            isTestnet={false}
+                            isTestnet={isTestnet}
                             backgroundColor={theme.backgroundPrimary}
+                            hashColor
                         />
                     )}
                 </View>
@@ -169,17 +177,52 @@ const PendingTransactionView = memo(({
                         />
                     )}
                 </View>
-            </View>
+            </Pressable>
             {!last && !single && (
                 <ItemDivider />
             )}
         </Animated.View>
     )
 });
+PendingTransactionView.displayName = 'PendingTransactionView';
+
+export const PendingTransactionsView = memo((
+    {
+        theme,
+        pending,
+        removePending,
+        style
+    }: {
+        theme: ThemeType,
+        pending: PendingTransaction[],
+        removePending: (id: string) => void,
+        style?: StyleProp<ViewStyle>,
+    }
+) => {
+    return (
+        <View style={[{
+            overflow: 'hidden',
+            backgroundColor: theme.surfaceOnBg,
+            borderRadius: 20,
+        }, style]}>
+            {pending.map((tx, i) => (
+                <PendingTransactionView
+                    key={tx.id}
+                    tx={tx}
+                    first={i === 0}
+                    last={i === pending.length - 1}
+                    onRemove={() => removePending(tx.id)}
+                />
+            ))}
+        </View>
+    );
+});
+PendingTransactionsView.displayName = 'PendingTransactionsView';
 
 export const PendingTransactions = memo(() => {
-    const pending = usePendingTransactions();
-    const setPending = useSetRecoilState(pendingTransactionsState);
+    const account = useSelectedAccount();
+    const network = useNetwork();
+    const [pending, setPending] = usePendingTransactions(account?.addressString ?? '', network.isTestnet);
     const theme = useTheme();
 
     const removePending = useCallback((id: string) => {
@@ -189,7 +232,7 @@ export const PendingTransactions = memo(() => {
     }, [setPending]);
 
     return (
-        <View>
+        <View style={{ paddingHorizontal: 16 }}>
             {pending.length > 0 && (
                 <Animated.View
                     entering={FadeInDown}
@@ -198,9 +241,8 @@ export const PendingTransactions = memo(() => {
                         backgroundColor: theme.backgroundPrimary,
                         justifyContent: 'flex-end',
                         paddingBottom: 2,
-                        paddingTop: 12,
                         marginVertical: 8,
-                        paddingHorizontal: 16
+                        marginTop: 16,
                     }}
                 >
                     <Text style={{
@@ -213,21 +255,12 @@ export const PendingTransactions = memo(() => {
                     </Text>
                 </Animated.View>
             )}
-            <View style={{
-                overflow: 'hidden',
-                backgroundColor: theme.surfaceOnElevation,
-                marginHorizontal: 16, borderRadius: 20,
-            }}>
-                {pending.map((tx, i) => (
-                    <PendingTransactionView
-                        key={tx.id}
-                        tx={tx}
-                        first={i === 0}
-                        last={i === pending.length - 1}
-                        onRemove={() => removePending(tx.id)}
-                    />
-                ))}
-            </View>
+            <PendingTransactionsView
+                theme={theme}
+                pending={pending}
+                removePending={removePending}
+            />
         </View>
     );
 });
+PendingTransactions.displayName = 'PendingTransactions';

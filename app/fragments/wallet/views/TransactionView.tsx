@@ -217,8 +217,7 @@ export function TransactionView(props: {
                         borderRadius: 23,
                         position: 'relative',
                         borderWidth: 0, marginRight: 10,
-                        justifyContent: 'center', alignItems: 'center',
-                        backgroundColor: theme.border
+                        justifyContent: 'center', alignItems: 'center'
                     }}>
                         {parsed.status === 'pending' ? (
                             <PendingTransactionAvatar
@@ -228,16 +227,16 @@ export function TransactionView(props: {
                             />
                         ) : (
                             <Avatar
-                                size={42}
+                                size={48}
                                 address={opAddress}
                                 id={opAddress}
                                 borderWith={0}
                                 spam={spam}
                                 markContact={!!contact}
-                                isOwn={isOwn}
+                                icProps={{ isOwn, backgroundColor: theme.surfaceOnBg, size: 18, borderWidth: 2 }}
                                 theme={theme}
                                 isTestnet={isTestnet}
-                                icBackgroundColor={theme.surfaceOnBg}
+                                hashColor
                             />
                         )}
                     </PerfView>

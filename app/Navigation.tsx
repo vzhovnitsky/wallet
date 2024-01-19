@@ -16,7 +16,7 @@ import { PrivacyFragment } from './fragments/onboarding/PrivacyFragment';
 import { TermsFragment } from './fragments/onboarding/TermsFragment';
 import { resolveOnboarding } from './fragments/resolveOnboarding';
 import { DeveloperToolsFragment } from './fragments/dev/DeveloperToolsFragment';
-import { NavigationContainer } from '@react-navigation/native';
+import { NavigationContainer, createNavigationContainerRef } from '@react-navigation/native';
 import { getPendingGrant, getPendingRevoke, removePendingGrant, removePendingRevoke } from './storage/appState';
 import { EdgeInsets, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { backoff } from './utils/time';
@@ -84,6 +84,7 @@ import { LedgerSignTransferFragment } from './fragments/ledger/LedgerSignTransfe
 import { AppStartAuthFragment } from './fragments/AppStartAuthFragment';
 import { BackupIntroFragment } from './fragments/onboarding/BackupIntroFragment';
 import { ProductsFragment } from './fragments/wallet/ProductsFragment';
+import { PendingTxPreviewFragment } from './fragments/wallet/PendingTxPreviewFragment';
 
 const Stack = createNativeStackNavigator();
 Stack.Navigator.displayName = 'MainStack';
@@ -123,10 +124,14 @@ function modalScreen(name: string, component: React.ComponentType<any>, safeArea
             options={{
                 presentation: 'modal',
                 headerShown: false,
-                contentStyle: {
-                    paddingBottom: Platform.OS === 'ios' ? (safeArea.bottom === 0 ? 24 : safeArea.bottom) + 16 : undefined,
-                    backgroundColor: Platform.OS === 'ios' ? theme.elevation : theme.backgroundPrimary
-                }
+                contentStyle: Platform.select({
+                    ios: {
+                        borderTopEndRadius: 20, borderTopStartRadius: 20,
+                        paddingBottom: (safeArea.bottom === 0 ? 24 : safeArea.bottom) + 16,
+                        backgroundColor: theme.elevation
+                    },
+                    android: { backgroundColor: theme.backgroundPrimary }
+                })
             }}
         />
     );
@@ -143,10 +148,14 @@ function lockedModalScreen(name: string, component: React.ComponentType<any>, sa
                 presentation: 'modal',
                 headerShown: false,
                 gestureEnabled: false,
-                contentStyle: {
-                    paddingBottom: Platform.OS === 'ios' ? safeArea.bottom + 16 : undefined,
-                    backgroundColor: Platform.OS === 'ios' ? theme.elevation : theme.backgroundPrimary
-                }
+                contentStyle: Platform.select({
+                    ios: {
+                        borderTopEndRadius: 20, borderTopStartRadius: 20,
+                        paddingBottom: safeArea.bottom + 16,
+                        backgroundColor: theme.elevation
+                    },
+                    android: { backgroundColor: theme.backgroundPrimary }
+                })
             }}
         />
     );
@@ -179,6 +188,7 @@ const navigation = (safeArea: EdgeInsets) => [
     genericScreen('WalletUpgrade', WalletUpgradeFragment, safeArea),
     genericScreen('BackupIntro', BackupIntroFragment, safeArea),
     modalScreen('Transaction', TransactionPreviewFragment, safeArea),
+    modalScreen('PendingTransaction', PendingTxPreviewFragment, safeArea),
     modalScreen('Sign', SignFragment, safeArea),
     modalScreen('Migration', MigrationFragment, safeArea),
 
@@ -239,8 +249,6 @@ const navigation = (safeArea: EdgeInsets) => [
     lockedModalScreen('LedgerSignTransfer', LedgerSignTransferFragment, safeArea),
     modalScreen('LedgerTransactionPreview', TransactionPreviewFragment, safeArea),
     modalScreen('LedgerAssets', AssetsFragment, safeArea),
-    modalScreen('LedgerStakingPools', StakingPoolsFragment, safeArea),
-    modalScreen('LedgerStaking', StakingFragment, safeArea),
     modalScreen('LedgerStakingTransfer', StakingTransferFragment, safeArea),
     modalScreen('LedgerStakingCalculator', StakingCalculatorFragment, safeArea),
 
@@ -271,6 +279,8 @@ const navigation = (safeArea: EdgeInsets) => [
     transparentModalScreen('AccountSelector', AccountSelectorFragment, safeArea),
     fullScreen('AppStartAuth', AppStartAuthFragment),
 ];
+
+export const navigationRef = createNavigationContainerRef<any>();
 
 export const Navigation = memo(() => {
     const safeArea = useSafeAreaInsets();
@@ -383,6 +393,7 @@ export const Navigation = memo(() => {
             <NavigationContainer
                 theme={navigationTheme}
                 onReady={onMounted}
+                ref={navigationRef}
             >
                 <Stack.Navigator
                     initialRouteName={initial}

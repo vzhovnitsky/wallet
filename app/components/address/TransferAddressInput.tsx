@@ -1,18 +1,17 @@
 import { ForwardedRef, RefObject, forwardRef, memo, useCallback, useEffect } from "react";
-import { Platform, Pressable, View } from "react-native";
+import { Platform, Pressable, View, Image } from "react-native";
 import { ThemeType } from "../../engine/state/theme";
 import { Address } from "@ton/core";
 import { Avatar } from "../Avatar";
 import { AddressDomainInput } from "./AddressDomainInput";
 import { ATextInputRef } from "../ATextInput";
 import { KnownWallets } from "../../secure/KnownWallets";
-import { useContact, useTheme } from "../../engine/hooks";
+import { useContact, useTheme, useWalletSettings } from "../../engine/hooks";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { AddressSearch } from "./AddressSearch";
 import { t } from "../../i18n/t";
 import { PerfText } from "../basic/PerfText";
 
-import IcSpamNonen from '@assets/ic-spam-none.svg';
 import IcChevron from '@assets/ic_chevron_forward.svg';
 
 type TransferAddressInputProps = {
@@ -122,6 +121,8 @@ export function addressInputReducer() {
 export const TransferAddressInput = memo(forwardRef((props: TransferAddressInputProps, ref: ForwardedRef<ATextInputRef>) => {
     const isKnown: boolean = !!KnownWallets(props.isTestnet)[props.target];
     const contact = useContact(props.target);
+    const [walletSettings,] = useWalletSettings(props?.validAddress ?? '');
+
     const theme = useTheme();
 
     const select = useCallback(() => {
@@ -134,10 +135,7 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
         }
     }, [select]);
 
-    const isSelected = Platform.select({
-        ios: props.isSelected,
-        android: true,
-    });
+    const isSelected = props.isSelected;
 
     return (
         <View>
@@ -162,9 +160,14 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
                             backgroundColor={props.theme.elevation}
                             borderColor={props.theme.elevation}
                             theme={theme}
+                            hash={walletSettings?.avatar}
                             isTestnet={props.isTestnet}
+                            hashColor
                         />
-                        : <IcSpamNonen height={46} width={46} style={{ height: 46, width: 46 }} />
+                        : <Image
+                            source={require('@assets/ic-contact.png')}
+                            style={{ height: 46, width: 46, tintColor: theme.iconPrimary }}
+                        />
                     }
                     <View style={{ paddingHorizontal: 12, flexGrow: 1 }}>
                         <PerfText style={{
@@ -189,7 +192,7 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
                 </Pressable>
             </View>
             <View
-                style={[!isSelected ? { opacity: 0, height: 0, width: 0 } : Platform.select({ ios: { marginTop: -16 } })]}
+                style={[!isSelected ? [{ opacity: 0, height: 0 }, Platform.select({ ios: { width: 0 } })] : {}]}
                 pointerEvents={isSelected ? undefined : 'none'}
             >
                 <View style={{
@@ -208,8 +211,13 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
                                 borderColor={props.theme.elevation}
                                 theme={theme}
                                 isTestnet={props.isTestnet}
+                                hash={walletSettings?.avatar}
+                                hashColor
                             />
-                            : <IcSpamNonen height={46} width={46} style={{ height: 46, width: 46 }} />
+                            : <Image
+                                source={require('@assets/ic-contact.png')}
+                                style={{ height: 46, width: 46, tintColor: theme.iconPrimary }}
+                            />
                         }
                     </View>
                     <View style={{ flexGrow: 1 }}>
@@ -219,14 +227,8 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
                             target={props.target}
                             index={props.index}
                             ref={ref}
+                            autoFocus={true}
                             onFocus={props.onFocus}
-                            style={{ paddingHorizontal: 16, flexGrow: 1 }}
-                            inputStyle={{
-                                flexShrink: 1,
-                                fontSize: 17, fontWeight: '400',
-                                color: props.theme.textPrimary,
-                                textAlignVertical: 'center',
-                            }}
                             isKnown={isKnown}
                             onSubmit={props.onSubmit}
                             contact={contact}

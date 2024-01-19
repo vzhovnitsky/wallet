@@ -5,13 +5,24 @@ import { fragment } from "../../fragment";
 import { t } from "../../i18n/t";
 import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
-import { LedgerHomeFragment } from "./LedgerHomeFragment";
-import { useTheme } from "../../engine/hooks";
+import { LedgerNavigationStack } from "./LedgerHomeFragment";
+import { useAccountTransactions, useClient4, useNetwork, useTheme } from "../../engine/hooks";
 import { useLedgerTransport } from "./components/TransportContext";
 import { TransactionsFragment } from "../wallet/TransactionsFragment";
 import { BlurView } from "expo-blur";
+import { SettingsFragment } from '../SettingsFragment';
 
 const Tab = createBottomTabNavigator();
+
+
+const PrefetchTransactions = ({ address }: { address: string }) => {
+    let isTestnet = useNetwork().isTestnet;
+    let client = useClient4(isTestnet);
+
+    useAccountTransactions(client, address);
+
+    return null;
+}
 
 export const LedgerAppFragment = fragment(() => {
     const theme = useTheme();
@@ -34,7 +45,8 @@ export const LedgerAppFragment = fragment(() => {
     }
 
     return (
-        <View style={{ flexGrow: 1, backgroundColor: 'white', }}>
+        <View style={{ flexGrow: 1, backgroundColor: theme.surfaceOnBg }}>
+            {ledgerContext?.addr.address && <PrefetchTransactions address={ledgerContext?.addr.address} />}
             <Tab.Navigator
                 initialRouteName={'LedgerHome'}
                 screenOptions={({ route }) => ({
@@ -70,6 +82,10 @@ export const LedgerAppFragment = fragment(() => {
                             source = require('@assets/ic-history.png');
                         }
 
+                        if ((route.name === 'LedgerSettings')) {
+                            source = require('@assets/ic-settings.png');
+                        }
+
                         return (
                             <Image
                                 source={source}
@@ -82,12 +98,17 @@ export const LedgerAppFragment = fragment(() => {
                 <Tab.Screen
                     options={{ title: t('home.home') }}
                     name={'LedgerHome'}
-                    component={LedgerHomeFragment}
+                    component={LedgerNavigationStack}
                 />
                 <Tab.Screen
                     options={{ title: t('home.history') }}
                     name={'LedgerTransactions'}
                     component={TransactionsFragment}
+                />
+                <Tab.Screen
+                    options={{ title: t('home.more') }}
+                    name={'LedgerSettings'}
+                    component={SettingsFragment}
                 />
             </Tab.Navigator>
         </View>

@@ -166,6 +166,7 @@ export type LocalizationSchema = {
             invalidDomainString: string,
             sendingToYourself: string,
             zeroCoins: string,
+            zeroCoinsAlert: string,
             notEnoughCoins: string,
             addressIsForTestnet: string,
             addressCantReceive: string,
@@ -290,7 +291,8 @@ export type LocalizationSchema = {
         },
         transactionRequest: {
             title: string,
-            subtitle: string
+            subtitle: string,
+            groupTitle: string,
         },
         signatureRequest: {
             title: string,
@@ -469,6 +471,7 @@ export type LocalizationSchema = {
                 account: string,
                 basicAccount: string,
                 proAccount: string,
+                noCards: string,
             },
             pageTitles: {
                 general: string,
@@ -755,7 +758,11 @@ export type LocalizationSchema = {
                 messageLogout: string,
                 logout: string,
                 restore: string,
-            }
+            },
+            canceled: {
+                title: string,
+                message: string,
+            },
         }
     },
     report: {
@@ -865,6 +872,8 @@ export type LocalizationSchema = {
         bluetoothScanDescription_3_and: string,
         bluetoothScanDescription_4_and: string,
         chooseAccountDescription: string,
+        openTheAppDescription: string,
+        unlockLedgerDescription: string,
         openAppVerifyAddress: string,
         devices: string,
         connection: string,

@@ -20,7 +20,7 @@ import { useParams } from '../../utils/useParams';
 import { useRoute } from '@react-navigation/native';
 import { useCallback, useEffect, useLayoutEffect, useMemo, useState } from 'react';
 import { ScreenHeader } from '../../components/ScreenHeader';
-import { formatCurrency } from '../../utils/formatCurrency';
+import { formatCurrency, formatInputAmount } from '../../utils/formatCurrency';
 import { Address, Cell, fromNano, toNano } from '@ton/core';
 import { useAccountLite, useNetwork, usePrice, useSelectedAccount, useStakingPool, useTheme } from '../../engine/hooks';
 import { useLedgerTransport } from '../ledger/components/TransportContext';
@@ -85,10 +85,13 @@ export const StakingTransferFragment = fragment(() => {
     const [minAmountWarn, setMinAmountWarn] = useState<string>();
 
     const validAmount = useMemo(() => {
+        let value: bigint | null = null;
         try {
-            return toNano(amount);
+            const valid = amount.replace(',', '.').replaceAll(' ', '');
+            value = toNano(valid);
+            return value;
         } catch {
-            return undefined;
+            return null;
         }
     }, [amount]);
 
@@ -297,7 +300,7 @@ export const StakingTransferFragment = fragment(() => {
 
     const onFocus = useCallback((index: number) => {
         if (amount === '0') {
-            setAmount('');
+            onSetAmount('');
         }
         runOnUI(scrollToInput)(index);
         setSelectedInput(index);
@@ -314,7 +317,9 @@ export const StakingTransferFragment = fragment(() => {
                 - (pool?.params?.receiptPrice || toNano('0.1'))
         }
         if (addAmount > 0n) {
-            onSetAmount(fromNano(addAmount));
+            const amount = fromNano(addAmount);
+            const formatted = formatInputAmount(amount.replace('.', ','), 9, { skipFormattingDecimals: true });
+            onSetAmount(formatted);
         }
     }, [balance, params, pool]);
 
@@ -411,7 +416,10 @@ export const StakingTransferFragment = fragment(() => {
                             ref={refs[0]}
                             onFocus={onFocus}
                             value={amount}
-                            onValueChange={setAmount}
+                            onValueChange={(newVal) => {
+                                const formatted = formatInputAmount(newVal, 9, { skipFormattingDecimals: true }, amount);
+                                onSetAmount(formatted);
+                            }}
                             keyboardType={'numeric'}
                             style={{
                                 backgroundColor: theme.backgroundPrimary,
@@ -420,7 +428,6 @@ export const StakingTransferFragment = fragment(() => {
                             }}
                             inputStyle={{
                                 fontSize: 17, fontWeight: '400',
-                                textAlignVertical: 'top',
                                 color: minAmountWarn ? theme.accentRed : theme.textPrimary,
                                 width: 'auto',
                                 flexShrink: 1
@@ -446,10 +453,10 @@ export const StakingTransferFragment = fragment(() => {
                         </Animated.View>
                     )}
 
-                    {(params?.action === 'deposit' || params?.action === 'top_up') && pool && (
+                    {(params?.action === 'deposit' || params?.action === 'top_up') && pool && validAmount !== null && (
                         <>
                             <StakingCalcComponent
-                                amount={amount}
+                                amount={validAmount}
                                 topUp={params?.action === 'top_up'}
                                 member={member}
                                 pool={pool}

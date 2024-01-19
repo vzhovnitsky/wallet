@@ -87,7 +87,9 @@ export const ProductsComponent = memo(({ selected }: { selected: SelectedAccount
             <Pressable
                 onPressIn={onPressIn}
                 onPressOut={onPressOut}
-                style={{ flex: 1, paddingHorizontal: 16, marginBottom: 16 }}
+                style={({ pressed }) => {
+                    return { flex: 1, paddingHorizontal: 16, marginBottom: 16, opacity: pressed ? 0.8 : 1 }
+                }}
                 onPress={onTonPress}
             >
                 <Animated.View style={[
@@ -95,7 +97,7 @@ export const ProductsComponent = memo(({ selected }: { selected: SelectedAccount
                         flexDirection: 'row', flexGrow: 1,
                         alignItems: 'center',
                         padding: 20,
-                        backgroundColor: theme.surfaceOnElevation,
+                        backgroundColor: theme.surfaceOnBg,
                         borderRadius: 20,
                         overflow: 'hidden'
                     },
@@ -107,7 +109,7 @@ export const ProductsComponent = memo(({ selected }: { selected: SelectedAccount
                             justifyContent: 'center', alignItems: 'center',
                             height: 20, width: 20, borderRadius: 10,
                             position: 'absolute', right: -2, bottom: -2,
-                            backgroundColor: theme.surfaceOnElevation
+                            backgroundColor: theme.surfaceOnBg
                         }}>
                             <Image
                                 source={require('@assets/ic-verified.png')}
@@ -132,8 +134,8 @@ export const ProductsComponent = memo(({ selected }: { selected: SelectedAccount
                         </Text>
                     </View>
                     <View style={{ flexGrow: 1, alignItems: 'flex-end' }}>
-                        <Text style={{ color: theme.textPrimary, fontSize: 17, lineHeight: 24, fontWeight: '600' }}>
-                            <ValueComponent value={balance} precision={2} />
+                        <Text style={[{ color: theme.textPrimary }, Typography.semiBold17_24]}>
+                            <ValueComponent value={balance} precision={2} centFontStyle={{ color: theme.textSecondary }} />
                             <Text style={{ color: theme.textSecondary, fontSize: 15 }}>{' TON'}</Text>
                         </Text>
                         <PriceComponent

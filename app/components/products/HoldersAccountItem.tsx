@@ -68,11 +68,7 @@ export const HoldersAccountItem = memo((props: {
     return (
         <Swipeable
             ref={swipableRef}
-            containerStyle={[{
-                flex: 1,
-                borderRadius: 20, paddingVertical: 20,
-                backgroundColor: theme.surfaceOnElevation
-            }, props.style]}
+            containerStyle={[{ flex: 1 }, props.style]}
             useNativeAnimations={true}
             renderRightActions={() => {
                 return (
@@ -81,9 +77,9 @@ export const HoldersAccountItem = memo((props: {
                             {
                                 padding: 20,
                                 justifyContent: 'center', alignItems: 'center',
-                                borderTopRightRadius: 20,
-                                borderBottomRightRadius: 20,
-                                backgroundColor: props.single ? theme.transparent : theme.accent,
+                                borderRadius: 20,
+                                backgroundColor: theme.accent,
+                                marginLeft: 10
                             }
                         ]}
                         onPress={() => {
@@ -94,26 +90,19 @@ export const HoldersAccountItem = memo((props: {
                         }}
                     >
                         {props.rightActionIcon}
-                        {!props.single && <View
-                            style={{
-                                position: 'absolute',
-                                top: 0, bottom: 0, left: -20,
-                                width: 20,
-                                backgroundColor: theme.surfaceOnElevation,
-                            }}
-                        />}
                     </Pressable>
                 )
             }}
         >
             <Animated.View style={animatedStyle}>
                 <TouchableOpacity
-                    style={{ flexGrow: 1 }}
+                    style={{ borderRadius: 20, overflow: 'hidden' }}
                     onPressIn={onPressIn}
                     onPressOut={onPressOut}
                     onPress={onPress}
+                    activeOpacity={0.8}
                 >
-                    <View>
+                    <View style={{ flexGrow: 1, paddingTop: 20, backgroundColor: theme.surfaceOnBg }}>
                         <View style={{ flexDirection: 'row', flexGrow: 1, alignItems: 'center', paddingHorizontal: 20 }}>
                             <View style={{ width: 46, height: 46, borderRadius: 23, borderWidth: 0 }}>
                                 <IcTonIcon width={46} height={46} />
@@ -139,8 +128,8 @@ export const HoldersAccountItem = memo((props: {
                             {(!!props.account && props.account.balance) && (
                                 <View style={{ flexGrow: 1, alignItems: 'flex-end' }}>
                                     <PerfText style={[{ color: theme.textPrimary }, Typography.semiBold17_24]}>
-                                        <ValueComponent value={props.account.balance} precision={2} centFontStyle={{ opacity: 0.5 }} />
-                                        <PerfText style={{ opacity: 0.5 }}>
+                                        <ValueComponent value={props.account.balance} precision={2} centFontStyle={{ color: theme.textSecondary }} />
+                                        <PerfText style={{ color: theme.textSecondary }}>
                                             {' TON'}
                                         </PerfText>
                                     </PerfText>
@@ -164,7 +153,9 @@ export const HoldersAccountItem = memo((props: {
                             style={[{ height: 46, marginTop: 10 }, Platform.select({ android: { marginLeft: 78 } })]}
                             contentContainerStyle={{ gap: 8 }}
                             contentInset={Platform.select({ ios: { left: 78 } })}
+                            contentOffset={Platform.select({ ios: { x: -78, y: 0 } })}
                             showsHorizontalScrollIndicator={false}
+                            alwaysBounceHorizontal={props.account.cards.length > 0}
                         >
                             {props.account.cards.map((card,) => {
                                 return (
@@ -174,10 +165,15 @@ export const HoldersAccountItem = memo((props: {
                                     />
                                 )
                             })}
+                            {props.account.cards.length === 0 && (
+                                <PerfText style={[{ color: theme.textSecondary }, Typography.medium17_24]}>
+                                    {t('products.holders.accounts.noCards')}
+                                </PerfText>
+                            )}
                         </ScrollView>
                     </View>
                 </TouchableOpacity>
             </Animated.View>
-        </Swipeable>
+        </Swipeable >
     );
 });

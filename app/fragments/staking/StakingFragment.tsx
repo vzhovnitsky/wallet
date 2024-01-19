@@ -16,14 +16,15 @@ import { t } from "../../i18n/t";
 import { RestrictedPoolBanner } from "../../components/staking/RestrictedPoolBanner";
 import { KnownPools } from "../../utils/KnownPools";
 import { StakingPoolType } from "./StakingPoolsFragment";
-import { useRoute } from "@react-navigation/native";
+import { useFocusEffect, useRoute } from "@react-navigation/native";
 import { ScreenHeader } from "../../components/ScreenHeader";
 import { StakingAnalyticsComponent } from "../../components/staking/StakingAnalyticsComponent";
-import { useNetwork, useSelectedAccount, useStakingPool, useStakingWalletConfig, useTheme } from "../../engine/hooks";
+import { useNetwork, usePendingTransactions, useSelectedAccount, useStakingActive, useStakingPool, useStakingWalletConfig, useTheme } from "../../engine/hooks";
 import { useLedgerTransport } from "../ledger/components/TransportContext";
 import { Address, toNano } from "@ton/core";
-import { StatusBar } from "expo-status-bar";
+import { StatusBar, setStatusBarStyle } from "expo-status-bar";
 import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
+import { PendingTransactionsView } from "../wallet/views/PendingTransactions";
 
 export const StakingFragment = fragment(() => {
     const theme = useTheme();
@@ -36,6 +37,8 @@ export const StakingFragment = fragment(() => {
     const isLedger = route.name === 'LedgerStaking';
     const selected = useSelectedAccount();
     const bottomBarHeight = useBottomTabBarHeight();
+    const active = useStakingActive();
+    const [pendingTxs, setPending] = usePendingTransactions(selected?.addressString ?? '', network.isTestnet);
 
     const ledgerContext = useLedgerTransport();
     const ledgerAddress = useMemo(() => {
@@ -52,7 +55,19 @@ export const StakingFragment = fragment(() => {
         isLedger
             ? ledgerAddress!.toString({ testOnly: network.isTestnet })
             : selected!.address.toString({ testOnly: network.isTestnet })
-    )
+    );
+
+    const pendingPoolTxs = useMemo(() => {
+        return pendingTxs.filter((tx) => {
+            return tx.address?.equals(targetPool);
+        });
+    }, [pendingTxs, targetPool]);
+
+    const removePending = useCallback((id: string) => {
+        setPending((prev) => {
+            return prev.filter((tx) => tx.id !== id);
+        });
+    }, [setPending]);
 
     let type: StakingPoolType = useMemo(() => {
         if (KnownPools(network.isTestnet)[params.pool].name.toLowerCase().includes('club')) {
@@ -118,6 +133,9 @@ export const StakingFragment = fragment(() => {
     const openMoreInfo = useCallback(() => openWithInApp(network.isTestnet ? 'https://test.tonwhales.com/staking' : 'https://tonwhales.com/staking'), [network.isTestnet]);
     const navigateToCurrencySettings = useCallback(() => navigation.navigate('Currency'), []);
     const openPoolSelector = useCallback(() => {
+        if (active.length < 2) {
+            return;
+        }
         navigation.navigate(
             isLedger ? 'StakingPoolSelectorLedger' : 'StakingPoolSelector',
             {
@@ -127,12 +145,20 @@ export const StakingFragment = fragment(() => {
                 }
             },
         )
-    }, [isLedger, targetPool, setParams]);
+    }, [isLedger, targetPool, setParams, active]);
 
     const hasStake = (member?.balance || 0n)
         + (member?.pendingWithdraw || 0n)
+        + (member?.pendingDeposit || 0n)
         + (member?.withdraw || 0n)
         > 0n;
+
+    // weird bug with status bar not changing color with component
+    useFocusEffect(() => {
+        setTimeout(() => {
+            setStatusBarStyle(theme.style === 'dark' ? 'light' : 'dark');
+        }, 10);
+    });
 
     return (
         <View style={{ flex: 1 }}>
@@ -165,7 +191,7 @@ export const StakingFragment = fragment(() => {
                     <Pressable
                         style={({ pressed }) => ({
                             alignItems: 'center',
-                            opacity: pressed ? 0.5 : 1
+                            opacity: (pressed && active.length >= 2) ? 0.5 : 1
                         })}
                         onPress={openPoolSelector}
                     >
@@ -275,7 +301,7 @@ export const StakingFragment = fragment(() => {
                         limitActions
                         disableContextMenu
                         copyOnPress
-                        copyToastProps={{ marginBottom: 16 }}
+                        copyToastProps={{ marginBottom: bottomBarHeight + 16 }}
                     />
                 </View>
                 <View
@@ -393,6 +419,14 @@ export const StakingFragment = fragment(() => {
                     <StakingCycle
                         stakeUntil={pool.status.proxyStakeUntil}
                         locked={pool.status.locked}
+                        style={{ marginBottom: 16 }}
+                    />
+                )}
+                {!!pendingPoolTxs && pendingPoolTxs.length > 0 && (
+                    <PendingTransactionsView
+                        theme={theme}
+                        pending={pendingPoolTxs}
+                        removePending={removePending}
                         style={{ marginBottom: 16 }}
                     />
                 )}

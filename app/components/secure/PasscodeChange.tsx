@@ -1,17 +1,16 @@
 import React, { memo, useLayoutEffect, useReducer, useState } from "react";
-import { View } from "react-native";
+import { Alert, View } from "react-native";
 import Animated, { SlideInRight, SlideOutLeft } from "react-native-reanimated";
 import { PasscodeInput } from "../passcode/PasscodeInput";
 import { t } from "../../i18n/t";
 import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { PasscodeSuccess } from "../passcode/PasscodeSuccess";
 import { getCurrentAddress } from "../../storage/appState";
-import { loadWalletKeys } from "../../storage/walletKeys";
+import { SecureAuthenticationCancelledError, loadWalletKeys } from "../../storage/walletKeys";
 import { passcodeLengthKey, updatePasscode } from "../../storage/secureStorage";
 import { storage } from "../../storage/storage";
 import { ToastDuration, useToaster } from "../toast/ToastProvider";
 import { useDimensions } from "@react-native-community/hooks";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
 
 type Action =
     | { type: 'auth', input: string }
@@ -76,7 +75,6 @@ function reduceSteps() {
 
 export const PasscodeChange = memo(() => {
     const acc = getCurrentAddress();
-    const safeArea = useSafeAreaInsets();
     const dimentions = useDimensions();
     const [isFirstRender, setFirstRender] = useState(true);
     const passcodeLength = storage.getNumber(passcodeLengthKey) ?? 4;
@@ -97,7 +95,7 @@ export const PasscodeChange = memo(() => {
                     style={{ height: dimentions.window.height - 156 }}
                 >
                     <PasscodeInput
-                        passcodeLength={state.passcodeLength}
+                        passcodeLength={passcodeLength}
                         title={t('security.passcodeSettings.enterPrevious')}
                         onEntered={async (pass) => {
                             if (!pass) {
@@ -106,7 +104,6 @@ export const PasscodeChange = memo(() => {
                             await loadWalletKeys(acc.secretKeyEnc, pass);
                             dispatch({ type: 'input', input: '', prev: pass });
                         }}
-                        onPasscodeLengthChange={(length) => dispatch({ type: 'passcode-length', length })}
                     />
                 </Animated.View>
             )}

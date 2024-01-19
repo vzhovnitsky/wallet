@@ -4,7 +4,7 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { fragment } from "../../fragment";
 import { getAppState } from "../../storage/appState";
 import { useParams } from "../../utils/useParams";
-import { ValueComponent, valueText } from "../../components/ValueComponent";
+import { valueText } from "../../components/ValueComponent";
 import { formatDate, formatTime } from "../../utils/dates";
 import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { Avatar } from "../../components/Avatar";
@@ -25,7 +25,7 @@ import { BigMath } from "../../utils/BigMath";
 import { useLedgerTransport } from "../ledger/components/TransportContext";
 import { Address, fromNano } from "@ton/core";
 import { StatusBar } from "expo-status-bar";
-import { formatCurrency } from "../../utils/formatCurrency";
+import { formatAmount, formatCurrency } from "../../utils/formatCurrency";
 import { PerfText } from "../../components/basic/PerfText";
 import { Typography } from "../../components/styles";
 import { useAddressBookContext } from "../../engine/AddressBookContext";
@@ -33,6 +33,7 @@ import { PerfView } from "../../components/basic/PerfView";
 import { PreviewFrom } from "./views/preview/PreviewFrom";
 import { PreviewTo } from "./views/preview/PreviewTo";
 import { TxInfo } from "./views/preview/TxInfo";
+import { AddressComponent } from "../../components/address/AddressComponent";
 
 const TransactionPreview = () => {
     const theme = useTheme();
@@ -84,7 +85,6 @@ const TransactionPreview = () => {
     let dateStr = `${formatDate(tx.base.time, 'MMMM dd, yyyy')} • ${formatTime(tx.base.time)}`;
     dateStr = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
 
-    // 2.3ms
     const feesPrise = useMemo(() => {
         if (!price) {
             return undefined;
@@ -225,21 +225,25 @@ const TransactionPreview = () => {
                         spam={spam}
                         showSpambadge
                         verified={verified}
-                        borderWith={2}
+                        borderWith={2.5}
                         borderColor={theme.surfaceOnElevation}
                         backgroundColor={theme.elevation}
                         markContact={!!contact}
-                        icPosition={'bottom'}
-                        isOwn={isOwn}
-                        icBorderWidth={4}
+                        icProps={{
+                            isOwn: isOwn,
+                            borderWidth: 2,
+                            position: 'bottom',
+                            size: 28
+                        }}
                         theme={theme}
                         isTestnet={isTestnet}
+                        hashColor
                     />
                     <PerfText
                         style={[
                             {
                                 color: theme.textPrimary,
-                                marginTop: (spam || !!contact || verified) ? 16 : 8
+                                paddingTop: (spam || !!contact || verified || isOwn || !!KnownWallets(isTestnet)[opAddress]) ? 16 : 8,
                             },
                             Typography.semiBold17_24
                         ]}
@@ -249,13 +253,25 @@ const TransactionPreview = () => {
                         {op}
                     </PerfText>
                     {!!known?.name ? (
-                        <PerfText
-                            style={[{ color: theme.textSecondary, marginTop: 2 }, Typography.regular15_20]}
-                            numberOfLines={1}
-                            ellipsizeMode="tail"
-                        >
-                            {known.name}
-                        </PerfText>
+                        <PerfView style={{ flexDirection: 'row', gap: 6, marginTop: 2, paddingHorizontal: 16 }}>
+                            <PerfText
+                                style={[{ color: theme.textPrimary, flexShrink: 1 }, Typography.regular17_24]}
+                                numberOfLines={1}
+                                ellipsizeMode="tail"
+                            >
+                                {known.name}
+                            </PerfText>
+                            <PerfText
+                                style={[{ color: theme.textSecondary }, Typography.regular17_24]}
+                                numberOfLines={1}
+                                ellipsizeMode="tail"
+                            >
+                                <AddressComponent
+                                    address={Address.parse(opAddress)}
+                                    end={4}
+                                />
+                            </PerfText>
+                        </PerfView>
                     ) : (
                         !!operation.op && (
                             <PerfText
@@ -369,7 +385,7 @@ const TransactionPreview = () => {
                         <PerfText style={[{ color: theme.textPrimary }, Typography.regular17_24]}>
                             {tx.base.fees
                                 ? <>
-                                    {`${fromNano(fees)}`}
+                                    {`${formatAmount(fromNano(fees))}`}
                                     <PerfText style={{ color: theme.textSecondary }}>
                                         {` ${feesPrise}`}
                                     </PerfText>

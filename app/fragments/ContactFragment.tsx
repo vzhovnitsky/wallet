@@ -183,11 +183,11 @@ export const ContactFragment = fragment(() => {
     }, [parsed]);
 
     const ready = useMemo(() => {
-        if (!params.isNew || !parsed || name?.length === 0) {
+        if (!params.isNew || !parsed || !name || name?.length === 0) {
             return false;
         }
         return true;
-    }, [params, name]);
+    }, [params, name, parsed]);
 
     const hasChanges = useMemo(() => {
         if (name !== contact?.name) {
@@ -281,6 +281,7 @@ export const ContactFragment = fragment(() => {
                                 borderColor={theme.surfaceOnElevation}
                                 theme={theme}
                                 isTestnet={isTestnet}
+                                hashColor
                             />
                         </View>
                         {!editing && (
@@ -484,7 +485,7 @@ export const ContactFragment = fragment(() => {
                                             onFocus={() => onFocus(0)}
                                         />
                                     </View>
-                                    {address.length > 0 && (
+                                    {address.length === 48 && !parsed && (
                                         <Animated.View entering={FadeIn} exiting={FadeOut}>
                                             <Text style={{
                                                 color: theme.accentRed,

@@ -6,12 +6,14 @@ import { useStakingActive, useStakingApy, useTheme } from "../../engine/hooks";
 import { StakingPool } from "../../fragments/staking/components/StakingPool";
 import { ItemDivider } from "../ItemDivider";
 import { CollapsibleCards } from "../animated/CollapsibleCards";
-
-import StakingIcon from '@assets/ic-staking.svg';
 import { PerfText } from "../basic/PerfText";
 import { Typography } from "../styles";
 import { ValueComponent } from "../ValueComponent";
 import { PriceComponent } from "../PriceComponent";
+import { useAnimatedPressedInOut } from "../../utils/useAnimatedPressedInOut";
+import Animated from "react-native-reanimated";
+
+import StakingIcon from '@assets/ic-staking.svg';
 
 const style: StyleProp<ViewStyle> = {
     height: 84,
@@ -59,6 +61,8 @@ export const StakingProductComponent = memo(() => {
         }, 0n);
     }, [active]);
 
+    const { onPressIn, onPressOut, animatedStyle } = useAnimatedPressedInOut();
+
     if (active.length >= 2) {
         return (
             <View style={{ marginBottom: 16 }}>
@@ -74,7 +78,7 @@ export const StakingProductComponent = memo(() => {
                                 <Pressable
                                     onPress={() => navigation.navigate('StakingPools')}
                                     style={({ pressed }) => {
-                                        return [style, { opacity: pressed ? 0.5 : 1, backgroundColor: theme.surfaceOnElevation }]
+                                        return [style, { opacity: pressed ? 0.5 : 1, backgroundColor: theme.surfaceOnBg }]
                                     }}
                                 >
                                     <View style={{ alignSelf: 'stretch', flexDirection: 'row' }}>
@@ -112,7 +116,7 @@ export const StakingProductComponent = memo(() => {
                                 address={p.address}
                                 balance={p.balance}
                                 style={{
-                                    backgroundColor: theme.surfaceOnElevation,
+                                    backgroundColor: theme.surfaceOnBg,
                                     paddingHorizontal: 20
                                 }}
                                 hideCycle
@@ -129,7 +133,7 @@ export const StakingProductComponent = memo(() => {
                                     marginHorizontal: 16,
                                     borderRadius: 20,
                                     alignItems: 'center',
-                                    backgroundColor: theme.surfaceOnElevation,
+                                    backgroundColor: theme.surfaceOnBg,
                                 },
                                 theme.style === 'dark' ? {
                                     shadowColor: '#000',
@@ -164,7 +168,7 @@ export const StakingProductComponent = memo(() => {
                                 {(!!totalBalance) && (
                                     <View style={{ flexGrow: 1, alignItems: 'flex-end' }}>
                                         <Text style={[{ color: theme.textPrimary }, Typography.semiBold17_24]}>
-                                            <ValueComponent value={totalBalance} precision={2} />
+                                            <ValueComponent value={totalBalance} precision={2} centFontStyle={{ color: theme.textSecondary }} />
                                             <Text style={{ color: theme.textSecondary, fontSize: 15 }}>
                                                 {' TON'}
                                             </Text>
@@ -193,61 +197,65 @@ export const StakingProductComponent = memo(() => {
     }
 
     return (
-        <View style={{
-            backgroundColor: theme.surfaceOnElevation,
-            borderRadius: 20,
-            marginHorizontal: 16,
-            marginBottom: 16
-        }}>
-            {!!active && active.map((p, i) => (
-                <View key={`active-${p.address.toString()}`}>
-                    <StakingPool
-                        address={p.address}
-                        balance={p.balance}
-                        style={{
-                            backgroundColor: theme.surfaceOnElevation,
-                            paddingHorizontal: 20
-                        }}
-                        hideCycle
-                    />
-                    <ItemDivider
-                        marginVertical={0}
-                    />
-                </View>
-            ))}
-            <Pressable
-                onPress={() => navigation.navigate('StakingPools')}
-                style={({ pressed }) => {
-                    return [style, { opacity: pressed ? 0.5 : 1, backgroundColor: theme.surfaceOnElevation }]
-                }}
-            >
-                <View style={{ alignSelf: 'stretch', flexDirection: 'row' }}>
-                    <View style={icStyle}>
-                        <View style={{ backgroundColor: theme.accent, ...icStyleInner }}>
-                            <StakingIcon width={32} height={32} color={'white'} />
+        <Animated.View style={animatedStyle}>
+            <View style={{
+                backgroundColor: theme.surfaceOnBg,
+                borderRadius: 20,
+                marginHorizontal: 16,
+                marginBottom: 16
+            }}>
+                {!!active && active.map((p, i) => (
+                    <View key={`active-${p.address.toString()}`}>
+                        <StakingPool
+                            address={p.address}
+                            balance={p.balance}
+                            style={{
+                                backgroundColor: theme.surfaceOnBg,
+                                paddingHorizontal: 20
+                            }}
+                            hideCycle
+                        />
+                        <ItemDivider
+                            marginVertical={0}
+                        />
+                    </View>
+                ))}
+                <Pressable
+                    onPress={() => navigation.navigate('StakingPools')}
+                    style={({ pressed }) => {
+                        return [style, { opacity: pressed ? 0.5 : 1, backgroundColor: theme.surfaceOnBg }]
+                    }}
+                    onPressIn={onPressIn}
+                    onPressOut={onPressOut}
+                >
+                    <View style={{ alignSelf: 'stretch', flexDirection: 'row' }}>
+                        <View style={icStyle}>
+                            <View style={{ backgroundColor: theme.accent, ...icStyleInner }}>
+                                <StakingIcon width={32} height={32} color={'white'} />
+                            </View>
+                        </View>
+                        <View style={{
+                            flexDirection: 'row',
+                            flexGrow: 1, flexShrink: 1, alignItems: 'center',
+                            justifyContent: 'space-between',
+                            overflow: 'hidden'
+                        }}>
+                            <View style={{ flexGrow: 1, flexShrink: 1 }}>
+                                <Text
+                                    style={{ color: theme.textPrimary, ...titleStyle }}
+                                    ellipsizeMode={'tail'}
+                                    numberOfLines={1}
+                                >
+                                    {t('products.staking.title')}
+                                </Text>
+                                <Text style={{ color: theme.textSecondary, ...subtitleStyle, flexShrink: 1 }} numberOfLines={1} ellipsizeMode="tail">
+                                    {t("products.staking.subtitle.join", { apy: apyWithFee ?? '8' })}
+                                </Text>
+                            </View>
                         </View>
                     </View>
-                    <View style={{
-                        flexDirection: 'row',
-                        flexGrow: 1, flexShrink: 1, alignItems: 'center',
-                        justifyContent: 'space-between',
-                        overflow: 'hidden'
-                    }}>
-                        <View style={{ flexGrow: 1, flexShrink: 1 }}>
-                            <Text
-                                style={{ color: theme.textPrimary, ...titleStyle }}
-                                ellipsizeMode={'tail'}
-                                numberOfLines={1}
-                            >
-                                {t('products.staking.title')}
-                            </Text>
-                            <Text style={{ color: theme.textSecondary, ...subtitleStyle, flexShrink: 1 }} numberOfLines={1} ellipsizeMode="tail">
-                                {t("products.staking.subtitle.join", { apy: apyWithFee ?? '8' })}
-                            </Text>
-                        </View>
-                    </View>
-                </View>
-            </Pressable>
-        </View>
+                </Pressable>
+            </View>
+        </Animated.View>
     );
 })
