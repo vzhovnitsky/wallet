@@ -1,7 +1,14 @@
 #!/bin/sh
 
+set -e
+
 export HOMEBREW_NO_INSTALL_CLEANUP=TRUE
-brew install cocoapods
+# brew install cocoapods
+# CocoaPods 1.15.0 is unstable, so we have to use 1.14.3 as prev stable
+# brew doesn't have version pinning for cocoapods, so we have to install it manually from the commit
+brew uninstall --ignore-dependencies cocoapods
+curl https://raw.githubusercontent.com/Homebrew/homebrew-core/1364b74ebeedb2eab300d62c99e12f2a6f344277/Formula/c/cocoapods.rb > cocoapods.rb
+brew install cocoapods.rb
 # have to add node yourself
 brew install node@18
 # link it to the path
