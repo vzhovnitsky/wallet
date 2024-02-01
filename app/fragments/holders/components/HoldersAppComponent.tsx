@@ -40,6 +40,7 @@ import { onHoldersInvalidate } from '../../../engine/effects/onHoldersInvalidate
 import { ThemeType } from '../../../engine/state/theme';
 import DeviceInfo from 'react-native-device-info';
 import { QueryParamsState, extractWebViewQueryAPIParams } from '../../../components/webview/utils/extractWebViewQueryAPIParams';
+import { setStatusBarBackgroundColor, setStatusBarStyle } from 'expo-status-bar';
 
 export function normalizePath(path: string) {
     return path.replaceAll('.', '_');
@@ -47,6 +48,7 @@ export function normalizePath(path: string) {
 
 import IcHolders from '../../../../assets/ic_holders.svg';
 import { isSafeDomain } from '../../../components/webview/utils/isSafeDomain';
+import { processStatusBarMessage } from '../../../components/webview/utils/processStatusBarMessage';
 
 function PulsingCardPlaceholder(theme: ThemeType) {
     const safeArea = useSafeAreaInsets();
@@ -454,6 +456,7 @@ export const HoldersAppComponent = memo((
             safeArea,
             additionalInjections: initialInjection,
             useMainButtonAPI: true,
+            useStatusBarAPI: true,
         });
     }, [status, accountsStatus]);
 
@@ -619,7 +622,7 @@ export const HoldersAppComponent = memo((
     }, []);
 
     return (
-        <View style={{ backgroundColor: theme.backgroundPrimary, flex: 1, paddingTop: safeArea.top }}>
+        <View style={{ backgroundColor: theme.backgroundPrimary, flex: 1 }}>
             {!!stableOfflineV ? (
                 <OfflineWebView
                     key={`offline-rendered-${offlineRender}`}
