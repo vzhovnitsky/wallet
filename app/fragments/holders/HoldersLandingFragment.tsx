@@ -233,6 +233,11 @@ export const HoldersLandingFragment = fragment(() => {
 
     const injectSource = useMemo(() => {
         return `
+        window['tonhub'] = (() => {
+            const obj = {};
+            Object.freeze(obj);
+            return obj;
+        })();
         ${statusBarAPI(safeArea)}
         true;
         `

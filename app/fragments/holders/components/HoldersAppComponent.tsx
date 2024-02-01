@@ -67,12 +67,6 @@ function PulsingCardPlaceholder(theme: ThemeType) {
     }, []);
 
     const animatedStyles = useAnimatedStyle(() => {
-        const opacity = interpolate(
-            animation.value,
-            [0, 1],
-            [1, 0.75],
-            Extrapolation.CLAMP
-        );
         const scale = interpolate(
             animation.value,
             [0, 1],
@@ -101,14 +95,14 @@ function PulsingCardPlaceholder(theme: ThemeType) {
                     backgroundColor: theme.backgroundUnchangeable,
                     height: 324,
                     position: 'absolute',
-                    top: -30 - safeArea.top - 44,
+                    top: -30 - 36 - safeArea.top,
                     left: -4,
                     right: -4,
                     borderRadius: 20,
                     alignItems: 'center',
                     paddingHorizontal: 20,
-                    borderBottomLeftRadius: 20,
-                    borderBottomRightRadius: 20,
+                    borderBottomLeftRadius: 28,
+                    borderBottomRightRadius: 28,
                 }}
             />
             <Animated.View style={[
@@ -116,8 +110,8 @@ function PulsingCardPlaceholder(theme: ThemeType) {
                     height: 44,
                     flexDirection: 'row',
                     alignItems: 'center',
-                    marginTop: 8 - safeArea.top,
-                    paddingHorizontal: 22
+                    paddingHorizontal: 22,
+                    marginTop: -12
                 },
                 animatedStyles
             ]}>
@@ -135,10 +129,10 @@ function PulsingCardPlaceholder(theme: ThemeType) {
                 style={[
                     {
                         backgroundColor: theme.textSecondary,
-                        height: 28,
+                        height: 38,
                         width: 142,
                         borderRadius: 8,
-                        marginTop: 44,
+                        marginTop: 24,
                         alignSelf: 'center'
                     },
                     animatedStyles
@@ -151,7 +145,7 @@ function PulsingCardPlaceholder(theme: ThemeType) {
                         height: 26,
                         width: 78,
                         borderRadius: 20,
-                        marginTop: 24,
+                        marginTop: 20,
                         alignSelf: 'center'
                     },
                     animatedStyles
@@ -163,7 +157,7 @@ function PulsingCardPlaceholder(theme: ThemeType) {
                         backgroundColor: theme.surfaceOnBg,
                         height: 96,
                         borderRadius: 20,
-                        marginTop: 38,
+                        marginTop: 24,
                         marginHorizontal: 20
                     },
                     animatedStyles
