@@ -30,6 +30,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebViewLoader, normalizePath } from './components/HoldersAppComponent';
 import DeviceInfo from 'react-native-device-info';
 import { QueryParamsState, extractWebViewQueryAPIParams } from '../../components/webview/utils/extractWebViewQueryAPIParams';
+import { processStatusBarMessage } from '../../components/webview/utils/processStatusBarMessage';
 
 export const HoldersLandingFragment = fragment(() => {
     const acc = useMemo(() => getCurrentAddress(), []);
