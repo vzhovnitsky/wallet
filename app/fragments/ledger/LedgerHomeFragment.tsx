@@ -7,7 +7,7 @@ import Animated, { SensorType, useAnimatedScrollHandler, useAnimatedSensor, useA
 import { Pressable, View, Image, Text, Platform, ScrollView } from "react-native";
 import { ValueComponent } from "../../components/ValueComponent";
 import { PriceComponent } from "../../components/PriceComponent";
-import { WalletAddress } from "../../components/WalletAddress";
+import { WalletAddress } from "../../components/address/WalletAddress";
 import { LedgerWalletHeader } from "./components/LedgerWalletHeader";
 import { useAccountLite, useAccountsLite, useNetwork, useStaking, useTheme } from "../../engine/hooks";
 import { useLedgerTransport } from "./components/TransportContext";
@@ -39,7 +39,7 @@ export const LedgerHomeFragment = fragment(() => {
         } catch { }
     }, [ledgerContext?.addr?.address]);
 
-    const account = useAccountLite(address!)!;
+    const account = useAccountLite(address!, true)!;
     const staking = useStaking(address!);
 
     const stakingBalance = useMemo(() => {
@@ -82,13 +82,6 @@ export const LedgerHomeFragment = fragment(() => {
                 ledger: true
             }
         );
-    }, []);
-
-    useEffect(() => {
-        ledgerContext?.setFocused(true);
-        return () => {
-            ledgerContext?.setFocused(false);
-        }
     }, []);
 
     if (
@@ -192,7 +185,6 @@ export const LedgerHomeFragment = fragment(() => {
                         </Pressable>
                         <View style={{ flexGrow: 1 }} />
                         <WalletAddress
-                            value={address!.toString({ testOnly: network.isTestnet })}
                             address={address!}
                             elipsise={{ start: 4, end: 4 }}
                             style={{

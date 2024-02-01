@@ -21,12 +21,15 @@ export const AddressSearchItemView = memo(({ item, onPress }: { item: AddressSea
             <Animated.View style={[{ paddingVertical: 10, flexDirection: 'row', alignItems: 'center' }, animatedStyle]}>
                 <View style={{ width: 46, height: 46, borderRadius: 23, borderWidth: 0, marginRight: 12 }}>
                     <Avatar
-                        address={item.address.toString({ testOnly: network.isTestnet })}
-                        id={item.address.toString({ testOnly: network.isTestnet })}
+                        address={item.addr.address.toString({ testOnly: network.isTestnet })}
+                        id={item.addr.address.toString({ testOnly: network.isTestnet })}
                         size={46}
                         borderWith={0}
                         markContact={item.type === 'contact'}
-                        icProps={{ isOwn: item.type === 'my-wallets' }}
+                        icProps={{
+                            isOwn: item.type === 'my-wallets',
+                            backgroundColor: theme.elevation
+                        }}
                         hash={item.walletSettings?.avatar}
                         theme={theme}
                         isTestnet={network.isTestnet}
@@ -46,7 +49,10 @@ export const AddressSearchItemView = memo(({ item, onPress }: { item: AddressSea
                         ellipsizeMode={'middle'}
                         numberOfLines={1}
                     >
-                        <AddressComponent address={item.address} />
+                        <AddressComponent
+                            bounceable={item.addr.isBounceable}
+                            address={item.addr.address}
+                        />
                     </Text>
                 </View>
             </Animated.View>

@@ -9,14 +9,13 @@ import { warn } from '../../utils/log';
 import { extractDomain } from '../../engine/utils/extractDomain';
 import { useParams } from '../../utils/useParams';
 import { HoldersAppParams } from './HoldersAppFragment';
-import { HoldersParams, extractHoldersQueryParams, processStatusBarMessage } from './utils';
 import { getLocales } from 'react-native-localize';
 import { fragment } from '../../fragment';
 import { useKeysAuth } from '../../components/secure/AuthWalletKeys';
-import { OfflineWebView } from './components/OfflineWebView';
+import { OfflineWebView } from '../../components/webview/OfflineWebView';
 import * as FileSystem from 'expo-file-system';
 import { useCallback, useMemo, useRef, useState } from 'react';
-import { WebViewErrorComponent } from './components/WebViewErrorComponent';
+import { WebViewErrorComponent } from '../../components/webview/WebViewErrorComponent';
 import { useNetwork, useOfflineApp, usePrimaryCurrency } from '../../engine/hooks';
 import { useTheme } from '../../engine/hooks';
 import { useHoldersEnroll } from '../../engine/hooks';
@@ -30,6 +29,7 @@ import { statusBarAPI } from '../apps/components/inject/createInjectSource';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { WebViewLoader, normalizePath } from './components/HoldersAppComponent';
 import DeviceInfo from 'react-native-device-info';
+import { QueryParamsState, extractWebViewQueryAPIParams } from '../../components/webview/utils/extractWebViewQueryAPIParams';
 
 export const HoldersLandingFragment = fragment(() => {
     const acc = useMemo(() => getCurrentAddress(), []);
@@ -40,7 +40,7 @@ export const HoldersLandingFragment = fragment(() => {
     const navigation = useTypedNavigation();
     const safeArea = useSafeAreaInsets();
     const [currency,] = usePrimaryCurrency();
-    const [holdersParams, setHoldersParams] = useState<Omit<HoldersParams, 'openEnrollment' | 'openUrl' | 'closeApp'>>({
+    const [holdersParams, setHoldersParams] = useState<QueryParamsState>({
         backPolicy: 'back',
         showKeyboardAccessoryView: false,
         lockScroll: true
@@ -199,7 +199,7 @@ export const HoldersLandingFragment = fragment(() => {
     }, [onEnroll]);
 
     const onNavigation = useCallback((url: string) => {
-        const params = extractHoldersQueryParams(url);
+        const params = extractWebViewQueryAPIParams(url);
         if (params.closeApp) {
             navigation.goBack();
             return;
@@ -248,17 +248,20 @@ export const HoldersLandingFragment = fragment(() => {
     }, []);
 
     const onContentProcessDidTerminate = useCallback(() => {
+        webRef.current?.reload();
+        // TODO: add offline support check when offline will be ready
         // In case of blank WebView without offline
-        if (!useOfflineApp) {
-            webRef.current?.reload();
-            return;
-        }
+        // if (!stableOfflineV || Platform.OS === 'android') {
+        //     webRef.current?.reload();
+        //     return;
+        // }
         // In case of iOS blank WebView with offline app
         // Re-render OfflineWebView to preserve folderPath navigation & inject last offlineRoute as initialRoute
-        if (Platform.OS === 'ios') {
-            setOfflineRender(offlineRender + 1);
-        }
-    }, [useOfflineApp, offlineRender]);
+        // if (Platform.OS === 'ios') {
+        //     setOfflineRender(offlineRender + 1);
+        // }
+        // }, [offlineRender, stableOfflineV]);
+    }, []);
 
     return (
         <View style={{

@@ -860,7 +860,8 @@ export type LocalizationSchema = {
         ledger: string,
         title: string,
         description: string,
-        installation: string,
+        installationIOS: string,
+        installationAndroid: string,
         installationGuide: string,
         connectionDescriptionAndroid: string,
         connectionDescriptionIOS: string,
@@ -896,6 +897,7 @@ export type LocalizationSchema = {
             remove: string
         },
         errors: {
+            bleTitle: string,
             noDevice: string,
             appNotOpen: string,
             turnOnBluetooth: string,
@@ -906,6 +908,9 @@ export type LocalizationSchema = {
             permissions: string,
             unknown: string,
             reboot: string,
+            turnOnLocation: string,
+            locationServicesUnauthorized: string,
+            bluetoothScanFailed: string
         },
         moreAbout: string
     },
@@ -951,6 +956,15 @@ export type LocalizationSchema = {
         avatar: string,
         wallet: string,
         price: string
+    },
+    newAddressFormat: {
+        title: string,
+        fragmentTitle: string,
+        description_0: string,
+        description_1: string,
+        action: string,
+        oldAddress: string,
+        newAddress: string
     }
 };
 

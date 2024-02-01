@@ -17,7 +17,7 @@ import { BiometricsState, PasscodeState, encryptData, generateNewKeyAndEncryptWi
 import { useCallback, useEffect, useState } from 'react';
 import { checkBiometricsPermissions, useKeysAuth } from './AuthWalletKeys';
 import { mnemonicToWalletKey } from '@ton/crypto';
-import { useNetwork, useSetAppState, useTheme } from '../../engine/hooks';
+import { useNetwork, useBounceableWalletFormat, useSetAppState, useSetPasscodeState, useTheme } from '../../engine/hooks';
 import { useLogoutAndReset } from '../../engine/hooks/accounts/useLogoutAndReset';
 import { openSettings } from 'react-native-permissions';
 import { ScreenHeader } from '../ScreenHeader';
@@ -34,6 +34,8 @@ export const WalletSecurePasscodeComponent = systemFragment((props: {
     const authContext = useKeysAuth();
     const setAppState = useSetAppState();
     const logOutAndReset = useLogoutAndReset();
+    const setPascodeState = useSetPasscodeState();
+    const [, setBounceable] = useBounceableWalletFormat();
 
     const [state, setState] = useState<{ passcode: string, deviceEncryption: DeviceEncryption }>();
     const [loading, setLoading] = useState(false);
@@ -48,6 +50,7 @@ export const WalletSecurePasscodeComponent = systemFragment((props: {
         navigation.navigateAndReplaceAll('Home');
     }, []);
 
+    // Create new wallet on launch if no wallets exist
     useEffect(() => {
         const appState = getAppState();
         if (appState.addresses.length <= 0) {
@@ -243,21 +246,27 @@ export const WalletSecurePasscodeComponent = systemFragment((props: {
                 // Use prev app key
                 try {
                     secretKeyEnc = await encryptData(Buffer.from(props.mnemonics), passcode);
-                } catch (e) {
-                    console.warn(e)
+                } catch {
                     warn('Failed to encrypt with passcode');
                     return;
                 }
             } else {
                 // Generate New Key
                 try {
-                    secretKeyEnc = await generateNewKeyAndEncryptWithPasscode(Buffer.from(props.mnemonics), passcode);
+                    secretKeyEnc = await generateNewKeyAndEncryptWithPasscode(
+                        Buffer.from(props.mnemonics),
+                        passcode,
+                        setPascodeState
+                    );
                 } catch {
                     // Ignore
                     warn('Failed to generate new key');
                     return;
                 }
             }
+
+            // Set new format for new wallets
+            setBounceable(false);
 
             // Persist state
             setAppState({
@@ -303,7 +312,7 @@ export const WalletSecurePasscodeComponent = systemFragment((props: {
         } finally {
             setLoading(false);
         }
-    }, [setAppState]);
+    }, [setAppState, setBounceable]);
 
     const resetConfirmedAddressState = useCallback(() => {
         if (!state) {

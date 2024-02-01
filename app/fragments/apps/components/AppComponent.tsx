@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { ActivityIndicator, Linking, NativeSyntheticEvent, Platform, Share, View, Image } from 'react-native';
+import { ActivityIndicator, Linking, NativeSyntheticEvent, Platform, Share, View, Image, StyleSheet } from 'react-native';
 import WebView from 'react-native-webview';
-import Animated, { useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut } from 'react-native-reanimated';
 import { ShouldStartLoadRequest, WebViewMessageEvent } from 'react-native-webview/lib/WebViewTypes';
 import { extractDomain } from '../../../engine/utils/extractDomain';
 import { resolveUrl } from '../../../utils/resolveUrl';
@@ -17,7 +17,7 @@ import { generateAppLink } from '../../../utils/generateAppLink';
 import { MixpanelEvent, trackEvent, useTrackEvent } from '../../../analytics/mixpanel';
 import { useTypedNavigation } from '../../../utils/useTypedNavigation';
 import ContextMenu, { ContextMenuOnPressNativeEvent } from 'react-native-context-menu-view';
-import { useTheme } from '../../../engine/hooks';
+import { useBounceableWalletFormat, useTheme } from '../../../engine/hooks';
 import { useNetwork } from '../../../engine/hooks';
 import { getCurrentAddress } from '../../../storage/appState';
 import { memo, useCallback, useMemo, useRef, useState } from 'react';
@@ -38,6 +38,8 @@ export const AppComponent = memo((props: {
     const { isTestnet } = useNetwork();
     const domain = useMemo(() => extractDomain(props.endpoint), []);
     const domainKey = getDomainKey(domain);
+    const safeArea = useSafeAreaInsets();
+    const [bounceableFormat,] = useBounceableWalletFormat();
     //
     // Track events
     //
@@ -73,23 +75,8 @@ export const AppComponent = memo((props: {
     }, [props]);
 
     // View
-    const safeArea = useSafeAreaInsets();
     let [loaded, setLoaded] = useState(false);
     const webRef = useRef<WebView>(null);
-    const opacity = useSharedValue(1);
-    const animatedStyles = useAnimatedStyle(() => {
-        return {
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundColor: props.color,
-            alignItems: 'center',
-            justifyContent: 'center',
-            opacity: withTiming(opacity.value, { duration: 300 }),
-        };
-    });
 
     //
     // Navigation
@@ -137,13 +124,13 @@ export const AppComponent = memo((props: {
 
         let domainSign = createDomainSignature(domain, domainKey);
 
-        return createInjectSource(
-            {
+        return createInjectSource({
+            config: {
                 version: 1,
                 platform: Platform.OS,
                 platformVersion: Platform.Version,
                 network: isTestnet ? 'testnet' : 'mainnet',
-                address: currentAccount.address.toString({ testOnly: isTestnet }),
+                address: currentAccount.address.toString({ testOnly: isTestnet, bounceable: bounceableFormat }),
                 publicKey: currentAccount.publicKey.toString('base64'),
                 walletConfig,
                 walletType,
@@ -156,9 +143,9 @@ export const AppComponent = memo((props: {
                     signature: domainSign.subkey.signature
                 }
             },
-            safeArea
-        );
-    }, [domainKey]);
+            safeArea: safeArea
+        });
+    }, [domainKey, bounceableFormat]);
     const injectionEngine = useInjectEngine(domain, props.title, isTestnet, props.endpoint);
     const handleWebViewMessage = useCallback((event: WebViewMessageEvent) => {
         const nativeEvent = event.nativeEvent;
@@ -238,10 +225,7 @@ export const AppComponent = memo((props: {
                     source={{ uri: props.endpoint }}
                     startInLoadingState={true}
                     style={{ backgroundColor: theme.backgroundPrimary, flexGrow: 1, flexBasis: 0, alignSelf: 'stretch' }}
-                    onLoadEnd={() => {
-                        setLoaded(true);
-                        opacity.value = 0;
-                    }}
+                    onLoadEnd={() => setLoaded(true)}
                     contentInset={{ top: 0, bottom: 0 }}
                     autoManageStatusBarEnabled={false}
                     allowFileAccessFromFileURLs={false}
@@ -252,6 +236,16 @@ export const AppComponent = memo((props: {
                     onShouldStartLoadWithRequest={loadWithRequest}
                     onMessage={handleWebViewMessage}
                 />
+                {!loaded && (
+                    <Animated.View
+                        entering={FadeIn}
+                        exiting={FadeOut}
+                        style={[StyleSheet.absoluteFill, { justifyContent: 'center', alignItems: 'center', backgroundColor: theme.backgroundPrimary }]}
+                        pointerEvents={loaded ? 'none' : 'box-none'}
+                    >
+                        <ActivityIndicator size="large" color={theme.accent} />
+                    </Animated.View>
+                )}
             </View>
         </>
     );

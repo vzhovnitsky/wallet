@@ -23,7 +23,6 @@ import { beginCell, internal, storeMessage, external, Address, SendMode, toNano 
 import { getLastBlock } from "../engine/accountWatcher";
 import { useDeleteCurrentAccount } from "../engine/hooks/appstate/useDeleteCurrentAccount";
 import { StatusBar } from "expo-status-bar";
-import { useKeyboard } from "@react-native-community/hooks";
 
 import IcDelete from '@assets/ic-delete-red.svg';
 import IcCheckAddress from '@assets/ic-check-recipient.svg';
@@ -43,9 +42,7 @@ export const DeleteAccountFragment = fragment(() => {
     const navigation = useTypedNavigation();
     const authContext = useKeysAuth();
     const selected = useSelectedAccount();
-    const account = useAccountLite(selected!.address);
-    const keyboard = useKeyboard();
-    const bottomMargin = (safeArea.bottom === 0 ? 32 : safeArea.bottom);
+    const account = useAccountLite(selected?.address);
 
     const onAccountDeleted = useDeleteCurrentAccount();
 
@@ -94,9 +91,13 @@ export const DeleteAccountFragment = fragment(() => {
             }
 
 
-            let targetAddress: Address;
+            let targetAddress: {
+                isBounceable: boolean;
+                isTestOnly: boolean;
+                address: Address;
+            };
             try {
-                targetAddress = Address.parse(recipientString);
+                targetAddress = Address.parseFriendly(recipientString);
             } catch (error) {
                 Alert.alert(t('transfer.error.invalidAddress'));
                 ended = true;
@@ -104,17 +105,15 @@ export const DeleteAccountFragment = fragment(() => {
                 return;
             }
 
-            const targetParsed = Address.parseFriendly(targetAddress.toString({ testOnly: network.isTestnet }));
-
             // Check target
             const targetState = await backoff('transfer', async () => {
                 let block = await backoff('transfer', () => client.getLastBlock());
-                return backoff('transfer', () => client.getAccount(block.last.seqno, targetParsed.address))
+                return backoff('transfer', () => client.getAccount(block.last.seqno, targetAddress.address))
             });
 
             const target = {
-                isTestOnly: targetParsed.isTestOnly,
-                address: targetParsed.address,
+                isTestOnly: targetAddress.isTestOnly,
+                address: targetAddress.address,
                 balance: BigInt(targetState.account.balance.coins),
                 active: targetState.account.state.type === 'active'
             };
@@ -325,13 +324,12 @@ export const DeleteAccountFragment = fragment(() => {
                         <View style={{ paddingHorizontal: 6 }}>
                             <ATextInput
                                 value={recipientString}
-                                onValueChange={setRecipientString}
+                                onValueChange={(newVal) => setRecipientString(newVal.trim())}
                                 keyboardType={'ascii-capable'}
                                 multiline
                                 autoCorrect={false}
                                 autoComplete={'off'}
                                 textContentType={'none'}
-                                maxLength={48}
                                 style={{
                                     paddingHorizontal: 10,
                                 }}

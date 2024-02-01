@@ -4,7 +4,7 @@ import Animated from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { PriceComponent } from "../../components/PriceComponent";
 import { ValueComponent } from "../../components/ValueComponent";
-import { WalletAddress } from "../../components/WalletAddress";
+import { WalletAddress } from "../../components/address/WalletAddress";
 import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { StakingCycle } from "../../components/staking/StakingCycle";
 import { StakingPendingComponent } from "../../components/staking/StakingPendingComponent";
@@ -171,8 +171,7 @@ export const StakingFragment = fragment(() => {
                         onPress={openMoreInfo}
                         style={({ pressed }) => ({
                             opacity: pressed ? 0.5 : 1,
-                            position: 'absolute',
-                            bottom: 12, right: 0,
+                            position: 'absolute', right: 0, 
                             backgroundColor: theme.surfaceOnElevation,
                             height: 32, width: 32, borderRadius: 16,
                             justifyContent: 'center', alignItems: 'center'
@@ -302,6 +301,7 @@ export const StakingFragment = fragment(() => {
                         disableContextMenu
                         copyOnPress
                         copyToastProps={{ marginBottom: bottomBarHeight + 16 }}
+                        bounceable={true}
                     />
                 </View>
                 <View
@@ -440,7 +440,9 @@ export const StakingFragment = fragment(() => {
                 {network.isTestnet && (
                     <RestrictedPoolBanner type={'team'} />
                 )}
-                <StakingAnalyticsComponent pool={targetPool} />
+                {__DEV__ && (
+                    <StakingAnalyticsComponent pool={targetPool} />
+                )}
                 <View style={Platform.select({ android: { height: safeArea.bottom + 186 } })} />
             </Animated.ScrollView >
         </View>

@@ -6,8 +6,7 @@ import { t } from '../../i18n/t';
 import { PriceComponent } from '../../components/PriceComponent';
 import { fragment } from '../../fragment';
 import { Suspense, memo, useCallback, useMemo } from 'react';
-import { WalletAddress } from '../../components/WalletAddress';
-import { useTrackScreen } from '../../analytics/mixpanel';
+import { WalletAddress } from '../../components/address/WalletAddress';
 import { WalletHeader } from './views/WalletHeader';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { fullScreen } from '../../Navigation';
@@ -69,6 +68,7 @@ function WalletComponent(props: { wallet: AccountLite | null, selectedAcc: Selec
                 scrollEventThrottle={16}
                 decelerationRate={'normal'}
                 alwaysBounceVertical={true}
+                overScrollMode={'never'}
             >
                 {Platform.OS === 'ios' && (
                     <View
@@ -150,7 +150,6 @@ function WalletComponent(props: { wallet: AccountLite | null, selectedAcc: Selec
                         </Pressable>
                         <View style={{ flexGrow: 1 }} />
                         <WalletAddress
-                            value={address.toString({ testOnly: network.isTestnet })}
                             address={address}
                             elipsise={{ start: 4, end: 4 }}
                             style={{
@@ -329,7 +328,6 @@ export const WalletFragment = fragment(() => {
     const { isTestnet } = useNetwork();
     const selectedAcc = useSelectedAccount();
     const accountLite = useAccountLite(selectedAcc?.address);
-    useTrackScreen('Wallet', isTestnet);
 
     return (
         <>
@@ -349,7 +347,7 @@ export const WalletFragment = fragment(() => {
             </PerformanceMeasureView>
         </>
     );
-}, true);
+});
 
 const Stack = createNativeStackNavigator();
 Stack.Navigator.displayName = 'WalletStack';

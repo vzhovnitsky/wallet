@@ -12,7 +12,7 @@ import { useTypedNavigation } from "../../../utils/useTypedNavigation";
 import { Address, fromNano, toNano } from "@ton/core";
 import { JettonMasterState } from "../../../engine/metadata/fetchJettonMasterContent";
 import { WalletSettings } from "../../../engine/state/walletSettings";
-import { useAppState, useNetwork, usePrice, useSelectedAccount, useTheme, useWalletsSettings } from "../../../engine/hooks";
+import { useAppState, useNetwork, useBounceableWalletFormat, usePrice, useSelectedAccount, useTheme, useWalletsSettings } from "../../../engine/hooks";
 import { AddressComponent } from "../../../components/address/AddressComponent";
 import { holdersUrl } from "../../../engine/api/holders/fetchAccountState";
 import { useLedgerTransport } from "../../ledger/components/TransportContext";
@@ -21,6 +21,8 @@ import { AboutIconButton } from "../../../components/AboutIconButton";
 import { formatAmount, formatCurrency } from "../../../utils/formatCurrency";
 import { Avatar } from "../../../components/Avatar";
 import { AddressContact } from "../../../engine/hooks/contacts/useAddressBook";
+import { valueText } from "../../../components/ValueComponent";
+import { toBnWithDecimals } from "../../../utils/withDecimals";
 
 import WithStateInit from '@assets/ic_sign_contract.svg';
 import IcAlert from '@assets/ic-alert.svg';
@@ -53,6 +55,7 @@ export const TransferSingleView = memo(({
         balance: bigint;
         active: boolean;
         domain?: string | undefined;
+        bounceable?: boolean | undefined;
     },
     fees: bigint,
     jettonMaster: JettonMasterState | null,
@@ -73,6 +76,7 @@ export const TransferSingleView = memo(({
     const appState = useAppState();
     const [walletsSettings,] = useWalletsSettings();
     const [price, currency] = usePrice();
+    const [bounceableFormat,] = useBounceableWalletFormat();
 
     const feesPrise = useMemo(() => {
         if (!price) {
@@ -122,6 +126,15 @@ export const TransferSingleView = memo(({
         });
     }, [amount, jettonAmountString]);
 
+    const amountText = useMemo(() => {
+        const decimals = jettonMaster?.decimals ?? 9;
+        const textArr = valueText(
+            jettonAmountString
+                ? { value: toBnWithDecimals(jettonAmountString, decimals), decimals }
+                : { value: amount, decimals: 9 }
+        );
+        return `-${textArr.join('')} ${!jettonAmountString ? 'TON' : jettonMaster?.symbol ?? ''}`
+    }, [amount, jettonAmountString, jettonMaster]);
 
     return (
         <View style={{ flexGrow: 1 }}>
@@ -206,7 +219,7 @@ export const TransferSingleView = memo(({
                                 color: theme.textPrimary,
                                 marginTop: 2
                             }}>
-                                <AddressComponent address={target.address} end={4} />
+                                <AddressComponent bounceable={target.bounceable} address={target.address} end={4} />
                             </Text>
                         </View>
                         <View style={{ flexDirection: 'row', paddingHorizontal: 26, flexWrap: 'wrap', justifyContent: 'center' }}>
@@ -222,11 +235,7 @@ export const TransferSingleView = memo(({
                                     lineHeight: 32
                                 }}
                             >
-                                {'-' +
-                                    (!jettonAmountString
-                                        ? (fromNano(amount) + ' TON')
-                                        : (`${jettonAmountString} ${jettonMaster?.symbol ?? ''}`))
-                                }
+                                {amountText}
                             </Text>
                         </View>
                         {!jettonAmountString && (
@@ -277,6 +286,7 @@ export const TransferSingleView = memo(({
                                         <AddressComponent
                                             address={fromAddress}
                                             end={4}
+                                            bounceable={bounceableFormat}
                                         />
                                     </Text>
 
@@ -299,7 +309,7 @@ export const TransferSingleView = memo(({
                                     }}
                                 >
                                     <Text style={{ color: theme.textPrimary }}>
-                                        {to.address.toString({ testOnly: isTestnet }).replaceAll('-', '\u2011')}
+                                        {to.address.toString({ testOnly: isTestnet, bounceable: target.bounceable }).replaceAll('-', '\u2011')}
                                     </Text>
                                 </Text>
                             </View>
@@ -466,11 +476,14 @@ export const TransferSingleView = memo(({
                                                     paddingLeft: 16, paddingRight: 14, paddingVertical: 12,
                                                     justifyContent: 'space-between', alignItems: 'center',
                                                     backgroundColor: 'white',
-                                                    opacity: pressed ? 0.5 : 1
+                                                    opacity: pressed ? 0.5 : 1,
+                                                    overflow: 'hidden'
                                                 };
                                             }}
                                         >
                                             <Text style={{
+                                                flexShrink: 1,
+                                                flexGrow: 1,
                                                 fontSize: 15, lineHeight: 20,
                                                 fontWeight: '400',
                                                 color: theme.accentRed

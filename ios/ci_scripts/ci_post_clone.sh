@@ -13,6 +13,7 @@ echo "===== Downloading formula ====="
 curl https://raw.githubusercontent.com/Homebrew/homebrew-core/1364b74ebeedb2eab300d62c99e12f2a6f344277/Formula/c/cocoapods.rb > cocoapods.rb
 echo "===== Installing formula ====="
 brew install cocoapods.rb
+
 echo "===== Installing node ====="
 # have to add node yourself
 brew install node@18

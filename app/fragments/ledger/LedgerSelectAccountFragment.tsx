@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { View, Text, Alert, Platform } from "react-native";
 import { ScrollView } from "react-native-gesture-handler";
 import { EdgeInsets, useSafeAreaInsets } from "react-native-safe-area-context";
@@ -8,18 +8,19 @@ import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { AccountButton } from "./components/AccountButton";
 import { fragment } from "../../fragment";
 import { ScreenHeader } from "../../components/ScreenHeader";
-import { useAccountsLite, useNetwork, useTheme } from "../../engine/hooks";
+import { useAccountsLite, useNetwork, useBounceableWalletFormat, useTheme } from "../../engine/hooks";
 import { useLedgerTransport } from "./components/TransportContext";
 import { Address } from "@ton/core";
 import { StatusBar } from "expo-status-bar";
 import { delay } from 'teslabot';
 import { ThemeType } from '../../engine/state/theme';
 import { Typography } from '../../components/styles';
+import { useFocusEffect } from "@react-navigation/native";
 
 export type LedgerAccount = { i: number, addr: { address: string, publicKey: Buffer }, balance: bigint };
 type AccountsLite = ReturnType<typeof useAccountsLite>;
 
-const LedgerAccountsList = ({ safeArea, theme, accountsLite, accs, selected, isTestnet, onLoadAccount, loading }: {
+const LedgerAccountsList = ({ safeArea, theme, accountsLite, accs, selected, isTestnet, onLoadAccount, loading, bounceable }: {
     safeArea: EdgeInsets,
     theme: ThemeType,
     accountsLite: AccountsLite,
@@ -30,7 +31,8 @@ const LedgerAccountsList = ({ safeArea, theme, accountsLite, accs, selected, isT
     selected?: number,
     isTestnet: boolean,
     loading: boolean,
-    onLoadAccount: (acc: LedgerAccount) => Promise<void>
+    onLoadAccount: (acc: LedgerAccount) => Promise<void>,
+    bounceable?: boolean
 }) => {
     return (
         <ScrollView
@@ -103,7 +105,7 @@ const LedgerAccountsList = ({ safeArea, theme, accountsLite, accs, selected, isT
                             acc={{
                                 i: accs.findIndex((a) => a.address.equals(acc.address)),
                                 addr: {
-                                    address: acc.address.toString({ testOnly: isTestnet }),
+                                    address: acc.address.toString({ testOnly: isTestnet, bounceable: bounceable }),
                                     publicKey: item!.publicKey || Buffer.from([]),
                                 },
                                 balance: BigInt(acc.data?.balance.coins || 0),
@@ -126,7 +128,7 @@ const LedgerHint = ({ state, theme }: { state: 'locked-device' | 'closed-app' | 
             setDotCount(0);
             return;
         }
-        
+
         let interval = setInterval(() => {
             setDotCount((prev) => (prev + 1) % 4);
         }, 300);
@@ -152,13 +154,7 @@ const LedgerHint = ({ state, theme }: { state: 'locked-device' | 'closed-app' | 
     text += new Array(dotCount).fill('.').join('');
 
     return (
-        <Text style={{
-            fontWeight: '400',
-            fontSize: 17, lineHeight: 24,
-            color: theme.textSecondary,
-            marginBottom: 16,
-            marginHorizontal: 16
-        }}>
+        <Text style={[{ color: theme.textSecondary, marginBottom: 16, marginHorizontal: 16 }, Typography.regular17_24]}>
             {text}
         </Text>
     );
@@ -170,6 +166,7 @@ export const LedgerSelectAccountFragment = fragment(() => {
     const navigation = useTypedNavigation();
     const safeArea = useSafeAreaInsets();
     const ledgerContext = useLedgerTransport();
+    const [bounceableFormat,] = useBounceableWalletFormat();
 
     const [selected, setSelected] = useState<number>();
     const [accs, setAccounts] = useState<{
@@ -197,7 +194,6 @@ export const LedgerSelectAccountFragment = fragment(() => {
                         if (cancelled) return;
 
                         if (!isAppOpen) {
-                            // TODO: ask to open app
                             console.warn('[ledger] closed app');
                             setConnectionState('closed-app');
                             return;
@@ -231,31 +227,65 @@ export const LedgerSelectAccountFragment = fragment(() => {
         return cancelWork;
     }, [ledgerContext?.tonTransport]);
 
-    const onLoadAccount = React.useCallback(
-        (async (acc: LedgerAccount) => {
-            if (!ledgerContext?.tonTransport) {
-                Alert.alert(t('hardwareWallet.errors.noDevice'));
-                ledgerContext?.setLedgerConnection(null);
+    const onLoadAccount = useCallback((async (acc: LedgerAccount) => {
+        if (!ledgerContext?.tonTransport) {
+            Alert.alert(t('hardwareWallet.errors.noDevice'));
+            ledgerContext?.setLedgerConnection(null);
+            return;
+        }
+        setSelected(acc.i);
+        let path = pathFromAccountNumber(acc.i, network.isTestnet);
+        try {
+            await ledgerContext.tonTransport.validateAddress(path, { testOnly: network.isTestnet });
+            ledgerContext.setAddr({ address: acc.addr.address, publicKey: acc.addr.publicKey, acc: acc.i });
+            setSelected(undefined);
+        } catch (e) {
+            setSelected(undefined);
+            let isAppOpen = await ledgerContext.tonTransport?.isAppOpen();
+
+            if (!isAppOpen) {
+                console.warn('[ledger] closed app');
+                setConnectionState('closed-app');
                 return;
             }
-            setSelected(acc.i);
-            let path = pathFromAccountNumber(acc.i, network.isTestnet);
-            try {
-                await ledgerContext.tonTransport.validateAddress(path, { testOnly: network.isTestnet });
-                ledgerContext.setAddr({ address: acc.addr.address, publicKey: acc.addr.publicKey, acc: acc.i });
-                setSelected(undefined);
-            } catch {
-                setSelected(undefined);
+
+            if (e instanceof Error && e.name === 'LockedDeviceError') {
+                console.warn('[ledger] locked device');
+                setConnectionState('locked-device');
             }
-        }),
-        [ledgerContext?.tonTransport],
-    );
+        }
+    }), [ledgerContext?.tonTransport]);
 
     useEffect(() => {
         if (!!ledgerContext?.addr) {
             navigation.navigateLedgerApp();
         }
     }, [ledgerContext?.addr]);
+
+    // Reseting ledger context on back navigation if no address selected
+    useFocusEffect(
+        useCallback(() => {
+            const onBackPress = () => {
+                if (!ledgerContext.addr) {
+                    const lastConnectionType = ledgerContext.ledgerConnection?.type;
+                    ledgerContext.reset();
+
+                    // Restart new search, we are navigating back to the search screen
+                    if (lastConnectionType === 'ble') {
+                        ledgerContext.startBleSearch();
+                    } else if (lastConnectionType === 'hid') {
+                        ledgerContext.startHIDSearch();
+                    }
+                }
+            };
+
+            navigation.base.addListener('beforeRemove', onBackPress);
+
+            return () => {
+                navigation.base.removeListener('beforeRemove', onBackPress);
+            };
+        }, [navigation, ledgerContext])
+    );
 
     return (
         <View style={{
@@ -273,12 +303,7 @@ export const LedgerSelectAccountFragment = fragment(() => {
                     Platform.select({ android: { paddingTop: safeArea.top } })
                 ]}
             />
-            <Text style={{
-                color: theme.textPrimary,
-                fontWeight: '600',
-                fontSize: 32, lineHeight: 38,
-                marginVertical: 16, marginHorizontal: 16
-            }}>
+            <Text style={[{ color: theme.textPrimary, marginVertical: 16, marginHorizontal: 16 }, Typography.semiBold32_38]}>
                 {ledgerContext?.tonTransport?.transport.deviceModel?.productName}
             </Text>
             <LedgerHint state={connectionState} theme={theme} />
@@ -292,6 +317,7 @@ export const LedgerSelectAccountFragment = fragment(() => {
                     selected={selected}
                     theme={theme}
                     loading={(!accountsLite || accountsLite.length === 0) || connectionState === 'loading'}
+                    bounceable={bounceableFormat}
                 />
             )}
         </View>

@@ -9,6 +9,7 @@ import { SimpleTransferParams } from '../fragments/secure/SimpleTransferFragment
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { HoldersAppParams } from '../fragments/holders/HoldersAppFragment';
 import { useMemo } from 'react';
+import { DAppWebViewFragmentParams } from '../fragments/utils/DAppWebViewFragment';
 
 type Base = NavigationProp<ParamListBase>;
 
@@ -103,7 +104,7 @@ export class TypedNavigation {
     }
 
     navigateLedgerTransfer(tx: SimpleTransferParams) {
-        this.navigate('LedgerTransfer', tx);
+        this.navigate('LedgerSimpleTransfer', tx);
     }
 
     navigateLedgerSignTransfer(params: LedgerSignTransferParams) {
@@ -143,6 +144,10 @@ export class TypedNavigation {
             return;
         };
         this.navigate('Alert', params);
+    }
+
+    navigateDAppWebView(params: DAppWebViewFragmentParams) {
+        this.navigate('DAppWebView', params);
     }
 }
 

@@ -81,8 +81,10 @@ export const TransferSingle = memo((props: ConfirmLoadedPropsSingle) => {
     // Tracking
     const success = useRef(false);
     useEffect(() => {
-        if (!success.current) {
-            trackEvent(MixpanelEvent.TransferCancel, { target: order.messages[0].target, amount: order.messages[0].amount.toString(10) }, isTestnet);
+        return () => {
+            if (!success.current) {
+                trackEvent(MixpanelEvent.TransferCancel, { target: order.messages[0].target, amount: order.messages[0].amount.toString(10) }, isTestnet);
+            }
         }
     }, []);
 
@@ -90,7 +92,7 @@ export const TransferSingle = memo((props: ConfirmLoadedPropsSingle) => {
         target = jettonTarget;
     }
 
-    const friendlyTarget = target.address.toString({ testOnly: isTestnet });
+    const friendlyTarget = target.address.toString({ testOnly: isTestnet, bounceable: target.bounceable });
     // Contact wallets
     const contact = useContact(friendlyTarget);
 

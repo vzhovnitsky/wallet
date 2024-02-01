@@ -1,11 +1,10 @@
 import * as React from 'react';
-import { View, Text, Pressable, Image } from 'react-native';
+import { View, Text, Pressable, Image, Platform } from 'react-native';
 import { ScrollView } from 'react-native-gesture-handler';
 import { ItemButton } from '../components/ItemButton';
 import { fragment } from '../fragment';
 import { useTypedNavigation } from '../utils/useTypedNavigation';
 import { t } from '../i18n/t';
-import { useTrackScreen } from '../analytics/mixpanel';
 import { openWithInApp } from '../utils/openWithInApp';
 import { useCallback, useMemo } from 'react';
 import { useActionSheet } from '@expo/react-native-action-sheet';
@@ -13,13 +12,14 @@ import * as StoreReview from 'expo-store-review';
 import { ReAnimatedCircularProgress } from '../components/CircularProgress/ReAnimatedCircularProgress';
 import { getAppState } from '../storage/appState';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useNetwork, useOldWalletsBalances, usePrice, useSelectedAccount, useSyncState, useTheme, useThemeStyle } from '../engine/hooks';
+import { useNetwork, useBounceableWalletFormat, useOldWalletsBalances, usePrice, useSelectedAccount, useSyncState, useTheme, useThemeStyle } from '../engine/hooks';
 import * as Application from 'expo-application';
 import { ThemeStyle } from '../engine/state/theme';
 import { useWalletSettings } from '../engine/hooks/appstate/useWalletSettings';
 import { StatusBar, setStatusBarStyle } from 'expo-status-bar';
 import { useFocusEffect, useRoute } from '@react-navigation/native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
+import { useLedgerTransport } from './ledger/components/TransportContext';
 
 import IcSecurity from '@assets/settings/ic-security.svg';
 import IcSpam from '@assets/settings/ic-spam.svg';
@@ -32,7 +32,7 @@ import IcTelegram from '@assets/settings/ic-tg.svg';
 import IcRateApp from '@assets/settings/ic-rate-app.svg';
 import IcNoConnection from '@assets/settings/ic-no-connection.svg';
 import IcTheme from '@assets/settings/ic-theme.svg';
-import { useLedgerTransport } from './ledger/components/TransportContext';
+import IcNewAddressFormat from '@assets/settings/ic-address-update.svg';
 
 export const SettingsFragment = fragment(() => {
     const theme = useTheme();
@@ -48,19 +48,12 @@ export const SettingsFragment = fragment(() => {
     const oldWalletsBalance = useOldWalletsBalances().total;
     const syncState = useSyncState();
     const [, currency] = usePrice();
+    const [bounceableFormat,] = useBounceableWalletFormat();
 
     // Ledger
     const route = useRoute();
     const isLedger = route.name === 'LedgerSettings';
     const ledgerContext = useLedgerTransport();
-    React.useEffect(() => {
-        if (!isLedger) return;
-
-        ledgerContext?.setFocused(true);
-        return () => {
-            ledgerContext?.setFocused(false);
-        }
-    }, [isLedger]);
 
     const onVersionTap = useMemo(() => {
         let count = 0;
@@ -114,15 +107,18 @@ export const SettingsFragment = fragment(() => {
         navigation.navigate('AccountSelector');
     }, []);
 
-    useTrackScreen('More', network.isTestnet);
-
     useFocusEffect(() => {
         setStatusBarStyle(theme.style === 'dark' ? 'light' : 'dark');
     });
 
     return (
         <View style={{ flexGrow: 1 }}>
-            <View style={{ marginTop: safeArea.top, alignItems: 'center', justifyContent: 'center', width: '100%', paddingVertical: 6 }}>
+            <View style={{
+                marginTop: safeArea.top + (Platform.OS === 'ios' ? 0 : 16),
+                alignItems: 'center', justifyContent: 'center',
+                width: '100%',
+                paddingVertical: 6
+            }}>
                 <StatusBar style={theme.style === 'dark' ? 'light' : 'dark'} />
                 <Pressable
                     style={({ pressed }) => ({
@@ -215,6 +211,12 @@ export const SettingsFragment = fragment(() => {
                         title={t('settings.primaryCurrency')}
                         onPress={() => navigation.navigate('Currency')}
                         hint={currency}
+                    />
+                    <ItemButton
+                        leftIconComponent={<IcNewAddressFormat width={24} height={24} />}
+                        title={t('newAddressFormat.title')}
+                        onPress={() => navigation.navigate('NewAddressFormat')}
+                        hint={seleted?.address.toString({ testOnly: network.isTestnet, bounceable: bounceableFormat }).slice(0, 2)}
                     />
                 </View>
                 <View style={{
@@ -359,4 +361,4 @@ export const SettingsFragment = fragment(() => {
             </ScrollView>
         </View>
     );
-}, true);
+});
