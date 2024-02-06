@@ -6,7 +6,6 @@ import { Address } from "@ton/core";
 import { useAccountTransactions, useClient4, useNetwork, useBounceableWalletFormat, useTheme, useWalletsSettings } from "../../engine/hooks";
 import { KnownWallets } from "../../secure/KnownWallets";
 import { t } from "../../i18n/t";
-import { WalletSettings } from "../../engine/state/walletSettings";
 import { useAddressBookContext } from "../../engine/AddressBookContext";
 
 export type AddressSearchItem = {
@@ -18,8 +17,7 @@ export type AddressSearchItem = {
     title: string,
     searchable: string,
     type: 'contact' | 'known' | 'unknown' | 'my-wallets',
-    icon?: string,
-    // walletSettings?: WalletSettings
+    icon?: string
 };
 
 export const AddressSearch = memo(({
