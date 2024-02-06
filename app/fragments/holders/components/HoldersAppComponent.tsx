@@ -13,7 +13,7 @@ import { useInjectEngine } from '../../apps/components/inject/useInjectEngine';
 import { getLocales } from 'react-native-localize';
 import { useLinkNavigator } from '../../../useLinkNavigator';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { memo, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { HoldersAppParams } from '../HoldersAppFragment';
 import Animated, { Easing, Extrapolation, interpolate, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 import { usePrimaryCurrency } from '../../../engine/hooks';
