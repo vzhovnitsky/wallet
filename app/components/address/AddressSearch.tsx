@@ -19,7 +19,7 @@ export type AddressSearchItem = {
     searchable: string,
     type: 'contact' | 'known' | 'unknown' | 'my-wallets',
     icon?: string,
-    walletSettings?: WalletSettings
+    // walletSettings?: WalletSettings
 };
 
 export const AddressSearch = memo(({
@@ -183,12 +183,12 @@ export const AddressSearch = memo(({
                         paddingHorizontal: 16,
                         paddingVertical: 8
                     } : undefined}>
-                        {filtered.recent.map((addr, index) => {
-                            const friendly = addr.address.toString({ testOnly: network.isTestnet, bounceable: addr.isBounceable });
-                            const contact = contacts[friendly];
-                            const known = knownWallets[friendly];
-                            const own = myWallets.find((acc) => acc.address.equals(addr.address));
-                            const settings = walletsSettings[friendly];
+                        {filtered.recent.map((address, index) => {
+                            const contact = contacts[address.toString({ testOnly: network.isTestnet })];
+                            const known = knownWallets[address.toString({ testOnly: network.isTestnet })];
+                            const own = myWallets.find((acc) => acc.address.equals(address));
+                            const settings = walletsSettings[address.toString({ testOnly: network.isTestnet })];
+
                             let type: "known" | "unknown" | "contact" | "my-wallets" = 'unknown';
                             let title = t('contacts.unknown');
                             if (contact) {
@@ -214,8 +214,8 @@ export const AddressSearch = memo(({
                                         title: title,
                                         searchable: friendly,
                                         type: type,
-                                        walletSettings: settings
                                     }}
+                                    walletsSettings={walletsSettings}
                                     onPress={onSelect}
                                 />
                             )
@@ -252,6 +252,7 @@ export const AddressSearch = memo(({
                                     key={index}
                                     item={item}
                                     onPress={onSelect}
+                                    walletsSettings={walletsSettings}
                                 />
                             );
                         })}
@@ -287,6 +288,7 @@ export const AddressSearch = memo(({
                                     key={index}
                                     item={item}
                                     onPress={onSelect}
+                                    walletsSettings={walletsSettings}
                                 />
                             );
                         })}
