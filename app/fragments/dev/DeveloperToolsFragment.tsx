@@ -36,7 +36,7 @@ import { Typography } from '../../components/styles';
 
 export function getHoldersUrl() {
     const stored = storage.getString('holdersUrl');
-    if (!stored) return 'https://tonhub-preview.holders.io';
+    if (!stored) return 'https://tonhub-stage.holders.io';
     return stored;
 }
 

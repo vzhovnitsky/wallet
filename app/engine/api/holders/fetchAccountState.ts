@@ -3,7 +3,7 @@ import { z } from 'zod';
 import { getHoldersUrl } from '../../../fragments/dev/DeveloperToolsFragment';
 
 export const holdersEndpoint = 'card-staging.whales-api.com';
-export const holdersUrl = 'https://tonhub-stage.holders.io';
+export const holdersUrl = getHoldersUrl();
 
 export type AccountState = z.infer<typeof accountStateCodec>;
 
