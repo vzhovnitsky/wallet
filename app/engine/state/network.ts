@@ -20,7 +20,7 @@ const isTestnetAtom = atom({
 export const networkSelector = selector({
     key: 'wallet/network',
     get: ({ get }) => {
-        return { isTestnet: get(isTestnetAtom) || IS_SANDBOX || false };
+        return { isTestnet: get(isTestnetAtom) ?? (IS_SANDBOX || false) };
     },
     set: ({ set }, newValue) => {
         if (newValue instanceof DefaultValue) {
