@@ -65,6 +65,9 @@ export function TransactionView(props: {
 
     const [walletSettings,] = useWalletSettings(parsedAddressFriendly);
 
+    const avatarColorHash = walletSettings?.color ?? avatarHash(parsedAddressFriendly, avatarColors.length);
+    const avatarColor = avatarColors[avatarColorHash];
+
     const contact = contacts[parsedAddressFriendly];
     const isSpam = !!denyList[parsedAddressFriendly]?.reason;
 
