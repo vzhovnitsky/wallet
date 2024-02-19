@@ -19,6 +19,9 @@ import { getJettonMaster } from "../../engine/getters/getJettonMaster";
 import { StatusBar } from "expo-status-bar";
 
 import TonIcon from '@assets/ic-ton-acc.svg';
+import { useLedgerTransport } from "../ledger/components/TransportContext";
+import { pathFromAccountNumber } from "../../utils/pathFromAccountNumber";
+import { RoundButton } from "../../components/RoundButton";
 
 export const ReceiveFragment = fragment(() => {
     const theme = useTheme();
@@ -28,7 +31,7 @@ export const ReceiveFragment = fragment(() => {
     const imageRef = useRef<View>(null);
     const params = useParams<{ addr?: string, ledger?: boolean }>();
     const selected = useSelectedAccount();
-    const [bounceableFormat,] = useBounceableWalletFormat();
+    const ledgerContext = useLedgerTransport();
 
     const qrSize = 262;
 
@@ -65,6 +68,33 @@ export const ReceiveFragment = fragment(() => {
         setJetton(null);
     }, []);
 
+    const ledgerConfirming = useRef(false);
+
+    const onLedgerConfirm = useCallback(async () => {
+        if (params.ledger && ledgerConfirming.current === false) {
+            ledgerConfirming.current = true;
+            try {
+                const addr = ledgerContext.addr;
+                if (!addr || !ledgerContext?.tonTransport) {
+                    Alert.alert(t('hardwareWallet.ledger'), t('hardwareWallet.errors.noDevice'));
+                } else {
+                    const path = pathFromAccountNumber(addr?.acc, network.isTestnet);
+                    await ledgerContext?.tonTransport?.validateAddress(path, { testOnly: network.isTestnet });
+                }
+            } catch (e) {
+                let isAppOpen = await ledgerContext.tonTransport?.isAppOpen();
+
+                if (!isAppOpen) {
+                    Alert.alert(t('hardwareWallet.ledger'), t('hardwareWallet.openTheAppDescription'));
+                } else if (e instanceof Error && e.name === 'LockedDeviceError') {
+                    Alert.alert(t('hardwareWallet.ledger'), t('hardwareWallet.unlockLedgerDescription'));
+                }
+            } finally {
+                ledgerConfirming.current = false;
+            }
+        }
+    }, [ledgerContext, network.isTestnet]);
+
     const link = useMemo(() => {
         if (jetton) {
             return `https://${network.isTestnet ? 'test.' : ''}tonhub.com/transfer`
@@ -87,7 +117,7 @@ export const ReceiveFragment = fragment(() => {
             <StatusBar style={Platform.select({ android: theme.style === 'dark' ? 'light' : 'dark', ios: 'light' })} />
             <ScreenHeader
                 style={[
-                    { flex: 1, minHeight: safeArea.bottom === 0 ? 60 : undefined },
+                    { minHeight: safeArea.bottom === 0 ? 60 : undefined },
                     Platform.select({ android: { paddingTop: safeArea.top } })
                 ]}
                 title={t('receive.title')}
@@ -131,7 +161,7 @@ export const ReceiveFragment = fragment(() => {
                                 />
                             </View>
                         </View>
-                        <View style={{ backgroundColor: theme.surfaceOnElevation, borderRadius: 20, padding: 20 }}>
+                        <View style={{ backgroundColor: theme.surfaceOnElevation, borderRadius: 20, padding: 20, paddingBottom: params.ledger ? 10 : 20 }}>
                             <Pressable
                                 style={({ pressed }) => {
                                     return {
@@ -217,6 +247,14 @@ export const ReceiveFragment = fragment(() => {
                                     />
                                 </View>
                             </Pressable>
+                            {params.ledger && !jetton && (
+                                <RoundButton
+                                    display={'secondary_contrast'}
+                                    title={t('hardwareWallet.actions.loadAddress')}
+                                    action={onLedgerConfirm}
+                                    style={{ marginTop: 8 }}
+                                />
+                            )}
                         </View>
                     </View>
                 </View>
