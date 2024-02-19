@@ -59,10 +59,6 @@ export function TransactionView(props: {
     const parsedAddressFriendly = parsedAddress.toString({ testOnly: isTestnet });
     const isOwn = (props.appState?.addresses ?? []).findIndex((a) => a.address.equals(Address.parse(opAddress))) >= 0;
 
-    if (!parsedOpAddr.isBounceable) {
-        console.log('Bounceable address', opAddress);
-    }
-
     const [walletSettings,] = useWalletSettings(parsedAddressFriendly);
 
     const avatarColorHash = walletSettings?.color ?? avatarHash(parsedAddressFriendly, avatarColors.length);
