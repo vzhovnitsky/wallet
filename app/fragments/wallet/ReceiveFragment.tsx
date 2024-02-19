@@ -17,11 +17,11 @@ import { Address } from "@ton/core";
 import { JettonMasterState } from "../../engine/metadata/fetchJettonMasterContent";
 import { getJettonMaster } from "../../engine/getters/getJettonMaster";
 import { StatusBar } from "expo-status-bar";
-
-import TonIcon from '@assets/ic-ton-acc.svg';
 import { useLedgerTransport } from "../ledger/components/TransportContext";
 import { pathFromAccountNumber } from "../../utils/pathFromAccountNumber";
 import { RoundButton } from "../../components/RoundButton";
+
+import TonIcon from '@assets/ic-ton-acc.svg';
 
 export const ReceiveFragment = fragment(() => {
     const theme = useTheme();
@@ -31,6 +31,7 @@ export const ReceiveFragment = fragment(() => {
     const imageRef = useRef<View>(null);
     const params = useParams<{ addr?: string, ledger?: boolean }>();
     const selected = useSelectedAccount();
+    const [bounceableFormat,] = useBounceableWalletFormat();
     const ledgerContext = useLedgerTransport();
 
     const qrSize = 262;
