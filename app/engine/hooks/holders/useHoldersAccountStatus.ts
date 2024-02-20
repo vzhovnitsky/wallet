@@ -6,6 +6,7 @@ import { useNetwork } from "../network/useNetwork";
 import { storage } from "../../../storage/storage";
 import { HoldersAccountState, accountStateCodec, fetchAccountState } from "../../api/holders/fetchAccountState";
 import { z } from 'zod';
+import { getHoldersUrl } from "../../../fragments/dev/DeveloperToolsFragment";
 
 const holdersAccountStatus = z.union([
     z.object({ state: z.literal(HoldersAccountState.NeedEnrollment) }),
@@ -18,7 +19,7 @@ export type HoldersAccountStatus = z.infer<typeof holdersAccountStatus>;
 // user will be prompted to re-enroll
 const migrationKey = 'holders-token-ton-connect';
 function migrateHoldersToken(addressString: string) {
-    const key = `${migrationKey}-${addressString}`;
+    const key = `${migrationKey}-${addressString}-${getHoldersUrl()}`;
     if (storage.getBoolean(key)) {
         return false;
     }
@@ -28,11 +29,11 @@ function migrateHoldersToken(addressString: string) {
 }
 
 export function deleteHoldersToken(address: string) {
-    storage.delete(`holders-jwt-${address}`);
+    storage.delete(`holders-jwt-${address}-${getHoldersUrl()}`);
 }
 
 export function setHoldersToken(address: string, token: string) {
-    storage.set(`holders-jwt-${address}`, token);
+    storage.set(`holders-jwt-${address}-${getHoldersUrl()}`, token);
 }
 
 export function getHoldersToken(address: string) {
@@ -40,7 +41,7 @@ export function getHoldersToken(address: string) {
     if (migrateHoldersToken(address)) {
         return null;
     }
-    return storage.getString(`holders-jwt-${address}`);
+    return storage.getString(`holders-jwt-${address}-${getHoldersUrl()}`);
 }
 
 export function useHoldersAccountStatus(address: string | Address) {
