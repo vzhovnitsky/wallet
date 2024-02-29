@@ -190,7 +190,7 @@ const PendingTransactionView = memo(({
                     )}
                 </View>
             </Pressable>
-            {!last && !single && (
+            {!last && !single && viewType !== 'history' && (
                 <ItemDivider />
             )}
         </Animated.View>
