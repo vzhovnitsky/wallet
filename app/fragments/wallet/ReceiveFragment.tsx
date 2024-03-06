@@ -116,6 +116,19 @@ export const ReceiveFragment = fragment(() => {
         return isSCAM;
     }, [network, jetton]);
 
+    const isSCAM = useMemo(() => {
+        const masterAddress = jetton?.master;
+
+        if (!masterAddress || !jetton.data.symbol) {
+            return false;
+        }
+
+        const isKnown = !!KnownJettonMasters(network.isTestnet)[masterAddress.toString({ testOnly: network.isTestnet })];
+        const isSCAM = !isKnown && KnownJettonTickers.includes(jetton.data.symbol);
+
+        return isSCAM;
+    }, [network, jetton]);
+
     return (
         <View
             style={{
