@@ -17,6 +17,9 @@ import { Address } from "@ton/core";
 import { JettonMasterState } from "../../engine/metadata/fetchJettonMasterContent";
 import { getJettonMaster } from "../../engine/getters/getJettonMaster";
 import { StatusBar } from "expo-status-bar";
+import { useLedgerTransport } from "../ledger/components/TransportContext";
+import { pathFromAccountNumber } from "../../utils/pathFromAccountNumber";
+import { RoundButton } from "../../components/RoundButton";
 import { Typography } from "../../components/styles";
 
 import TonIcon from '@assets/ic-ton-acc.svg';
@@ -102,19 +105,6 @@ export const ReceiveFragment = fragment(() => {
         return `https://${network.isTestnet ? 'test.' : ''}tonhub.com/transfer`
             + `/${friendly}`
     }, [jetton, network, friendly]);
-
-    const isSCAM = useMemo(() => {
-        const masterAddress = jetton?.master;
-
-        if (!masterAddress || !jetton.data.symbol) {
-            return false;
-        }
-
-        const isKnown = !!KnownJettonMasters(network.isTestnet)[masterAddress.toString({ testOnly: network.isTestnet })];
-        const isSCAM = !isKnown && KnownJettonTickers.includes(jetton.data.symbol);
-
-        return isSCAM;
-    }, [network, jetton]);
 
     const isSCAM = useMemo(() => {
         const masterAddress = jetton?.master;
