@@ -1,7 +1,7 @@
 import React, { memo, useCallback, useMemo } from "react";
 import { View, Text, Pressable } from "react-native";
 import { useTypedNavigation } from "../../utils/useTypedNavigation";
-import { Avatar } from "../Avatar";
+import { Avatar } from "../avatar/Avatar";
 import { useAnimatedPressedInOut } from "../../utils/useAnimatedPressedInOut";
 import Animated from "react-native-reanimated";
 import { useBounceableWalletFormat, useContact, useDenyAddress, useNetwork, useTheme } from "../../engine/hooks";
@@ -21,11 +21,9 @@ export const ContactItemView = memo(({ addressFriendly, action }: { addressFrien
 
     const { animatedStyle, onPressIn, onPressOut } = useAnimatedPressedInOut();
 
-    const bounceable = useMemo(() => {
-        return (contractInfo?.kind === 'wallet')
-            ? bounceableFormat
-            : true;
-    }, [contractInfo, bounceableFormat]);
+    const bounceable = (contractInfo?.kind === 'wallet')
+        ? bounceableFormat
+        : true;
 
     const lastName = useMemo(() => {
         if (contact?.fields) {
