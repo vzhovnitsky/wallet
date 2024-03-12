@@ -2,9 +2,7 @@ import * as React from 'react';
 import { Pressable, Text } from 'react-native';
 import { ValueComponent } from '../../../components/ValueComponent';
 import { AddressComponent } from '../../../components/address/AddressComponent';
-import { Avatar, avatarColors } from '../../../components/avatar/Avatar';
-import { PendingTransactionAvatar } from '../../../components/avatar/PendingTransactionAvatar';
-import { KnownWallet, KnownWallets } from '../../../secure/KnownWallets';
+import { KnownJettonMasters, KnownJettonTickers, KnownWallet, KnownWallets } from '../../../secure/KnownWallets';
 import { t } from '../../../i18n/t';
 import { TypedNavigation } from '../../../utils/useTypedNavigation';
 import { PriceComponent } from '../../../components/PriceComponent';
@@ -19,9 +17,11 @@ import { AppState } from '../../../storage/appState';
 import { PerfView } from '../../../components/basic/PerfView';
 import { Typography } from '../../../components/styles';
 import { avatarHash } from '../../../utils/avatarHash';
+import { getLiquidStakingAddress } from '../../../utils/KnownPools';
 import { WalletSettings } from '../../../engine/state/walletSettings';
-import { Ionicons } from '@expo/vector-icons';
 import { BatchAvatars } from '../../../components/avatar/BatchAvatars';
+import { Avatar, avatarColors } from '../../../components/avatar/Avatar';
+import { PendingTransactionAvatar } from '../../../components/avatar/PendingTransactionAvatar';
 
 const TxAvatar = memo((
     {
@@ -333,6 +333,7 @@ export function TransactionView(props: {
                                 `${tx.outMessagesCount} ${t('common.messages').toLowerCase()}`
                             ) : (
                                 <>
+
                                     {kind === 'in' ? '+' : '-'}
                                     <ValueComponent
                                         value={absAmount}
@@ -341,7 +342,12 @@ export function TransactionView(props: {
                                         centFontStyle={{ fontSize: 15 }}
                                     />
                                     <Text style={{ fontSize: 15 }}>
-                                        {item.kind === 'token' ? `${tx.masterMetadata?.symbol ? ` ${tx.masterMetadata?.symbol}` : ''}` : ' TON'}
+                                        {symbolText}
+                                        {isSCAMJetton && (
+                                            <Text style={{ color: theme.accentRed }}>
+                                                {'SCAM'}
+                                            </Text>
+                                        )}
                                     </Text>
                                 </>
                             )}

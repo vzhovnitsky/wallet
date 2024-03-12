@@ -353,25 +353,27 @@ const TransactionPreview = () => {
                     ) : (
                         tx.outMessagesCount > 1 ? (null) : (
                             <>
-                                <Text
-                                    minimumFontScale={0.4}
-                                    adjustsFontSizeToFit={true}
-                                    numberOfLines={1}
-                                    style={[
+                                <View style={{ marginTop: 12, flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text
+                                        minimumFontScale={0.4}
+                                        adjustsFontSizeToFit={true}
+                                        numberOfLines={1}
+                                        style={[{ color: amountColor }, Typography.semiBold27_32]}
+                                    >
                                         {
-                                            color: kind === 'in'
-                                                ? spam
-                                                    ? theme.textPrimary
-                                                    : theme.accentGreen
-                                                : theme.textPrimary,
-                                            marginTop: 12,
-                                        },
-                                        Typography.semiBold27_32
-                                    ]}
-                                >
-                                    {`${stringText[0]}${stringText[1]}${item.kind === 'ton' ? ' TON' : (jetton?.symbol ? ' ' + jetton?.symbol : '')}`}
-                                </Text>
-                                {item.kind === 'ton' && tx.outMessagesCount <= 1 && (
+                                            `${amountText[0]}${amountText[1]}${item.kind === 'ton'
+                                                ? ' TON'
+                                                : (jetton?.symbol ? ' ' + jetton?.symbol : '')}`
+                                            + (isSCAMJetton ? ' • ' : '')
+                                        }
+                                    </Text>
+                                    {isSCAMJetton && (
+                                        <Text style={[{ color: theme.accentRed }, Typography.semiBold27_32]}>
+                                            {'SCAM'}
+                                        </Text>
+                                    )}
+                                </View>
+                                {item.kind === 'ton' && (
                                     <PriceComponent
                                         style={{
                                             backgroundColor: theme.transparent,

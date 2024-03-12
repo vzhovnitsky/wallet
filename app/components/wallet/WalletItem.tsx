@@ -1,12 +1,12 @@
 import { memo, useCallback } from "react";
-import { Pressable, View, Text } from "react-native";
-import { Avatar, avatarColors } from "../avatar/Avatar";
+import { Pressable, View, Text, StyleProp, ViewStyle } from "react-native";
 import { t } from "../../i18n/t";
 import { ellipsiseAddress } from "../address/WalletAddress";
 import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { Address } from "@ton/core";
 import { useAppState, useBounceableWalletFormat, useNetwork, useSetAppState, useTheme, useWalletSettings } from "../../engine/hooks";
 import { avatarHash } from "../../utils/avatarHash";
+import { Avatar, avatarColors } from "../avatar/Avatar";
 
 import IcCheck from "@assets/ic-check.svg";
 
