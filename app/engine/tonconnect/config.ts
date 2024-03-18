@@ -18,7 +18,7 @@ const getPlatform = (): DeviceInfo['platform'] => {
 
 export const tonConnectDeviceInfo: DeviceInfo = {
   platform: getPlatform(),
-  appName: Application.applicationName ?? 'Tonhub',
+  appName: 'Tonhub',
   appVersion: Application.nativeApplicationVersion ?? '1.23.3',
   maxProtocolVersion: CURRENT_PROTOCOL_VERSION,
   features: ['SendTransaction', { name: 'SendTransaction', maxMessages: 4 }]
