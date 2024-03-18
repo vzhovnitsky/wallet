@@ -13,8 +13,8 @@ import { extractDomain } from "../../../engine/utils/extractDomain";
 import { useImageColors } from "../../../utils/useImageColors";
 import { AndroidImageColors, IOSImageColors } from "react-native-image-colors/build/types";
 import { Canvas, ImageSVG, Skia } from "@shopify/react-native-skia";
-import { useAppState, useTheme } from "../../../engine/hooks";
 import { CheckBox } from "../../../components/CheckBox";
+import { useTheme, useAppState } from "../../../engine/hooks";
 import { StatusBar } from "expo-status-bar";
 import { ScreenHeader } from "../../../components/ScreenHeader";
 import { useTypedNavigation } from "../../../utils/useTypedNavigation";
@@ -323,7 +323,7 @@ export const DappAuthComponent = memo(({
                                 return (
                                     <WalletItem
                                         key={addr.address.toString()}
-                                        index={index}
+                                        index={index + 2}
                                         selected={selectedAccount?.address.equals(addr.address)}
                                         address={addr.address}
                                         onSelect={onAddressSelected}
