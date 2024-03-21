@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { fragment } from '../../fragment';
-import { View } from 'react-native';
+import { Alert, View } from 'react-native';
 import { HoldersAppComponent } from './components/HoldersAppComponent';
 import { useParams } from '../../utils/useParams';
 import { t } from '../../i18n/t';
@@ -40,9 +40,35 @@ export const HoldersAppFragment = fragment(() => {
     }, [status, isHoldersReady]);
 
     useEffect(() => {
-        if (needsEnrollment) {
-            navigation.goBack();
-        }
+        (async () => {
+            await new Promise<boolean>(resolve => {
+                Alert.alert(
+                    'HoldersApp',
+                    JSON.stringify({ needsEnrollment, status: status?.state, isHoldersReady }),
+                    [{
+                        text: t('common.ok'),
+                        onPress: () => {
+                            resolve(true)
+                        }
+                    }])
+            });
+
+            await new Promise<boolean>(resolve => {
+                Alert.alert(
+                    'HoldersApp',
+                    'Going back to previous screen...',
+                    [{
+                        text: t('common.ok'),
+                        onPress: () => {
+                            resolve(true)
+                        }
+                    }])
+            });
+
+            if (needsEnrollment) {
+                navigation.goBack();
+            }
+        })();
     }, [needsEnrollment]);
 
     useEffect(() => {

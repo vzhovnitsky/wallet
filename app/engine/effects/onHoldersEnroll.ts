@@ -4,21 +4,61 @@ import { Queries } from "../queries";
 import { getHoldersToken } from "../hooks/holders/useHoldersAccountStatus";
 import { HoldersAccountState, fetchAccountState } from "../api/holders/fetchAccountState";
 import { fetchAccountsPublic, fetchAccountsList } from "../api/holders/fetchAccounts";
+import { Alert } from "react-native";
+import { t } from "../../i18n/t";
 
 export async function onHoldersEnroll(account: string, isTestnet: boolean) {
     let address = Address.parse(account).toString({ testOnly: isTestnet });
 
     const token = getHoldersToken(address);
 
+    await new Promise<boolean>(resolve => {
+        Alert.alert(
+            'Prefetch holders',
+            JSON.stringify({ token }),
+            [{
+                text: t('common.ok'),
+                onPress: () => {
+                    resolve(true)
+                }
+            }])
+    });
+
     if (!token) {
         return { state: HoldersAccountState.NeedEnrollment } as { state: HoldersAccountState.NeedEnrollment }; // This looks amazingly stupid
     }
 
     const fetched = await fetchAccountState(token);
+
+    await new Promise<boolean>(resolve => {
+        Alert.alert(
+            'Prefetch holders',
+            JSON.stringify({ fetchedStatus: fetched }),
+            [{
+                text: t('common.ok'),
+                onPress: () => {
+                    resolve(true)
+                }
+            }])
+    });
+
     if (!fetched) {
         return { state: HoldersAccountState.NeedEnrollment } as { state: HoldersAccountState.NeedEnrollment };
     }
     const status = { ...fetched, token };
+
+    await new Promise<boolean>(resolve => {
+        Alert.alert(
+            'Prefetch holders',
+            JSON.stringify({ status }),
+            [{
+                text: t('common.ok'),
+                onPress: () => {
+                    resolve(true)
+                }
+            }])
+    });
+    
     queryClient.setQueryData(Queries.Holders(address).Status(), () => status);
 
     if (status.state === HoldersAccountState.Ok) {

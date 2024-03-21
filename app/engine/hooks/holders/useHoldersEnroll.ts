@@ -13,6 +13,8 @@ import { useAppConnections, useConnectApp, useNetwork, useSaveAppConnection } fr
 import { deleteHoldersToken, getHoldersToken, setHoldersToken } from "./useHoldersAccountStatus";
 import { TonConnectBridgeType } from "../../tonconnect/types";
 import { extensionKey } from "../dapps/useAddExtension";
+import { Alert } from "react-native";
+import { t } from "../../../i18n/t";
 
 export type HoldersEnrollParams = {
     acc: {
@@ -177,6 +179,18 @@ export function useHoldersEnroll({ acc, authContext, authStyle }: HoldersEnrollP
         //
         // Refetch state
         //
+
+        await new Promise<boolean>(resolve => {
+            Alert.alert(
+                'Enroll res',
+                JSON.stringify(res),
+                [{
+                    text: t('common.ok'),
+                    onPress: () => {
+                        resolve(true)
+                    }
+                }])
+        });
 
         try {
             await onHoldersEnroll(acc.address.toString({ testOnly: isTestnet }), isTestnet);
