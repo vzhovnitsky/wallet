@@ -9,7 +9,6 @@ import { avatarHash } from "../../utils/avatarHash";
 import { Avatar, avatarColors } from "../avatar/Avatar";
 
 import IcCheck from "@assets/ic-check.svg";
-import { Avatar, avatarColors } from "../avatar/Avatar";
 
 export const WalletItem = memo((
     {
