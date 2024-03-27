@@ -997,7 +997,11 @@ export type LocalizationSchema = {
                 services: string,
             },
             title: string
-        }
+        },
+        refresh: string,
+        back: string,
+        forward: string,
+        share: string
     }
 };
 

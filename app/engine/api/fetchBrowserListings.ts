@@ -5,6 +5,7 @@ const browserListingCodec = z.object({
     id: z.number(),
     weight: z.number().optional(),
     image_url: z.string().nullable().optional(),
+    icon_url: z.string().nullable().optional(),
     title: z.string().nullable().optional(),
     description: z.string().nullable().optional(),
     banner_type: z.string().nullable().optional(),
