@@ -86,8 +86,7 @@ import { PendingTxPreviewFragment } from './fragments/wallet/PendingTxPreviewFra
 import { DAppWebViewFragment } from './fragments/utils/DAppWebViewFragment';
 import { DevDAppWebViewFragment } from './fragments/dev/DevDAppWebViewFragment';
 import { NewAddressFormatFragment } from './fragments/NewAddressFormatFragment';
-import { LiquidWithdrawActionFragment } from './fragments/staking/LiquidWithdrawActionFragment';
-import { LiquidStakingTransferFragment } from './fragments/staking/LiquidStakingTransferFragment';
+import { BounceableFormatAboutFragment } from './fragments/utils/BounceableFormatAboutFragment';
 
 const Stack = createNativeStackNavigator();
 Stack.Navigator.displayName = 'MainStack';
@@ -273,6 +272,7 @@ const navigation = (safeArea: EdgeInsets) => [
     modalScreen('WalletSettings', WalletSettingsFragment, safeArea),
     modalScreen('AvatarPicker', AvatarPickerFragment, safeArea),
     modalScreen('NewAddressFormat', NewAddressFormatFragment, safeArea),
+    modalScreen('BounceableFormatAbout', BounceableFormatAboutFragment, safeArea),
 
     // Holders
     genericScreen('HoldersLanding', HoldersLandingFragment, safeArea, true, 0),
