@@ -29,6 +29,20 @@ import { useHoldersAccounts } from '../../engine/hooks';
 import { useHoldersAccountStatus } from '../../engine/hooks';
 import { KeyboardAvoidingView } from 'react-native';
 import { ScreenHeader } from '../../components/ScreenHeader';
+import { ATextInput } from '../../components/ATextInput';
+import { RoundButton } from '../../components/RoundButton';
+import { useToaster } from '../../components/toast/ToastProvider';
+import { Typography } from '../../components/styles';
+
+export function getHoldersUrl() {
+    const stored = storage.getString('holdersUrl');
+    if (!stored) return 'https://tonhub-stage.holders.io';
+    return stored;
+}
+
+function setHoldersUrl(url: string) {
+    storage.set('holdersUrl', url);
+}
 import { queryClient } from '../../engine/clients';
 
 export const DeveloperToolsFragment = fragment(() => {

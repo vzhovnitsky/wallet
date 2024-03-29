@@ -17,7 +17,7 @@ import { ToastDuration, useToaster } from '../../components/toast/ToastProvider'
 import { ScreenHeader } from "../../components/ScreenHeader";
 import { ItemGroup } from "../../components/ItemGroup";
 import { AboutIconButton } from "../../components/AboutIconButton";
-import { useAppState, useBounceableWalletFormat, useDontShowComments, useIsSpamWallet, useJettons, useNetwork, usePrice, useSelectedAccount, useSpamMinAmount, useTheme } from "../../engine/hooks";
+import { useAppState, useBounceableWalletFormat, useDontShowComments, useJettons, useNetwork, usePrice, useSelectedAccount, useServerConfig, useSpamMinAmount, useTheme, useWalletsSettings } from "../../engine/hooks";
 import { useRoute } from "@react-navigation/native";
 import { TransactionDescription } from "../../engine/types";
 import { BigMath } from "../../utils/BigMath";
@@ -358,42 +358,46 @@ const TransactionPreview = () => {
                             {t('tx.failed')}
                         </PerfText>
                     ) : (
-                        <>
-                            <Text
-                                minimumFontScale={0.4}
-                                adjustsFontSizeToFit={true}
-                                numberOfLines={1}
-                                style={[
-                                    {
-                                        color: kind === 'in'
-                                            ? spam
-                                                ? theme.textPrimary
-                                                : theme.accentGreen
-                                            : theme.textPrimary,
-                                        marginTop: 12,
-                                    },
-                                    Typography.semiBold27_32
-                                ]}
-                            >
-                                {`${stringText[0]}${stringText[1]}${item.kind === 'ton' ? ' TON' : jetton?.symbol}`}
-                            </Text>
-                            {item.kind === 'ton' && (
-                                <PriceComponent
-                                    style={{
-                                        backgroundColor: theme.transparent,
-                                        paddingHorizontal: 0,
-                                        alignSelf: 'center',
-                                        paddingVertical: 0,
-                                        height: 'auto',
-                                        paddingLeft: 0
-                                    }}
-                                    theme={theme}
-                                    prefix={kind === 'in' ? '+' : ''}
-                                    textStyle={[{ color: theme.textSecondary }, Typography.regular17_24]}
-                                    amount={BigInt(item.amount)}
-                                />
-                            )}
-                        </>
+                        tx.outMessagesCount > 1 ? (null) : (
+                            <>
+                                <View style={{ marginTop: 12, flexDirection: 'row', alignItems: 'center' }}>
+                                    <Text
+                                        minimumFontScale={0.4}
+                                        adjustsFontSizeToFit={true}
+                                        numberOfLines={1}
+                                        style={[{ color: amountColor }, Typography.semiBold27_32]}
+                                    >
+                                        {
+                                            `${amountText[0]}${amountText[1]}${item.kind === 'ton'
+                                                ? ' TON'
+                                                : (jetton?.symbol ? ' ' + jetton?.symbol : '')}`
+                                            + (isSCAMJetton ? ' • ' : '')
+                                        }
+                                    </Text>
+                                    {isSCAMJetton && (
+                                        <Text style={[{ color: theme.accentRed }, Typography.semiBold27_32]}>
+                                            {'SCAM'}
+                                        </Text>
+                                    )}
+                                </View>
+                                {item.kind === 'ton' && (
+                                    <PriceComponent
+                                        style={{
+                                            backgroundColor: theme.transparent,
+                                            paddingHorizontal: 0,
+                                            alignSelf: 'center',
+                                            paddingVertical: 0,
+                                            height: 'auto',
+                                            paddingLeft: 0
+                                        }}
+                                        theme={theme}
+                                        prefix={kind === 'in' ? '+' : ''}
+                                        textStyle={[{ color: theme.textSecondary }, Typography.regular17_24]}
+                                        amount={BigInt(item.amount)}
+                                    />
+                                )}
+                            </>
+                        )
                     )}
                 </PerfView>
                 {tx.outMessagesCount > 1 ? (

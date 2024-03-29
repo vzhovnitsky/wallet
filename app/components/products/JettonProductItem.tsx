@@ -1,4 +1,5 @@
 import * as React from 'react';
+import { KnownJettonMasters, KnownJettonTickers } from '../../secure/KnownWallets';
 import { useTypedNavigation } from '../../utils/useTypedNavigation';
 import { View, Pressable, Text } from 'react-native';
 import { ValueComponent } from '../ValueComponent';
@@ -12,7 +13,6 @@ import { PerfText } from '../basic/PerfText';
 import { useJettonSwap } from '../../engine/hooks/jettons/useJettonSwap';
 import { PriceComponent } from '../PriceComponent';
 import { fromNano, toNano } from '@ton/core';
-import { t } from '../../i18n/t';
 import { JettonIcon } from './JettonIcon';
 import { Typography } from '../styles';
 
@@ -36,6 +36,9 @@ export const JettonProductItem = memo((props: {
         ? Number(fromNano(swap)) * balanceNum
         : null;
     const swipableRef = useRef<Swipeable>(null);
+
+    const isKnown = !!KnownJettonMasters(isTestnet)[props.jetton.master.toString({ testOnly: isTestnet })];
+    const isSCAM = !isKnown && KnownJettonTickers.includes(props.jetton.symbol);
 
     const { onPressIn, onPressOut, animatedStyle } = useAnimatedPressedInOut();
 
@@ -142,6 +145,7 @@ export const JettonProductItem = memo((props: {
                                 theme={theme}
                                 isTestnet={isTestnet}
                                 backgroundColor={theme.surfaceOnElevation}
+                                isSCAM={isSCAM}
                             />
                             <View style={{ marginLeft: 12, flex: 1 }}>
                                 <PerfText
@@ -156,6 +160,15 @@ export const JettonProductItem = memo((props: {
                                     style={[{ color: theme.textSecondary }, Typography.regular15_20]}
                                 >
                                     <PerfText style={{ flexShrink: 1 }}>
+                                        {isSCAM && (
+                                            <>
+                                                <PerfText style={{ color: theme.accentRed }}>
+                                                    {'SCAM'}
+                                                </PerfText>
+                                                {props.jetton.description ? ' • ' : ''}
+                                            </>
+                                        )}
+                                        {props.jetton.description}
                                         {description}
                                     </PerfText>
                                 </PerfText>
@@ -197,11 +210,16 @@ export const JettonProductItem = memo((props: {
                         </View>
                     </TouchableHighlight>
                 </Swipeable>
-                {
-                    !props.last && !props.card && (
-                        <View style={{ backgroundColor: theme.divider, height: 1, position: 'absolute', bottom: 0, left: 36, right: 36 }} />
-                    )
-                }
+                {!props.last && !props.card && (
+                    <View
+                        style={{
+                            backgroundColor: theme.divider,
+                            height: 1,
+                            position: 'absolute',
+                            bottom: 0, left: 36, right: 36
+                        }}
+                    />
+                )}
             </Animated.View >
         ) : (
             <Pressable

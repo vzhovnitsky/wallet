@@ -15,9 +15,10 @@ import { Jetton } from "../../engine/types";
 import { StatusBar } from "expo-status-bar";
 import { Platform } from "react-native";
 import { AssetsListItem } from "../../components/jettons/AssetsListItem";
+import { JettonIcon } from "../../components/products/JettonIcon";
+import { KnownJettonMasters, KnownJettonTickers } from "../../secure/KnownWallets";
 
 import TonIcon from '@assets/ic-ton-acc.svg';
-import { JettonIcon } from "../../components/products/JettonIcon";
 
 export const AssetsFragment = fragment(() => {
     const safeArea = useSafeAreaInsets();
@@ -159,11 +160,14 @@ export const AssetsFragment = fragment(() => {
                     />
                     {(isLedgerScreen ? ledgerJettons : visibleList).map((j) => {
                         const selected = !!selectedJetton && j.master.equals(selectedJetton);
+                        const verified = KnownJettonMasters(network.isTestnet)[j.master.toString()];
+                        const isSCAM = !verified && KnownJettonTickers.includes(j.symbol);
                         return (
                             <AssetsListItem
                                 key={'jt' + j.wallet.toString()}
                                 jetton={j}
                                 onSelect={() => onSelected(j)}
+                                theme={theme}
                                 icon={
                                     <JettonIcon
                                         size={46}
@@ -171,6 +175,7 @@ export const AssetsFragment = fragment(() => {
                                         theme={theme}
                                         isTestnet={network.isTestnet}
                                         backgroundColor={theme.elevation}
+                                        isSCAM={isSCAM}
                                     />
                                 }
                                 hideSelection={!callback}

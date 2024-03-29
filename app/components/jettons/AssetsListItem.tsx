@@ -16,12 +16,14 @@ export const AssetsListItem = memo(({
     theme,
     selected,
     hideSelection,
+    icon
 }: {
     jetton: Jetton,
     onSelect: (j: Jetton) => void,
     theme: ThemeType,
     selected?: boolean,
     hideSelection?: boolean,
+    icon?: React.ReactNode
 }) => {
     const { isTestnet } = useNetwork();
     const verified = KnownJettonMasters(isTestnet)[jetton.master.toString()];
@@ -42,39 +44,41 @@ export const AssetsListItem = memo(({
                 onPress={() => onSelect(jetton)}
             >
                 <View style={{ height: 46, width: 46, justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
-                    <View style={{ width: 46, height: 46 }}>
-                        <WImage
-                            src={jetton.icon ? jetton.icon : undefined}
-                            width={46}
-                            heigh={46}
-                            borderRadius={23}
-                        />
-                        {verified ? (
-                            <View style={{
-                                justifyContent: 'center', alignItems: 'center',
-                                height: 20, width: 20, borderRadius: 10,
-                                position: 'absolute', right: -2, bottom: -2,
-                                backgroundColor: theme.surfaceOnBg
-                            }}>
-                                <Image
-                                    source={require('@assets/ic-verified.png')}
-                                    style={{ height: 20, width: 20 }}
-                                />
-                            </View>
-                        ) : (isSCAM && (
-                            <View style={{
-                                justifyContent: 'center', alignItems: 'center',
-                                height: 20, width: 20, borderRadius: 10,
-                                position: 'absolute', right: -2, bottom: -2,
-                                backgroundColor: theme.surfaceOnBg
-                            }}>
-                                <Image
-                                    source={require('@assets/ic-jetton-scam.png')}
-                                    style={{ height: 20, width: 20 }}
-                                />
-                            </View>
-                        ))}
-                    </View>
+                    {!!icon ? (icon) : (
+                        <View style={{ width: 46, height: 46 }}>
+                            <WImage
+                                src={jetton.icon ? jetton.icon : undefined}
+                                width={46}
+                                heigh={46}
+                                borderRadius={23}
+                            />
+                            {verified ? (
+                                <View style={{
+                                    justifyContent: 'center', alignItems: 'center',
+                                    height: 20, width: 20, borderRadius: 10,
+                                    position: 'absolute', right: -2, bottom: -2,
+                                    backgroundColor: theme.surfaceOnBg
+                                }}>
+                                    <Image
+                                        source={require('@assets/ic-verified.png')}
+                                        style={{ height: 20, width: 20 }}
+                                    />
+                                </View>
+                            ) : (isSCAM && (
+                                <View style={{
+                                    justifyContent: 'center', alignItems: 'center',
+                                    height: 20, width: 20, borderRadius: 10,
+                                    position: 'absolute', right: -2, bottom: -2,
+                                    backgroundColor: theme.surfaceOnBg
+                                }}>
+                                    <Image
+                                        source={require('@assets/ic-jetton-scam.png')}
+                                        style={{ height: 20, width: 20 }}
+                                    />
+                                </View>
+                            ))}
+                        </View>
+                    )}
                 </View>
                 <View style={{ justifyContent: 'center', flexGrow: 1, flex: 1 }}>
                     <Text style={[{ flexShrink: 1, color: theme.textPrimary, marginBottom: 2 }, Typography.semiBold17_24]}>

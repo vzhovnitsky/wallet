@@ -8,7 +8,7 @@ import { TypedNavigation } from '../../../utils/useTypedNavigation';
 import { PriceComponent } from '../../../components/PriceComponent';
 import { Address } from '@ton/core';
 import { Jetton, TransactionDescription } from '../../../engine/types';
-import { useMemo } from 'react';
+import { memo, useMemo } from 'react';
 import { ThemeType } from '../../../engine/state/theme';
 import { AddressContact } from '../../../engine/hooks/contacts/useAddressBook';
 import { formatTime } from '../../../utils/dates';
@@ -97,7 +97,8 @@ export function TransactionView(props: {
     isTestnet: boolean,
     spamWallets: string[],
     appState?: AppState,
-    jettons: Jetton[]
+    walletsSettings: { [key: string]: WalletSettings },
+    jettons: Jetton[],
     bounceableFormat: boolean
 }) {
     const {
@@ -120,7 +121,7 @@ export function TransactionView(props: {
     const parsedAddressFriendly = parsedAddress.toString({ testOnly: isTestnet });
     const isOwn = (props.appState?.addresses ?? []).findIndex((a) => a.address.equals(Address.parse(opAddress))) >= 0;
 
-    const [walletSettings,] = useWalletSettings(parsedAddressFriendly);
+    const walletSettings = props.walletsSettings[parsedAddressFriendly];
     const jetton = props.jettons.find((j) =>
         !!tx.metadata?.jettonWallet?.master
         && j.master.equals(tx.metadata?.jettonWallet?.master)
@@ -334,16 +335,27 @@ export function TransactionView(props: {
                             style={[{ color: amountColor, marginRight: 2 }, Typography.semiBold17_24]}
                             numberOfLines={1}
                         >
-                            {kind === 'in' ? '+' : '-'}
-                            <ValueComponent
-                                value={absAmount}
-                                decimals={item.kind === 'token' ? tx.masterMetadata?.decimals : undefined}
-                                precision={3}
-                                centFontStyle={{ fontSize: 15 }}
-                            />
-                            <Text style={{ fontSize: 15 }}>
-                                {item.kind === 'token' ? `${jetton?.symbol}` : ' TON'}
-                            </Text>
+                            {tx.outMessagesCount > 1 ? (
+                                `${tx.outMessagesCount} ${t('common.messages').toLowerCase()}`
+                            ) : (
+                                <>
+                                    {kind === 'in' ? '+' : '-'}
+                                    <ValueComponent
+                                        value={absAmount}
+                                        decimals={item.kind === 'token' ? tx.masterMetadata?.decimals : undefined}
+                                        precision={3}
+                                        centFontStyle={{ fontSize: 15 }}
+                                    />
+                                    <Text style={{ fontSize: 15 }}>
+                                        {item.kind === 'token' ? `${jetton?.symbol ?? ''}` : ' TON'}
+                                    </Text>
+                                    {isSCAMJetton && (
+                                        <Text style={{ color: theme.accentRed }}>
+                                            {'SCAM'}
+                                        </Text>
+                                    )}
+                                </>
+                            )}
                         </Text>
                     )}
                     {item.kind !== 'token' && tx.outMessagesCount <= 1 && (

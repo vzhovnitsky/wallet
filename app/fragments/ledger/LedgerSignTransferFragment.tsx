@@ -265,7 +265,6 @@ const LedgerTransferLoaded = memo((props: ConfirmLoadedProps & ({ setTransferSta
                 contentContainerStyle={{ paddingBottom: 56 }}
             >
                 <TransferSingleView
-                    metadata={metadata}
                     operation={operation}
                     order={order}
                     amount={order.amountAll ? (account?.balance ?? 0n) : order.amount}

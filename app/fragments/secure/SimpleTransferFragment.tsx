@@ -181,6 +181,22 @@ export const SimpleTransferFragment = fragment(() => {
         );
     }, [price, currency, estimation]);
 
+    const isVerified = useMemo(() => {
+        if (!jettonState || !jettonState.wallet.master) {
+            return true;
+        }
+        return !!KnownJettonMasters(network.isTestnet)[jettonState.wallet.master];
+    }, [jettonState]);
+
+    const isSCAM = useMemo(() => {
+        const ticker = jettonState?.master?.symbol;
+        if (!ticker) {
+            return false;
+        }
+
+        return !isVerified && KnownJettonTickers.includes(ticker);
+    }, [jettonState, isVerified]);
+
     const balance = useMemo(() => {
         let value: bigint;
         if (jettonState) {
@@ -867,6 +883,7 @@ export const SimpleTransferFragment = fragment(() => {
                                                     size={46}
                                                     jetton={jettonState.master}
                                                     backgroundColor={theme.elevation}
+                                                    isSCAM={isSCAM}
                                                 />
                                             ) : (
                                                 <IcTonIcon width={46} height={46} />
