@@ -17,6 +17,7 @@ import { Platform } from "react-native";
 import { AssetsListItem } from "../../components/jettons/AssetsListItem";
 
 import TonIcon from '@assets/ic-ton-acc.svg';
+import { JettonIcon } from "../../components/products/JettonIcon";
 
 export const AssetsFragment = fragment(() => {
     const safeArea = useSafeAreaInsets();
@@ -163,7 +164,15 @@ export const AssetsFragment = fragment(() => {
                                 key={'jt' + j.wallet.toString()}
                                 jetton={j}
                                 onSelect={() => onSelected(j)}
-                                theme={theme}
+                                icon={
+                                    <JettonIcon
+                                        size={46}
+                                        jetton={j}
+                                        theme={theme}
+                                        isTestnet={network.isTestnet}
+                                        backgroundColor={theme.elevation}
+                                    />
+                                }
                                 hideSelection={!callback}
                                 selected={selected}
                             />
