@@ -17,11 +17,7 @@ import { ToastDuration, useToaster } from '../../components/toast/ToastProvider'
 import { ScreenHeader } from "../../components/ScreenHeader";
 import { ItemGroup } from "../../components/ItemGroup";
 import { AboutIconButton } from "../../components/AboutIconButton";
-<<<<<<< HEAD
-import { useAppState, useBounceableWalletFormat, useDontShowComments, useNetwork, usePrice, useSelectedAccount, useServerConfig, useSpamMinAmount, useTheme, useWalletsSettings } from "../../engine/hooks";
-=======
 import { useAppState, useBounceableWalletFormat, useDontShowComments, useIsSpamWallet, useJettons, useNetwork, usePrice, useSelectedAccount, useSpamMinAmount, useTheme } from "../../engine/hooks";
->>>>>>> fix/hub-940
 import { useRoute } from "@react-navigation/native";
 import { TransactionDescription } from "../../engine/types";
 import { BigMath } from "../../utils/BigMath";

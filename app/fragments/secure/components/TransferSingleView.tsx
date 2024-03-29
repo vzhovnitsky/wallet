@@ -152,19 +152,6 @@ export const TransferSingleView = memo(({
         return `-${textArr.join('')} ${!jettonAmountString ? 'TON' : jetton?.symbol ?? ''}`
     }, [amount, jettonAmountString, jetton]);
 
-    const isSCAMJetton = useMemo(() => {
-        const masterAddress = metadata?.jettonWallet?.master;
-
-        if (!masterAddress || !jettonMaster?.symbol) {
-            return false;
-        }
-
-        const isKnown = !!KnownJettonMasters(isTestnet)[masterAddress.toString({ testOnly: isTestnet })];
-        const isSCAM = !isKnown && KnownJettonTickers.includes(jettonMaster.symbol);
-
-        return isSCAM;
-    }, [isTestnet, metadata, jettonMaster]);
-
     return (
         <View style={{ flexGrow: 1 }}>
             <ScrollView
