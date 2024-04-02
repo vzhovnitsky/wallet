@@ -226,7 +226,6 @@ export const StakingProductComponent = memo(({ isLedger }: { isLedger?: boolean 
                                                 height: undefined
                                             }}
                                             textStyle={[{ color: theme.textSecondary }, Typography.regular15_20]}
-                                            currencyCode={'EUR'}
                                             theme={theme}
                                         />
                                     </View>
