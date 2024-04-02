@@ -531,7 +531,7 @@ export const SimpleTransferFragment = fragment(() => {
                 });
             }
         }
-    }, [commentString, target, validAmount, stateInit, jetton]);
+    }, [commentString, target, validAmount, stateInit, selectedJetton]);
 
     const onAddAll = useCallback(() => {
         const amount = jettonState
