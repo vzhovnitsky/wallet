@@ -172,6 +172,7 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
             addressIsNotActive: 'This wallet has no history',
             addressIsNotActiveDescription: 'This means that no transactions have been made from this wallet address',
             invalidTransaction: 'Invalid transaction',
+            memoRequired: 'Memo or rag is required in message'
         },
         sendAll: 'Max',
         scanQR: 'scan qr code',
@@ -183,7 +184,7 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         purpose: 'Purpose of transaction',
         comment: 'Message (optional)',
         commentDescription: 'Message will be visible to everyone on the blockchain',
-        commentRequired: 'Check your message before sending',
+        commentRequired: 'Check your memo/tag before sending',
         commentLabel: 'Message',
         checkComment: 'Check before sending',
         confirmTitle: 'Confirm transaction',
