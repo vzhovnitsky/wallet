@@ -6,6 +6,7 @@ import { useTheme } from "../../engine/hooks";
 import { Typography } from "../styles";
 import { AccountLite } from '../../engine/hooks/accounts/useAccountLite';
 import { useTypedNavigation } from '../../utils/useTypedNavigation';
+import { StakingProductComponent } from "./StakingProductComponent";
 import { TonProductComponent } from "./TonProductComponent";
 import { USDTProduct } from "./USDTProduct";
 import { Address } from "@ton/core";
@@ -15,15 +16,9 @@ export const LedgerProductsComponent = React.memo(({ account, testOnly }: { acco
     const navigation = useTypedNavigation();
 
     return (
-        <View style={{
-            backgroundColor: theme.backgroundPrimary,
-        }}>
+        <View>
             <View style={{
-                flexDirection: 'row',
-                justifyContent: 'space-between', alignItems: 'center',
-                marginTop: 16,
-                paddingVertical: 12,
-                paddingHorizontal: 16
+                backgroundColor: theme.backgroundPrimary,
             }}>
                 <View style={{
                     flexDirection: 'row',
@@ -54,18 +49,15 @@ export const LedgerProductsComponent = React.memo(({ account, testOnly }: { acco
                     testOnly={testOnly}
                 />
 
+                <View style={{ marginTop: 4 }}>
+                    <StakingProductComponent isLedger key={'pool'} />
+                </View>
+
                 <View style={{ paddingHorizontal: 16 }}>
-
-            <View style={{ paddingHorizontal: 16 }}>
-                {tonItem}
-            </View>
-
-            <View style={{ marginTop: 4 }}>
-                <StakingProductComponent isLedger key={'pool'} />
-            </View>
-
-            <View style={{ marginTop: 16, paddingHorizontal: 16 }}>
-                <LedgerJettonsProductComponent key={'jettons'} />
+                    <View style={{ marginTop: 16 }}>
+                        <LedgerJettonsProductComponent key={'jettons'} />
+                    </View>
+                </View>
             </View>
         </View>
     );
