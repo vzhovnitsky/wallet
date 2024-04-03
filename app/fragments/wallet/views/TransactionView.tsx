@@ -351,7 +351,7 @@ export function TransactionView(props: {
                                     </Text>
                                     {isSCAMJetton && (
                                         <Text style={{ color: theme.accentRed }}>
-                                            {'SCAM'}
+                                            {' SCAM'}
                                         </Text>
                                     )}
                                 </>
