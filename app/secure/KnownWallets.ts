@@ -654,51 +654,11 @@ export const KnownJettonMasters: (isTestnet: boolean) => { [key: string]: any } 
             'EQCBdxpECfEPH2wUxi1a6QiOkSf-5qDjUWqLCUuKtD-GLINT': {}, // GLINT
             'EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH5ORmG_O': {}, // GRAM
         }
-        : {};
+        : {
+            'kQAZym3GBvem-frRGy1gUIaO-IBb5ByJPrm8aXtN7a_6PK4w': {} // USDT (j1INCH)
+        };
 }
 
-export const KnownJettonTickers = [
-    // Other chains
-    'BTC',
-    'ETH',
-    'USDT',
-    'USDC',
-    'BNB',
-    'SOL',
-    'XPR',
-    'ADA',
-    'AVAX',
-    'DOGE',
-    'DOT',
-    'TRX',
-    'LINK',
-    'MATIC',
-    'DAI',
-    'SHIB',
-    'LTC',
-    'EURt',
-    'EURc',
-    'TRX',
-    
-    // TON main
-    'TON',
-    'AMBR',
-    'wsTON',
-    'jUSDT',
-    'jUSDC',
-    'jDAI',
-    'jWBTC',
-    
-    // TON others
-    'TNX',
-    'DHD',
-    'FNZ',
-    'KINGY',
-    'SCALE',
-    'MARGA',
-    'JETTON',
-    'BOLT',
-    'LIFEYT',
-    'GLINT',
-    'GRAM',
-]
+export const USDTMaster: (isTestnet: boolean) => string | null = (isTestnet: boolean) => {
+    return isTestnet? 'kQAZym3GBvem-frRGy1gUIaO-IBb5ByJPrm8aXtN7a_6PK4w' : null
+}
