@@ -335,19 +335,18 @@ export function TransactionView(props: {
                             style={[{ color: amountColor, marginRight: 2 }, Typography.semiBold17_24]}
                             numberOfLines={1}
                         >
-                            {tx.outMessagesCount > 1 ? (
-                                `${tx.outMessagesCount} ${t('common.messages').toLowerCase()}`
-                            ) : (
-                                <>
-                                    {kind === 'in' ? '+' : '-'}
-                                    <ValueComponent
-                                        value={absAmount}
-                                        decimals={item.kind === 'token' ? tx.masterMetadata?.decimals : undefined}
-                                        precision={3}
-                                        centFontStyle={{ fontSize: 15 }}
-                                    />
-                                    <Text style={{ fontSize: 15 }}>
-                                        {item.kind === 'token' ? `${jetton?.symbol ?? ''}` : ' TON'}
+                            {kind === 'in' ? '+' : '-'}
+                            <ValueComponent
+                                value={absAmount}
+                                decimals={item.kind === 'token' ? tx.masterMetadata?.decimals : undefined}
+                                precision={3}
+                                centFontStyle={{ fontSize: 15 }}
+                            />
+                            <Text style={{ fontSize: 15 }}>
+                                {symbolText}
+                                {isSCAMJetton && (
+                                    <Text style={{ color: theme.accentRed }}>
+                                        {' SCAM'}
                                     </Text>
                                     {isSCAMJetton && (
                                         <Text style={{ color: theme.accentRed }}>
