@@ -348,13 +348,9 @@ export function TransactionView(props: {
                                     <Text style={{ color: theme.accentRed }}>
                                         {' SCAM'}
                                     </Text>
-                                    {isSCAMJetton && (
-                                        <Text style={{ color: theme.accentRed }}>
-                                            {' SCAM'}
-                                        </Text>
-                                    )}
-                                </>
-                            )}
+                                )}
+
+                            </Text>
                         </Text>
                     )}
                     {item.kind !== 'token' && tx.outMessagesCount <= 1 && (
