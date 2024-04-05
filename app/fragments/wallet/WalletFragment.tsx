@@ -24,6 +24,8 @@ import { useFocusEffect } from '@react-navigation/native';
 import { useBottomTabBarHeight } from '@react-navigation/bottom-tabs';
 import { BlurView } from 'expo-blur';
 import { Typography } from '../../components/styles';
+import { LiquidStakingFragment } from '../staking/LiquidStakingFragment';
+import { useUSDT } from '../../engine/hooks/jettons/useUSDT';
 import { WalletActions } from './views/WalletActions';
 
 function WalletComponent(props: { wallet: AccountLite | null, selectedAcc: SelectedAccount }) {
