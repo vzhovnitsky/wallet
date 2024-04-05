@@ -89,6 +89,7 @@ import { NewAddressFormatFragment } from './fragments/NewAddressFormatFragment';
 import { LiquidWithdrawActionFragment } from './fragments/staking/LiquidWithdrawActionFragment';
 import { LiquidStakingTransferFragment } from './fragments/staking/LiquidStakingTransferFragment';
 import { BounceableFormatAboutFragment } from './fragments/utils/BounceableFormatAboutFragment';
+import { SwapFragment } from './fragments/integrations/SwapFragment';
 
 const Stack = createNativeStackNavigator();
 Stack.Navigator.displayName = 'MainStack';
@@ -212,6 +213,7 @@ const navigation = (safeArea: EdgeInsets) => [
     lockedModalScreen('Buy', NeocryptoFragment, safeArea),
     modalScreen('Assets', AssetsFragment, safeArea),
     transparentModalScreen('Products', ProductsFragment, safeArea),
+    modalScreen('Swap', SwapFragment, safeArea),
 
     // dApps
     modalScreen('TonConnectAuthenticate', TonConnectAuthenticateFragment, safeArea),
