@@ -134,7 +134,9 @@ export function useLinkNavigator(isTestnet: boolean) {
                                 metadata: parsedMetadata,
                                 verified: null,
                                 op: null,
-                                title: null
+                                title: null,
+                                outMessages: base.outMessages,
+                                outMessagesCount: base.outMessagesCount
                             };
                         }
                     }
