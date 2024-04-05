@@ -1,5 +1,5 @@
 import React, { useCallback, useMemo, useState } from "react";
-import { ActivityIndicator, Linking, View, Text, Platform, Share, Pressable } from "react-native";
+import { ActivityIndicator, Linking, View, Platform, Share, Pressable } from "react-native";
 import { fragment } from "../../fragment";
 import { useParams } from "../../utils/useParams";
 import { StatusBar, setStatusBarStyle } from "expo-status-bar";
