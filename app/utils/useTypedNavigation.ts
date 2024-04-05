@@ -10,8 +10,7 @@ import { BarCodeScanner } from 'expo-barcode-scanner';
 import { HoldersAppParams } from '../fragments/holders/HoldersAppFragment';
 import { useMemo } from 'react';
 import { DAppWebViewFragmentParams } from '../fragments/utils/DAppWebViewFragment';
-import { LiquidStakingTransferParams } from '../fragments/staking/LiquidStakingTransferFragment';
-import { StakingFragmentParams } from '../fragments/staking/StakingFragment';
+import { HomeFragmentProps } from '../fragments/HomeFragment';
 
 type Base = NavigationProp<ParamListBase>;
 
@@ -181,6 +180,10 @@ export class TypedNavigation {
 
     navigateDAppWebView(params: DAppWebViewFragmentParams) {
         this.navigate('DAppWebView', params);
+    }
+
+    navigateAndReplaceHome(params?: HomeFragmentProps) {
+        this.navigateAndReplaceAll('Home', params);
     }
 }
 
