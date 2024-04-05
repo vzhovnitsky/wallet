@@ -10,3 +10,4 @@ export { useStakingActive } from './useStakingActive';
 export { useLiquidStakingMember } from './useLiquidStakingMember';
 export { usePoolApy } from './usePoolApy';
 export { useStakingStatus } from './useStakingStatus';
+export { useLiquidStakingBalance } from './useLiquidStakingBalance';
