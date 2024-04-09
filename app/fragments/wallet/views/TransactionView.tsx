@@ -2,13 +2,13 @@ import * as React from 'react';
 import { Pressable, Text } from 'react-native';
 import { ValueComponent } from '../../../components/ValueComponent';
 import { AddressComponent } from '../../../components/address/AddressComponent';
+import { KnownJettonMasters, KnownJettonTickers, KnownWallet, KnownWallets } from '../../../secure/KnownWallets';
 import { avatarColors } from '../../../components/avatar/Avatar';
-import { KnownWallet, KnownWallets } from '../../../secure/KnownWallets';
 import { t } from '../../../i18n/t';
 import { TypedNavigation } from '../../../utils/useTypedNavigation';
 import { PriceComponent } from '../../../components/PriceComponent';
 import { Address } from '@ton/core';
-import { TransactionDescription } from '../../../engine/types';
+import { Jetton, TransactionDescription } from '../../../engine/types';
 import { useMemo } from 'react';
 import { ThemeType } from '../../../engine/state/theme';
 import { AddressContact } from '../../../engine/hooks/contacts/useAddressBook';
@@ -129,6 +129,26 @@ export function TransactionView(props: {
             && !isTestnet
         ) && kind !== 'out';
 
+    const amountColor = (kind === 'in')
+        ? (spam ? theme.textPrimary : theme.accentGreen)
+        : theme.textPrimary;
+
+    const isSCAMJetton = useMemo(() => {
+        const masterAddress = tx.metadata?.jettonWallet?.master;
+
+        if (!masterAddress || !tx.masterMetadata?.symbol || item.kind !== 'token') {
+            return false;
+        }
+
+        const isKnown = !!KnownJettonMasters(isTestnet)[masterAddress.toString({ testOnly: isTestnet })];
+        const isSCAM = !isKnown && KnownJettonTickers.includes(tx.masterMetadata?.symbol);
+
+        return isSCAM;
+    }, [isTestnet, tx]);
+
+    const symbolText = `${(item.kind === 'token')
+        ? `${tx.masterMetadata?.symbol ? ` ${tx.masterMetadata?.symbol}` : ''}`
+        : ' TON'}${isSCAMJetton ? ' • ' : ''}`;
 
     if (preparedMessages.length > 1) {
         return (
