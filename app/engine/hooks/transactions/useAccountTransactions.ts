@@ -6,7 +6,7 @@ import { useJettonContents } from '../jettons/useJettonContents';
 import { StoredContractMetadata } from '../../metadata/StoredMetadata';
 import { useMemo } from 'react';
 import { TransactionDescription } from '../../types';
-import { useNetwork } from '..';
+import { useNetwork } from '../network';
 
 export function getJettonMasterAddressFromMetadata(metadata: StoredContractMetadata | null) {
     if (metadata?.jettonMaster) {
