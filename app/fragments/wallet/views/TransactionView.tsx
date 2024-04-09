@@ -2,13 +2,14 @@ import * as React from 'react';
 import { Pressable, Text } from 'react-native';
 import { ValueComponent } from '../../../components/ValueComponent';
 import { AddressComponent } from '../../../components/address/AddressComponent';
-import { KnownJettonMasters, KnownJettonTickers, KnownWallet, KnownWallets } from '../../../secure/KnownWallets';
+import { avatarColors } from '../../../components/avatar/Avatar';
+import { KnownWallet, KnownWallets } from '../../../secure/KnownWallets';
 import { t } from '../../../i18n/t';
 import { TypedNavigation } from '../../../utils/useTypedNavigation';
 import { PriceComponent } from '../../../components/PriceComponent';
 import { Address } from '@ton/core';
-import { Jetton, TransactionDescription } from '../../../engine/types';
-import { memo, useMemo } from 'react';
+import { TransactionDescription } from '../../../engine/types';
+import { useMemo } from 'react';
 import { ThemeType } from '../../../engine/state/theme';
 import { AddressContact } from '../../../engine/hooks/contacts/useAddressBook';
 import { formatTime } from '../../../utils/dates';
@@ -17,68 +18,11 @@ import { AppState } from '../../../storage/appState';
 import { PerfView } from '../../../components/basic/PerfView';
 import { Typography } from '../../../components/styles';
 import { avatarHash } from '../../../utils/avatarHash';
-import { getLiquidStakingAddress } from '../../../utils/KnownPools';
 import { WalletSettings } from '../../../engine/state/walletSettings';
-import { BatchAvatars } from '../../../components/avatar/BatchAvatars';
-import { Avatar, avatarColors } from '../../../components/avatar/Avatar';
-import { PendingTransactionAvatar } from '../../../components/avatar/PendingTransactionAvatar';
-
-const TxAvatar = memo((
-    {
-        status,
-        parsedAddressFriendly,
-        kind,
-        spam,
-        isOwn,
-        theme,
-        isTestnet,
-        walletSettings,
-        markContact,
-        avatarColor
-    }: {
-        status: "failed" | "pending" | "success",
-        parsedAddressFriendly: string,
-        kind: "in" | "out",
-        spam: boolean,
-        isOwn: boolean,
-        theme: ThemeType,
-        isTestnet: boolean,
-        walletSettings?: WalletSettings,
-        markContact?: boolean,
-        avatarColor: string
-    }
-) => {
-    if (status === "pending") {
-        return (
-            <PendingTransactionAvatar
-                kind={kind}
-                address={parsedAddressFriendly}
-                avatarId={parsedAddressFriendly}
-            />
-        );
-    }
-
-    return (
-        <Avatar
-            size={48}
-            address={parsedAddressFriendly}
-            id={parsedAddressFriendly}
-            borderWith={0}
-            spam={spam}
-            markContact={markContact}
-            icProps={{
-                isOwn,
-                backgroundColor: theme.backgroundPrimary,
-                size: 18,
-                borderWidth: 2
-            }}
-            theme={theme}
-            isTestnet={isTestnet}
-            backgroundColor={avatarColor}
-            hash={walletSettings?.avatar}
-        />
-    );
-});
+import { getLiquidStakingAddress } from '../../../utils/KnownPools';
+import { usePeparedMessages } from '../../../engine/hooks';
+import { TxAvatar } from './TxAvatar';
+import { PreparedMessageView } from './PreparedMessageView';
 
 export function TransactionView(props: {
     own: Address,
@@ -89,7 +33,6 @@ export function TransactionView(props: {
     onPress: (src: TransactionDescription) => void,
     onLongPress?: (src: TransactionDescription) => void,
     ledger?: boolean,
-    addToDenyList: (address: string | Address, reason: string) => void,
     spamMinAmount: bigint,
     dontShowComments: boolean,
     denyList: { [key: string]: { reason: string | null } },
@@ -120,6 +63,7 @@ export function TransactionView(props: {
     const parsedAddress = parsedOpAddr.address;
     const parsedAddressFriendly = parsedAddress.toString({ testOnly: isTestnet });
     const isOwn = (props.appState?.addresses ?? []).findIndex((a) => a.address.equals(Address.parse(opAddress))) >= 0;
+    const preparedMessages = usePeparedMessages(tx.outMessages, isTestnet);
 
     const walletSettings = props.walletsSettings[parsedAddressFriendly];
     const jetton = props.jettons.find((j) =>
@@ -185,26 +129,30 @@ export function TransactionView(props: {
             && !isTestnet
         ) && kind !== 'out';
 
-    const amountColor = (kind === 'in')
-        ? (spam ? theme.textPrimary : theme.accentGreen)
-        : theme.textPrimary;
 
-    const isSCAMJetton = useMemo(() => {
-        const masterAddress = tx.metadata?.jettonWallet?.master;
-
-        if (!masterAddress || !tx.masterMetadata?.symbol || item.kind !== 'token') {
-            return false;
-        }
-
-        const isKnown = !!KnownJettonMasters(isTestnet)[masterAddress.toString({ testOnly: isTestnet })];
-        const isSCAM = !isKnown && KnownJettonTickers.includes(tx.masterMetadata?.symbol);
-
-        return isSCAM;
-    }, [isTestnet, tx]);
-
-    const symbolText = `${(item.kind === 'token')
-        ? `${tx.masterMetadata?.symbol ? ` ${tx.masterMetadata?.symbol}` : ''}`
-        : ' TON'}${isSCAMJetton ? ' • ' : ''}`;
+    if (preparedMessages.length > 1) {
+        return (
+            <>
+                {preparedMessages.map((m, i) => (
+                    <PreparedMessageView
+                        own={props.own}
+                        message={m}
+                        separator={false}
+                        theme={theme}
+                        navigation={props.navigation}
+                        onPress={() => props.onPress(props.tx)}
+                        onLongPress={() => props.onLongPress?.(props.tx)}
+                        contacts={props.contacts}
+                        isTestnet={props.isTestnet}
+                        bounceableFormat={props.bounceableFormat}
+                        walletsSettings={props.walletsSettings}
+                        time={tx.base.time}
+                        status={parsed.status}
+                    />
+                ))}
+            </>
+        );
+    }
 
     return (
         <Pressable
@@ -229,40 +177,18 @@ export function TransactionView(props: {
                     borderWidth: 0, marginRight: 10,
                     justifyContent: 'center', alignItems: 'center'
                 }}>
-                    {tx.outMessagesCount > 1 ? (
-                        <BatchAvatars
-                            messages={tx.outMessages}
-                            size={46}
-                            icProps={{
-                                backgroundColor: theme.backgroundPrimary,
-                                size: 18,
-                                borderWidth: 2
-                            }}
-                            theme={theme}
-                            isTestnet={isTestnet}
-                            denyList={denyList}
-                            contacts={contacts}
-                            spamWallets={spamWallets}
-                            ownAccounts={props.appState?.addresses ?? []}
-                            walletsSettings={props.walletsSettings}
-                            backgroundColor={theme.surfaceOnBg}
-                            borderColor={theme.surfaceOnBg}
-                            borderWidth={0}
-                        />
-                    ) : (
-                        <TxAvatar
-                            status={parsed.status}
-                            parsedAddressFriendly={parsedAddressFriendly}
-                            kind={kind}
-                            spam={spam}
-                            isOwn={isOwn}
-                            theme={theme}
-                            isTestnet={isTestnet}
-                            walletSettings={walletSettings}
-                            markContact={!!contact}
-                            avatarColor={avatarColor}
-                        />
-                    )}
+                    <TxAvatar
+                        status={parsed.status}
+                        parsedAddressFriendly={parsedAddressFriendly}
+                        kind={kind}
+                        spam={spam}
+                        isOwn={isOwn}
+                        theme={theme}
+                        isTestnet={isTestnet}
+                        walletSettings={walletSettings}
+                        markContact={!!contact}
+                        avatarColor={avatarColor}
+                    />
                 </PerfView>
                 <PerfView style={{ flex: 1, marginRight: 4 }}>
                     <PerfView style={{ flexDirection: 'row', alignItems: 'center' }}>
