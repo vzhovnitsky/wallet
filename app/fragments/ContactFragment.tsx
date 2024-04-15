@@ -21,6 +21,7 @@ import { useBounceableWalletFormat, useNetwork, useTheme } from "../engine/hooks
 import { Address } from "@ton/core";
 import { StatusBar } from "expo-status-bar";
 import { useContractInfo } from "../engine/hooks/metadata/useContractInfo";
+import { KnownWallets } from "../secure/KnownWallets";
 import { useAddressBookContext } from "../engine/AddressBookContext";
 
 import CopyIcon from '@assets/ic-copy.svg';

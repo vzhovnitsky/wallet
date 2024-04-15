@@ -4,11 +4,11 @@ import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { Avatar } from "../Avatar";
 import { useAnimatedPressedInOut } from "../../utils/useAnimatedPressedInOut";
 import Animated from "react-native-reanimated";
-import { useBounceableWalletFormat, useTheme } from "../../engine/hooks";
 import { Address } from "@ton/core";
 import { AddressComponent } from "../address/AddressComponent";
 import { useContractInfo } from "../../engine/hooks/metadata/useContractInfo";
-import { KnownWallets } from "../../secure/KnownWallets";
+import { KnownWallet } from "../../secure/KnownWallets";
+import { useBounceableWalletFormat, useTheme } from "../../engine/hooks";
 import { useAddressBookContext } from "../../engine/AddressBookContext";
 
 export const ContactItemView = memo(({

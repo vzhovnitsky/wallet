@@ -12,6 +12,7 @@ import { useDontShowComments, useNetwork, useSpamMinAmount, useTheme } from "../
 import { Address, fromNano, toNano } from "@ton/core";
 import { confirmAlert } from "../utils/confirmAlert";
 import { StatusBar } from "expo-status-bar";
+import { KnownWallets } from "../secure/KnownWallets";
 import { useAddressBookContext } from "../engine/AddressBookContext";
 
 import IcSpamNonen from '@assets/ic-spam-none.svg';
