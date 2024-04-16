@@ -32,7 +32,6 @@ export const AddressSearchItemView = memo(({
     const contractInfo = useContractInfo(addressString);
     const a = global.performance.now();
     const known = knownWallets[addressString];
-    console.log('AdSIV hooks', global.performance.now() - a, 'ms');
 
     const settings = walletsSettings[addressString];
 
@@ -70,7 +69,7 @@ export const AddressSearchItemView = memo(({
                             borderWith={0}
                             markContact={item.type === 'contact'}
                             icProps={{
-                                isOwn: item.type === 'my-wallets',
+                                isOwn: item.type === 'own',
                                 backgroundColor: theme.elevation
                             }}
                             hash={settings?.avatar}
