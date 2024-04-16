@@ -6,7 +6,7 @@ import { avatarColors } from "../Avatar";
 import { AddressDomainInput } from "./AddressDomainInput";
 import { ATextInputRef } from "../ATextInput";
 import { KnownWallet } from "../../secure/KnownWallets";
-import { useAppState, useBounceableWalletFormat, useWalletSettings } from "../../engine/hooks";
+import { useAppState, useBounceableWalletFormat, useContact, useWalletSettings } from "../../engine/hooks";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { AddressSearch, AddressSearchItem } from "./AddressSearch";
 import { t } from "../../i18n/t";
@@ -17,8 +17,10 @@ import { AddressInputAvatar } from "./AddressInputAvatar";
 import { useDimensions } from "@react-native-community/hooks";
 import { useAddressBookContext } from "../../engine/AddressBookContext";
 import { TransactionDescription } from "../../engine/types";
+import { TypedNavigation } from "../../utils/useTypedNavigation";
 
 import IcChevron from '@assets/ic_chevron_forward.svg';
+import { AddressBookContext, useAddressBookContext } from "../../engine/AddressBookContext";
 
 type TransferAddressInputProps = {
     acc: Address,
@@ -38,6 +40,7 @@ type TransferAddressInputProps = {
     onSearchItemSelected?: (item: AddressSearchItem) => void,
     knownWallets: { [key: string]: KnownWallet },
     lastTwoTxs: TransactionDescription[],
+    navigation: TypedNavigation
 }
 
 export type AddressInputState = {
@@ -135,6 +138,8 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
     const addressBookContext = useAddressBookContext();
     const contact = addressBookContext.asContact(props.target);
     const query = props.input;
+    const addressBookContext = useAddressBookContext();
+    const contact = addressBookContext.asContact(props.target);
     const appState = useAppState();
     const theme = props.theme;
     const dimentions = useDimensions();
@@ -287,6 +292,9 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
                         screenWidth={screenWidth * 0.75}
                         bounceableFormat={bounceableFormat}
                         knownWallets={props.knownWallets}
+                        navigation={props.navigation}
+                        theme={theme}
+                        isTestnet={props.isTestnet}
                     />
                 </View>
                 {!props.validAddress && (props.target.length >= 48) && (
