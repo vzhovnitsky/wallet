@@ -6,7 +6,7 @@ import { avatarColors } from "../Avatar";
 import { AddressDomainInput } from "./AddressDomainInput";
 import { ATextInputRef } from "../ATextInput";
 import { KnownWallet } from "../../secure/KnownWallets";
-import { useAppState, useBounceableWalletFormat, useContact, useWalletSettings } from "../../engine/hooks";
+import { useAppState, useBounceableWalletFormat, useWalletSettings } from "../../engine/hooks";
 import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
 import { AddressSearch, AddressSearchItem } from "./AddressSearch";
 import { t } from "../../i18n/t";
@@ -20,7 +20,6 @@ import { TransactionDescription } from "../../engine/types";
 import { TypedNavigation } from "../../utils/useTypedNavigation";
 
 import IcChevron from '@assets/ic_chevron_forward.svg';
-import { AddressBookContext, useAddressBookContext } from "../../engine/AddressBookContext";
 
 type TransferAddressInputProps = {
     acc: Address,
@@ -138,8 +137,6 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
     const addressBookContext = useAddressBookContext();
     const contact = addressBookContext.asContact(props.target);
     const query = props.input;
-    const addressBookContext = useAddressBookContext();
-    const contact = addressBookContext.asContact(props.target);
     const appState = useAppState();
     const theme = props.theme;
     const dimentions = useDimensions();
