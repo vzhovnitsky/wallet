@@ -147,7 +147,7 @@ export function TransactionView(props: {
     }, [isTestnet, tx]);
 
     const symbolText = `${(item.kind === 'token')
-        ? `${tx.masterMetadata?.symbol ? ` ${tx.masterMetadata?.symbol}` : ''}`
+        ? `${jetton?.symbol ? ` ${jetton.symbol}` : ''}`
         : ' TON'}${isSCAMJetton ? ' • ' : ''}`;
 
     if (preparedMessages.length > 1) {
@@ -289,7 +289,12 @@ export function TransactionView(props: {
                                 centFontStyle={{ fontSize: 15 }}
                             />
                             <Text style={{ fontSize: 15 }}>
-                                {item.kind === 'token' ? `${jetton?.symbol ?? ''}` : ' TON'}
+                                {symbolText}
+                                {isSCAMJetton && (
+                                    <Text style={{ color: theme.accentRed }}>
+                                        {' SCAM'}
+                                    </Text>
+                                )}
                             </Text>
                         </Text>
                     )}
