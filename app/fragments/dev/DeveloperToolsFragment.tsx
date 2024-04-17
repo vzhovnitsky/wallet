@@ -29,21 +29,8 @@ import { useHoldersAccounts } from '../../engine/hooks';
 import { useHoldersAccountStatus } from '../../engine/hooks';
 import { KeyboardAvoidingView } from 'react-native';
 import { ScreenHeader } from '../../components/ScreenHeader';
-import { ATextInput } from '../../components/ATextInput';
-import { RoundButton } from '../../components/RoundButton';
-import { useToaster } from '../../components/toast/ToastProvider';
-import { Typography } from '../../components/styles';
-
-export function getHoldersUrl() {
-    const stored = storage.getString('holdersUrl');
-    if (!stored) return 'https://tonhub-stage.holders.io';
-    return stored;
-}
-
-function setHoldersUrl(url: string) {
-    storage.set('holdersUrl', url);
-}
-import { queryClient } from '../../engine/clients';
+import { getCountryCodes } from '../../utils/isNeocryptoAvailable';
+import { Item } from '../../components/Item';
 
 export const DeveloperToolsFragment = fragment(() => {
     const theme = useTheme();
@@ -53,7 +40,7 @@ export const DeveloperToolsFragment = fragment(() => {
     const navigation = useTypedNavigation();
     const safeArea = useSafeAreaInsets();
     const offlineApp = useOfflineApp();
-    const toaster = useToaster();
+    const countryCodes = getCountryCodes();
 
     const acc = useMemo(() => getCurrentAddress(), []);
 
@@ -186,8 +173,21 @@ export const DeveloperToolsFragment = fragment(() => {
                         <View style={{ marginHorizontal: 16, width: '100%' }}>
                             <ItemButton title={"Counter"} hint={counter.counter.toString()} onPress={() => setCounter((value) => value.counter++)} />
                         </View>
-                        <View style={{ marginHorizontal: 16, width: '100%' }}>
-                            <ItemButton title={t('devTools.switchNetwork')} onPress={switchNetwork} hint={isTestnet ? 'Testnet' : 'Mainnet'} />
+
+                        {!(
+                            Application.applicationId === 'com.tonhub.app.testnet' ||
+                            Application.applicationId === 'com.tonhub.app.debug.testnet' ||
+                            Application.applicationId === 'com.tonhub.wallet.testnet' ||
+                            Application.applicationId === 'com.tonhub.wallet.testnet.debug'
+                        ) && (
+                                <View style={{ marginHorizontal: 16, width: '100%' }}>
+                                    <ItemButton title={t('devTools.switchNetwork')} onPress={switchNetwork} hint={isTestnet ? 'Testnet' : 'Mainnet'} />
+                                </View>
+                            )}
+
+                        <View style={{ width: '100%', marginBottom: 16 }}>
+                            <Item title={"Store code"} hint={countryCodes.storeFrontCode ?? 'Not availible'} />
+                            <Item title={"Country code"} hint={countryCodes.countryCode} />
                         </View>
                     </View>
                     <View style={{
