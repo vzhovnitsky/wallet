@@ -17,7 +17,7 @@ import { ToastDuration, useToaster } from '../../components/toast/ToastProvider'
 import { ScreenHeader } from "../../components/ScreenHeader";
 import { ItemGroup } from "../../components/ItemGroup";
 import { AboutIconButton } from "../../components/AboutIconButton";
-import { useAppState, useBounceableWalletFormat, useDontShowComments, useJettons, useNetwork, usePeparedMessages, usePrice, useSelectedAccount, useServerConfig, useSpamMinAmount, useTheme, useWalletsSettings } from "../../engine/hooks";
+import { useAppState, useBounceableWalletFormat, useDontShowComments, useIsScamJetton, useIsSpamWallet, useNetwork, usePrice, useSelectedAccount, useSpamMinAmount, useTheme } from "../../engine/hooks";
 import { useRoute } from "@react-navigation/native";
 import { TransactionDescription } from "../../engine/types";
 import { BigMath } from "../../utils/BigMath";
@@ -217,18 +217,8 @@ const TransactionPreview = () => {
             : theme.accentGreen
         : theme.textPrimary
 
-    const isSCAMJetton = useMemo(() => {
-        const masterAddress = tx.metadata?.jettonWallet?.master;
-
-        if (!masterAddress || !jetton?.symbol) {
-            return false;
-        }
-
-        const isKnown = !!KnownJettonMasters(isTestnet)[masterAddress.toString({ testOnly: isTestnet })];
-        const isSCAM = !isKnown && KnownJettonTickers.includes(jetton.symbol);
-
-        return isSCAM;
-    }, [isTestnet, tx]);
+    const jettonMaster = tx.metadata?.jettonWallet?.master;
+    const isSCAMJetton = useIsScamJetton(jetton?.symbol, jettonMaster?.toString({ testOnly: isTestnet }));
 
     return (
         <PerfView
@@ -358,44 +348,24 @@ const TransactionPreview = () => {
                             {t('tx.failed')}
                         </PerfText>
                     ) : (
-                        tx.outMessagesCount > 1 ? (
-                            <PerfView style={{ justifyContent: 'center', alignItems: 'center' }}>
-                                {preparedMessages.map((message, index) => {
-                                    if (!message.amountString) {
-                                        return null;
+                        <>
+                            <View style={{ marginTop: 12, flexDirection: 'row', alignItems: 'center' }}>
+                                <Text
+                                    minimumFontScale={0.4}
+                                    adjustsFontSizeToFit={true}
+                                    numberOfLines={1}
+                                    style={[{ color: amountColor }, Typography.semiBold27_32]}
+                                >
+                                    {
+                                        `${amountText[0]}${amountText[1]}${item.kind === 'ton'
+                                            ? ' TON'
+                                            : (jetton?.symbol ? ' ' + jetton?.symbol : '')}`
                                     }
-
-                                    return (
-                                        <Text
-                                            key={`prep-amount-${index}`}
-                                            minimumFontScale={0.4}
-                                            adjustsFontSizeToFit={true}
-                                            numberOfLines={1}
-                                            style={[
-                                                { color: theme.textPrimary },
-                                                Typography.semiBold17_24
-                                            ]}
-                                        >
-                                            {message.amountString}
-                                        </Text>
-                                    );
-                                })}
-                            </PerfView>
-                        ) : (
-                            <>
-                                <View style={{ marginTop: 12, flexDirection: 'row', alignItems: 'center' }}>
-                                    <Text
-                                        minimumFontScale={0.4}
-                                        adjustsFontSizeToFit={true}
-                                        numberOfLines={1}
-                                        style={[{ color: amountColor }, Typography.semiBold27_32]}
-                                    >
-                                        {
-                                            `${amountText[0]}${amountText[1]}${item.kind === 'ton'
-                                                ? ' TON'
-                                                : (jetton?.symbol ? ' ' + jetton?.symbol : '')}`
-                                            + (isSCAMJetton ? ' • ' : '')
-                                        }
+                                    {isSCAMJetton && (' • ')}
+                                </Text>
+                                {isSCAMJetton && (
+                                    <Text style={[{ color: theme.accentRed }, Typography.semiBold27_32]}>
+                                        {'SCAM'}
                                     </Text>
                                     {isSCAMJetton && (
                                         <Text style={[{ color: theme.accentRed }, Typography.semiBold27_32]}>

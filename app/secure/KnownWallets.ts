@@ -660,20 +660,20 @@ export const KnownJettonMasters: (isTestnet: boolean) => { [key: string]: any } 
             'EQC47093oX5Xhb0xuk2lCr2RhS8rj-vul61u4W2UH5ORmG_O': {}, // GRAM
         }
         : {
-            'kQAZym3GBvem-frRGy1gUIaO-IBb5ByJPrm8aXtN7a_6PK4w': {} // USDT (j1INCH)
+            'kQAZym3GBvem-frRGy1gUIaO-IBb5ByJPrm8aXtN7a_6PK4w': {}, // USDT (j1INCH)
+            'EQCSJnVYculwsyLUx_VT3qbIeYUs-nwfPsXjfo9VLYlIQlMJ': {}, // wsTON
+            'kQCSJnVYculwsyLUx_VT3qbIeYUs-nwfPsXjfo9VLYlIQuiD': {} // wsTON
         };
 }
 
 export const USDTMaster: (isTestnet: boolean) => string | null = (isTestnet: boolean) => {
-    return isTestnet? 'kQAZym3GBvem-frRGy1gUIaO-IBb5ByJPrm8aXtN7a_6PK4w' : null
+    return isTestnet ? 'kQAZym3GBvem-frRGy1gUIaO-IBb5ByJPrm8aXtN7a_6PK4w' : null
 }
 
 export const KnownJettonTickers = [
     // Other chains
     'BTC',
     'ETH',
-    'USDT',
-    'USDC',
     'BNB',
     'SOL',
     'XPR',
@@ -690,7 +690,7 @@ export const KnownJettonTickers = [
     'EURt',
     'EURc',
     'TRX',
-    
+
     // TON main
     'TON',
     'AMBR',
@@ -699,7 +699,7 @@ export const KnownJettonTickers = [
     'jUSDC',
     'jDAI',
     'jWBTC',
-    
+
     // TON others
     'TNX',
     'DHD',

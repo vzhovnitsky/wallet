@@ -17,6 +17,7 @@ import { PerfText } from '../../../components/basic/PerfText';
 import { AppState } from '../../../storage/appState';
 import { PerfView } from '../../../components/basic/PerfView';
 import { Typography } from '../../../components/styles';
+import { useIsScamJetton, useWalletSettings } from '../../../engine/hooks';
 import { avatarHash } from '../../../utils/avatarHash';
 import { WalletSettings } from '../../../engine/state/walletSettings';
 import { getLiquidStakingAddress } from '../../../utils/KnownPools';
@@ -133,18 +134,8 @@ export function TransactionView(props: {
         ? (spam ? theme.textPrimary : theme.accentGreen)
         : theme.textPrimary;
 
-    const isSCAMJetton = useMemo(() => {
-        const masterAddress = tx.metadata?.jettonWallet?.master;
-
-        if (!masterAddress || !tx.masterMetadata?.symbol || item.kind !== 'token') {
-            return false;
-        }
-
-        const isKnown = !!KnownJettonMasters(isTestnet)[masterAddress.toString({ testOnly: isTestnet })];
-        const isSCAM = !isKnown && KnownJettonTickers.includes(tx.masterMetadata?.symbol);
-
-        return isSCAM;
-    }, [isTestnet, tx]);
+    const jettonMaster = tx.metadata?.jettonWallet?.master;
+    const isSCAMJetton = useIsScamJetton(tx.masterMetadata?.symbol, jettonMaster?.toString({ testOnly: isTestnet }));
 
     const symbolText = `${(item.kind === 'token')
         ? `${jetton?.symbol ? ` ${jetton.symbol}` : ''}`

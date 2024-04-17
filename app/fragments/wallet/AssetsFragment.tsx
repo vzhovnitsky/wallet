@@ -1,147 +1,57 @@
-import { useCallback, useMemo } from "react";
-import { View, ScrollView, Image } from "react-native";
-import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { fragment } from "../../fragment";
-import { t } from "../../i18n/t";
-import { useParams } from "../../utils/useParams";
-import { useTypedNavigation } from "../../utils/useTypedNavigation";
-import { SelectableButton } from "../../components/SelectableButton";
-import { ScreenHeader } from "../../components/ScreenHeader";
-import { useRoute } from "@react-navigation/native";
-import { useJettons, useNetwork, useSelectedAccount, useTheme } from "../../engine/hooks";
-import { Address } from "@ton/core";
-import { useLedgerTransport } from "../ledger/components/TransportContext";
+import { memo } from "react";
+import { View, Image, Pressable, Text } from "react-native";
 import { Jetton } from "../../engine/types";
-import { StatusBar } from "expo-status-bar";
-import { Platform } from "react-native";
-import { AssetsListItem } from "../../components/jettons/AssetsListItem";
-import { JettonIcon } from "../../components/products/JettonIcon";
-import { KnownJettonMasters, KnownJettonTickers } from "../../secure/KnownWallets";
+import { useIsScamJetton } from "../../engine/hooks";
+import { WImage } from "../WImage";
+import { ThemeType } from "../../engine/state/theme";
+import Animated, { FadeIn, FadeOut } from "react-native-reanimated";
+import { Typography } from "../styles";
+import { KnownJettonMasters } from "../../secure/KnownWallets";
 
-import TonIcon from '@assets/ic-ton-acc.svg';
+import IcCheck from "@assets/ic-check.svg";
 
-export const AssetsFragment = fragment(() => {
-    const safeArea = useSafeAreaInsets();
-    const navigation = useTypedNavigation();
-    const theme = useTheme();
-    const network = useNetwork();
-    const selected = useSelectedAccount();
-
-    const { target, callback, selectedJetton } = useParams<{
-        target: string,
-        callback?: (selected?: { wallet: Address, master: Address }) => void,
-        selectedJetton?: Address
-    }>();
-
-    const route = useRoute();
-    const isLedgerScreen = route.name === 'LedgerAssets';
-
-    const ledgerTransport = useLedgerTransport();
-    const address = useMemo(() => {
-        if (isLedgerScreen && !!ledgerTransport?.addr) {
-            return Address.parse(ledgerTransport.addr.address);
-        }
-    }, [ledgerTransport, isLedgerScreen]);
-
-    const ledgerJettons = useJettons(address?.toString({ testOnly: network.isTestnet }) || '') ?? [];
-    const jettons = useJettons(selected!.address.toString({ testOnly: network.isTestnet })) ?? [];
-    const visibleList = jettons.filter((j) => !j.disabled);
-
-    const onSelected = useCallback((jetton: Jetton) => {
-        if (callback) {
-            onCallback({ wallet: jetton.wallet, master: jetton.master });
-            return;
-        }
-        if (isLedgerScreen) {
-            navigation.replace('LedgerSimpleTransfer', {
-                amount: null,
-                target: target,
-                comment: null,
-                jetton: jetton.wallet,
-                stateInit: null,
-                job: null,
-                callback: null
-            });
-            return;
-        }
-        navigation.navigateSimpleTransfer({
-            amount: null,
-            target: target,
-            comment: null,
-            jetton: jetton.wallet,
-            stateInit: null,
-            job: null,
-            callback: null
-        });
-    }, []);
-
-    const onTonSelected = useCallback(() => {
-        if (callback) {
-            onCallback();
-            return;
-        }
-        if (isLedgerScreen) {
-            navigation.replace('LedgerSimpleTransfer', {
-                amount: null,
-                target: target,
-                stateInit: null,
-                job: null,
-                comment: null,
-                jetton: null,
-                callback: null
-            });
-            return;
-        }
-        navigation.navigateSimpleTransfer({
-            amount: null,
-            target: target,
-            stateInit: null,
-            job: null,
-            comment: null,
-            jetton: null,
-            callback: null
-        });
-    }, [isLedgerScreen, callback]);
-
-    const onCallback = useCallback((selected?: { wallet: Address, master: Address }) => {
-        if (callback) {
-            setTimeout(() => {
-                navigation.goBack();
-                callback(selected);
-            }, 10);
-        }
-    }, [callback]);
+export const AssetsListItem = memo(({
+    jetton,
+    onSelect,
+    theme,
+    selected,
+    hideSelection,
+    isTestnet
+}: {
+    jetton: Jetton,
+    onSelect: (j: Jetton) => void,
+    theme: ThemeType,
+    selected?: boolean,
+    hideSelection?: boolean,
+    isTestnet: boolean
+}) => {
+    const verified = KnownJettonMasters(isTestnet)[jetton.master.toString()];
+    const isSCAM = useIsScamJetton(jetton.symbol, jetton.master.toString({ testOnly: isTestnet }));
 
     return (
-        <View style={{ flexGrow: 1 }}>
-            <StatusBar style={Platform.select({
-                android: theme.style === 'dark' ? 'light' : 'dark',
-                ios: 'light'
-            })} />
-            <ScreenHeader
-                onBackPressed={navigation.goBack}
-                title={t('products.accounts')}
-                style={[
-                    { paddingHorizontal: 16 },
-                    Platform.select({ android: { paddingTop: safeArea.top } })
-                ]}
-            />
-            <ScrollView
-                style={{ flexGrow: 1, flexBasis: 0, marginTop: 16 }}
-                contentContainerStyle={{ paddingHorizontal: 16 }}
-                contentInset={{ bottom: safeArea.bottom + 16 }}
+        <Animated.View entering={FadeIn} exiting={FadeOut}>
+            <Pressable
+                style={{
+                    backgroundColor: theme.surfaceOnElevation,
+                    padding: 20,
+                    marginBottom: 16,
+                    borderRadius: 20,
+                    flexDirection: 'row',
+                    alignItems: 'center',
+                    justifyContent: 'space-between'
+                }}
+                onPress={() => onSelect(jetton)}
             >
-                <View style={{
-                    borderRadius: 14,
-                }}>
-                    <SelectableButton
-                        key={'assets-ton'}
-                        title={'TON'}
-                        subtitle={t('common.balance')}
-                        onSelect={onTonSelected}
-                        icon={
-                            <View style={{ width: 46, height: 46 }}>
-                                <TonIcon width={46} height={46} />
+                <View style={{ height: 46, width: 46, justifyContent: 'center', alignItems: 'center', marginRight: 12 }}>
+                    {!!icon ? (icon) : (
+                        <View style={{ width: 46, height: 46 }}>
+                            <WImage
+                                src={jetton.icon ? jetton.icon : undefined}
+                                width={46}
+                                heigh={46}
+                                borderRadius={23}
+                            />
+                            {verified ? (
                                 <View style={{
                                     justifyContent: 'center', alignItems: 'center',
                                     height: 20, width: 20, borderRadius: 10,
@@ -153,38 +63,62 @@ export const AssetsFragment = fragment(() => {
                                         style={{ height: 20, width: 20 }}
                                     />
                                 </View>
-                            </View>
-                        }
-                        selected={!selectedJetton}
-                        hideSelection={!callback}
-                    />
-                    {(isLedgerScreen ? ledgerJettons : visibleList).map((j) => {
-                        const selected = !!selectedJetton && j.master.equals(selectedJetton);
-                        const verified = KnownJettonMasters(network.isTestnet)[j.master.toString()];
-                        const isSCAM = !verified && KnownJettonTickers.includes(j.symbol);
-                        return (
-                            <AssetsListItem
-                                key={'jt' + j.wallet.toString()}
-                                jetton={j}
-                                onSelect={() => onSelected(j)}
-                                theme={theme}
-                                icon={
-                                    <JettonIcon
-                                        size={46}
-                                        jetton={j}
-                                        theme={theme}
-                                        isTestnet={network.isTestnet}
-                                        backgroundColor={theme.elevation}
-                                        isSCAM={isSCAM}
+                            ) : (isSCAM && (
+                                <View style={{
+                                    justifyContent: 'center', alignItems: 'center',
+                                    height: 20, width: 20, borderRadius: 10,
+                                    position: 'absolute', right: -2, bottom: -2,
+                                    backgroundColor: theme.surfaceOnBg
+                                }}>
+                                    <Image
+                                        source={require('@assets/ic-jetton-scam.png')}
+                                        style={{ height: 20, width: 20 }}
                                     />
-                                }
-                                hideSelection={!callback}
-                                selected={selected}
-                            />
-                        );
-                    })}
+                                </View>
+                            ))}
+                        </View>
+                    )}
                 </View>
-            </ScrollView>
-        </View>
+                <View style={{ justifyContent: 'center', flexGrow: 1, flex: 1 }}>
+                    <Text style={[{ flexShrink: 1, color: theme.textPrimary, marginBottom: 2 }, Typography.semiBold17_24]}>
+                        {jetton.name}
+                    </Text>
+                    <Text
+                        numberOfLines={1}
+                        style={{
+                            flexShrink: 1,
+                            fontSize: 15, lineHeight: 20, fontWeight: '400',
+                            color: theme.textSecondary,
+                        }}
+                    >
+                        {isSCAM && (
+                            <>
+                                <Text style={{ color: theme.accentRed }}>
+                                    {'SCAM'}
+                                </Text>
+                                {jetton.description ? ' • ' : ''}
+                            </>
+                        )}
+                        {jetton.description}
+                    </Text>
+                </View>
+                {!hideSelection && (
+                    <View style={{
+                        justifyContent: 'center', alignItems: 'center',
+                        height: 24, width: 24,
+                        backgroundColor: selected ? theme.accent : theme.divider,
+                        borderRadius: 12
+                    }}>
+                        {selected && (
+                            <IcCheck
+                                color={theme.white}
+                                height={16} width={16}
+                                style={{ height: 16, width: 16 }}
+                            />
+                        )}
+                    </View>
+                )}
+            </Pressable>
+        </Animated.View>
     );
 });
