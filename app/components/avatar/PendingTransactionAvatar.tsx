@@ -2,9 +2,9 @@ import React, { memo, useEffect } from "react"
 import { StyleProp, View, ViewStyle, Image } from "react-native"
 import { avatarHash } from "../../utils/avatarHash";
 import { Avatar, avatarColors } from "./Avatar";
-import { KnownWallet } from "../secure/KnownWallets";
-import { useNetwork, useTheme, useWalletSettings } from "../engine/hooks";
 import Animated, { Easing, useAnimatedStyle, useSharedValue, withRepeat, withTiming } from "react-native-reanimated";
+import { KnownWallet } from "../../secure/KnownWallets";
+import { useNetwork, useTheme, useWalletSettings } from "../../engine/hooks";
 
 const Color = require('color');
 

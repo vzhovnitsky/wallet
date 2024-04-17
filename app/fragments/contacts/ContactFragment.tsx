@@ -3,7 +3,6 @@ import React, { RefObject, createRef, useCallback, useEffect, useMemo, useState 
 import { Platform, View, Text, Image, Alert, Keyboard, Pressable, TextInput } from "react-native";
 import Animated, { runOnUI, useAnimatedRef, useSharedValue, measure, scrollTo, FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Avatar } from "../../components/Avatar";
 import { ContactField } from "../../components/Contacts/ContactField";
 import { RoundButton } from "../../components/RoundButton";
 import { fragment } from "../../fragment";
@@ -23,6 +22,7 @@ import { StatusBar } from "expo-status-bar";
 import { useContractInfo } from "../../engine/hooks/metadata/useContractInfo";
 import { useAddressBookContext } from "../../engine/AddressBookContext";
 import { KnownWallets } from "../../secure/KnownWallets";
+import { Avatar } from "../../components/avatar/Avatar";
 
 import CopyIcon from '@assets/ic-copy.svg';
 import ShareIcon from '@assets/ic-share-contact.svg';

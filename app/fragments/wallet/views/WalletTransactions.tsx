@@ -7,7 +7,7 @@ import { formatDate, getDateKey } from "../../../utils/dates";
 import { TransactionView } from "./TransactionView";
 import { ThemeType } from "../../../engine/state/theme";
 import { Jetton, TransactionDescription } from '../../../engine/types';
-import { AddressContact, useAddressBook } from "../../../engine/hooks/contacts/useAddressBook";
+import { AddressContact } from "../../../engine/hooks/contacts/useAddressBook";
 import { useAppState, useBounceableWalletFormat, useDontShowComments, useNetwork, usePendingTransactions, useServerConfig, useSpamMinAmount, useWalletsSettings } from "../../../engine/hooks";
 import { TransactionsEmptyState } from "./TransactionsEmptyStateView";
 import { TransactionsSkeleton } from "../../../components/skeletons/TransactionsSkeleton";
@@ -20,6 +20,7 @@ import { confirmAlert } from "../../../utils/confirmAlert";
 import { KnownWallet, KnownWallets } from "../../../secure/KnownWallets";
 import { Typography } from "../../../components/styles";
 import { warn } from "../../../utils/log";
+import { WalletSettings } from "../../../engine/state/walletSettings";
 import { useAddressBookContext } from "../../../engine/AddressBookContext";
 
 const SectionHeader = memo(({ theme, title }: { theme: ThemeType, title: string }) => {
@@ -49,6 +50,7 @@ type TransactionListItemProps = {
     spamWallets: string[],
     appState: AppState,
     bounceableFormat: boolean,
+    walletsSettings: { [key: string]: WalletSettings }
     knownWallets: { [key: string]: KnownWallet }
 }
 
@@ -79,6 +81,7 @@ const TransactionListItem = memo(({ item, section, index, theme, ...props }: Sec
         && prev.appState === next.appState
         && prev.onLongPress === next.onLongPress
         && prev.bounceableFormat === next.bounceableFormat
+        && prev.walletsSettings === next.walletsSettings
         && prev.knownWallets === next.knownWallets
 });
 TransactionListItem.displayName = 'TransactionListItem';
@@ -322,6 +325,7 @@ export const WalletTransactions = memo((props: {
                     appState={appState}
                     jettons={props.jettons}
                     bounceableFormat={bounceableFormat}
+                    walletsSettings={walletsSettings}
                     knownWallets={knownWallets}
                 />
             )}

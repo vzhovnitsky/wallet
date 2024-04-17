@@ -15,7 +15,7 @@ import { useParams } from "../../utils/useParams";
 import { StatusBar } from "expo-status-bar";
 import { useAddressBookContext } from "../../engine/AddressBookContext";
 import { useDimensions } from "@react-native-community/hooks";
-import { KnownWallets } from "../secure/KnownWallets";
+import { KnownWallets } from "../../secure/KnownWallets";
 
 const EmptyIllustrations = {
     dark: require('@assets/empty-contacts-dark.webp'),

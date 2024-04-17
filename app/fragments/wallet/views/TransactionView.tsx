@@ -41,6 +41,8 @@ export function TransactionView(props: {
     isTestnet: boolean,
     spamWallets: string[],
     appState?: AppState,
+    walletsSettings: { [key: string]: WalletSettings },
+    jettons: Jetton[],
     bounceableFormat: boolean,
     knownWallets: { [key: string]: KnownWallet }
 }) {
@@ -188,33 +190,19 @@ export function TransactionView(props: {
                     borderWidth: 0, marginRight: 10,
                     justifyContent: 'center', alignItems: 'center'
                 }}>
-                    {parsed.status === 'pending' ? (
-                        <PendingTransactionAvatar
-                            kind={kind}
-                            address={parsedAddressFriendly}
-                            avatarId={parsedAddressFriendly}
-                            knownWallets={knownWallets}
-                        />
-                    ) : (
-                        <Avatar
-                            size={48}
-                            address={parsedAddressFriendly}
-                            id={parsedAddressFriendly}
-                            borderWith={0}
-                            spam={spam}
-                            markContact={!!contact}
-                            icProps={{
-                                isOwn,
-                                backgroundColor: theme.backgroundPrimary,
-                                size: 18,
-                                borderWidth: 2
-                            }}
-                            theme={theme}
-                            knownWallets={knownWallets}
-                            backgroundColor={avatarColor}
-                            hash={walletSettings?.avatar}
-                        />
-                    )}
+                    <TxAvatar
+                        status={parsed.status}
+                        parsedAddressFriendly={parsedAddressFriendly}
+                        kind={kind}
+                        spam={spam}
+                        isOwn={isOwn}
+                        theme={theme}
+                        isTestnet={isTestnet}
+                        walletSettings={walletSettings}
+                        markContact={!!contact}
+                        avatarColor={avatarColor}
+                        knownWallets={knownWallets}
+                    />
                 </PerfView>
                 <PerfView style={{ flex: 1, marginRight: 4 }}>
                     <PerfView style={{ flexDirection: 'row', alignItems: 'center' }}>

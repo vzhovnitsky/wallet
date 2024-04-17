@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Image } from 'react-native';
-import { avatarHash } from '../utils/avatarHash';
-import { KnownWallet } from '../secure/KnownWallets';
+import { avatarHash } from '../../utils/avatarHash';
+import { KnownWallet } from '../../secure/KnownWallets';
 import { KnownAvatar } from './KnownAvatar';
 import FastImage from 'react-native-fast-image';
 import { ReactNode, memo } from 'react';
@@ -169,41 +169,13 @@ export const Avatar = memo((props: {
     hashColor?: { hash: number } | boolean,
     knownWallets: { [key: string]: KnownWallet }
 }) => {
-    const theme = props.theme;
-    const known = props.address ? props.knownWallets[props.address] : undefined;
-
-    const hash = (props.hash !== undefined && props.hash !== null)
-        ? props.hash
-        : avatarHash(props.id, avatarImages.length);
-    const imgSource = avatarImages[hash];
-    const color = avatarColors[avatarHash(props.id, avatarColors.length)];
-
-
-    // resolve image
-    let img: any;
-
-    if (props.image) {
-        img = (
-            <FastImage
-                source={{ uri: props.image }}
-                style={{ width: props.size, height: props.size, borderRadius: props.size / 2, overflow: 'hidden' }}
-            />
-        );
-    } else if (!known || (!known.ic) && imgSource) {
-        const animalSize = props.size + 8
-        img = (
-            <FastImage
-                source={imgSource}
-                style={{ width: animalSize, height: animalSize, borderRadius: animalSize / 2, overflow: 'hidden' }}
-            />
-        );
-    } else {
-        img = <KnownAvatar size={props.size} wallet={known} />;
-    }
-
-
-    // resolve image
-    let img: any;
+    const { theme, address, id, markContact, verified, dontShowVerified, icProps, image, showSpambadge, spam, size, hash, hashColor, borderColor, borderWith, backgroundColor, knownWallets } = props;
+    const imgHash = hash ?? avatarHash(id, avatarImages.length);
+    const known = address ? knownWallets[address] : undefined;
+    const imgSource = avatarImages[imgHash];
+    const color = avatarColors[avatarHash(id, avatarColors.length)];
+    let img: ReactNode;
+    let avatarBackgroundClr: string | undefined = backgroundColor ?? theme.surfaceOnElevation;
 
     if (!!known && !!known?.ic) {
         avatarBackgroundClr = theme.backgroundPrimary;

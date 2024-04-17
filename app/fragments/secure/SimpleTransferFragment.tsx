@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { Platform, Text, View, KeyboardAvoidingView, Keyboard, Alert, Pressable, StyleProp, ViewStyle, Image } from "react-native";
+import { Platform, Text, View, KeyboardAvoidingView, Keyboard, Alert, Pressable, StyleProp, ViewStyle } from "react-native";
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useKeyboard } from '@react-native-community/hooks';
 import Animated, { FadeOut, FadeIn, LinearTransition, Easing } from 'react-native-reanimated';
@@ -22,7 +22,7 @@ import { ReactNode, RefObject, createRef, useCallback, useEffect, useMemo, useRe
 import { formatAmount, formatCurrency, formatInputAmount } from '../../utils/formatCurrency';
 import { ValueComponent } from '../../components/ValueComponent';
 import { useRoute } from '@react-navigation/native';
-import { useAccountLite, useAccountTransactions, useClient4, useCommitCommand, useConfig, useJettonMaster, useJettonWallet, useNetwork, usePrice, useSelectedAccount, useTheme } from '../../engine/hooks';
+import { useAccountLite, useAccountTransactions, useClient4, useCommitCommand, useConfig, useIsScamJetton, useJettonWallet, useJettons, useNetwork, usePrice, useSelectedAccount, useTheme } from '../../engine/hooks';
 import { useLedgerTransport } from '../ledger/components/TransportContext';
 import { fromBnWithDecimals, toBnWithDecimals } from '../../utils/withDecimals';
 import { fetchSeqno } from '../../engine/api/fetchSeqno';
@@ -102,9 +102,13 @@ export const SimpleTransferFragment = fragment(() => {
     const [estimation, setEstimation] = useState<bigint | null>(null);
     const [selectedJetton, setJetton] = useState<Address | null>(params?.jetton || null);
 
-    const jettonWallet = useJettonWallet(jetton?.toString({ testOnly: network.isTestnet }), true);
-    const jettonMaster = useJettonMaster(jettonWallet?.master!);
-    const symbol = jettonMaster ? jettonMaster.symbol! : 'TON';
+    const jettonWallet = useJettonWallet(selectedJetton?.toString({ testOnly: network.isTestnet }), true);
+    const jetton = useJettons(isLedger ? addr!.address : acc!.addressString)
+        .find((j) => (
+            jettonWallet?.master
+            && j.master.equals(Address.parse(jettonWallet.master))
+        ));
+    const symbol = jetton ? jetton.symbol : 'TON'
 
     const targetAddressValid = useMemo(() => {
         if (target.length > 48) {

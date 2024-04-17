@@ -6,6 +6,7 @@ import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { Address } from "@ton/core";
 import { useAppState, useSetAppState, useTheme, useWalletSettings } from "../../engine/hooks";
 import { avatarHash } from "../../utils/avatarHash";
+import { Avatar, avatarColors } from "../avatar/Avatar";
 import { KnownWallet } from "../../secure/KnownWallets";
 
 import IcCheck from "@assets/ic-check.svg";

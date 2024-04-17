@@ -3,6 +3,7 @@ import { ThemeType } from "../../../engine/state/theme";
 import { PendingTransactionAvatar } from "../../../components/avatar/PendingTransactionAvatar";
 import { WalletSettings } from "../../../engine/state/walletSettings";
 import { Avatar } from "../../../components/avatar/Avatar";
+import { KnownWallet } from "../../../secure/KnownWallets";
 
 export const TxAvatar = memo((
     {
@@ -15,7 +16,8 @@ export const TxAvatar = memo((
         isTestnet,
         walletSettings,
         markContact,
-        avatarColor
+        avatarColor,
+        knownWallets
     }: {
         status: "failed" | "pending" | "success",
         parsedAddressFriendly: string,
@@ -26,7 +28,8 @@ export const TxAvatar = memo((
         isTestnet: boolean,
         walletSettings?: WalletSettings,
         markContact?: boolean,
-        avatarColor: string
+        avatarColor: string,
+        knownWallets: { [key: string]: KnownWallet }
     }
 ) => {
     if (status === "pending") {
@@ -35,6 +38,7 @@ export const TxAvatar = memo((
                 kind={kind}
                 address={parsedAddressFriendly}
                 avatarId={parsedAddressFriendly}
+                knownWallets={knownWallets}
             />
         );
     }
@@ -55,6 +59,7 @@ export const TxAvatar = memo((
             }}
             theme={theme}
             isTestnet={isTestnet}
+            knownWallets={knownWallets}
             backgroundColor={avatarColor}
             hash={walletSettings?.avatar}
         />

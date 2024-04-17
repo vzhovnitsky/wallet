@@ -251,27 +251,50 @@ const TransactionPreview = () => {
                     justifyContent: 'center', alignItems: 'center'
                 }}>
                     <PerfView style={{ backgroundColor: theme.divider, position: 'absolute', top: 0, left: 0, right: 0, height: 54 }} />
-                    <Avatar
-                        size={68}
-                        id={opAddressBounceable}
-                        address={opAddressBounceable}
-                        spam={spam}
-                        showSpambadge
-                        verified={verified}
-                        borderWith={2.5}
-                        borderColor={theme.surfaceOnElevation}
-                        backgroundColor={avatarColor}
-                        markContact={!!contact}
-                        icProps={{
-                            isOwn: isOwn,
-                            borderWidth: 2,
-                            position: 'bottom',
-                            size: 28
-                        }}
-                        theme={theme}
-                        knownWallets={knownWallets}
-                        hash={opAddressWalletSettings?.avatar}
-                    />
+                    {tx.outMessagesCount > 1 ? (
+                        <BatchAvatars
+                            messages={messages}
+                            size={68}
+                            icProps={{
+                                size: 28,
+                                borderWidth: 2,
+                                position: 'bottom'
+                            }}
+                            showSpambadge
+                            theme={theme}
+                            isTestnet={isTestnet}
+                            denyList={addressBook.state.denyList}
+                            contacts={addressBook.state.contacts}
+                            spamWallets={config?.wallets?.spam ?? []}
+                            ownAccounts={appState.addresses}
+                            walletsSettings={walletsSettings}
+                            backgroundColor={theme.surfaceOnBg}
+                            borderWidth={2.5}
+                        />
+                    ) : (
+                        <Avatar
+                            size={68}
+                            id={opAddressBounceable}
+                            address={opAddressBounceable}
+                            spam={spam}
+                            showSpambadge
+                            verified={verified}
+                            borderWith={2.5}
+                            borderColor={theme.surfaceOnElevation}
+                            backgroundColor={avatarColor}
+                            markContact={!!contact}
+                            icProps={{
+                                isOwn: isOwn,
+                                borderWidth: 2,
+                                position: 'bottom',
+                                size: 28
+                            }}
+                            theme={theme}
+                            isTestnet={isTestnet}
+                            knownWallets={knownWallets}
+                            hash={opAddressWalletSettings?.avatar}
+                        />
+                    )}
                     <PerfText
                         style={[
                             {

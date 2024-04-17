@@ -26,19 +26,18 @@ import { TransferSkeleton } from '../../components/skeletons/TransferSkeleton';
 import { ScreenHeader } from '../../components/ScreenHeader';
 import { confirmAlert } from '../../utils/confirmAlert';
 import { ReAnimatedCircularProgress } from '../../components/CircularProgress/ReAnimatedCircularProgress';
-import { JettonMasterState } from '../../engine/metadata/fetchJettonMasterContent';
 import { TonTransport } from '@ton-community/ton-ledger';
-import { useAccountLite, useClient4, useConfig, useIsSpamWallet, useNetwork, useTheme } from '../../engine/hooks';
+import { useAccountLite, useClient4, useConfig, useIsSpamWallet, useJettons, useNetwork, useTheme } from '../../engine/hooks';
 import { useLedgerTransport } from './components/TransportContext';
 import { useWalletSettings } from '../../engine/hooks/appstate/useWalletSettings';
 import { fromBnWithDecimals } from '../../utils/withDecimals';
 import { Address, Cell, SendMode, WalletContractV4, beginCell, external, internal, storeMessage, storeMessageRelaxed } from '@ton/ton';
-import { fetchJettonMaster } from '../../engine/getters/getJettonMaster';
 import { estimateFees } from '../../utils/estimateFees';
 import { TransferSingleView } from '../secure/components/TransferSingleView';
 import { RoundButton } from '../../components/RoundButton';
 import { ScrollView } from 'react-native-gesture-handler';
 import { StatusBar } from 'expo-status-bar';
+import { Jetton } from '../../engine/types';
 import { useAddressBookContext } from '../../engine/AddressBookContext';
 
 export type LedgerSignTransferParams = {
