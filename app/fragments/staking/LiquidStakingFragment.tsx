@@ -254,7 +254,7 @@ export const LiquidStakingFragment = fragment(() => {
                             disableContextMenu
                             copyOnPress
                             copyToastProps={{ marginBottom: bottomBarHeight + 16 }}
-                            bounceable={true}
+                            theme={theme}
                         />
                     </View>
                     <View style={{ paddingHorizontal: 16 }}>

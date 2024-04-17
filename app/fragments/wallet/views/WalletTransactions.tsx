@@ -17,10 +17,10 @@ import { useBottomTabBarHeight } from "@react-navigation/bottom-tabs";
 import { ActionSheetOptions, useActionSheet } from "@expo/react-native-action-sheet";
 import { t } from "../../../i18n/t";
 import { confirmAlert } from "../../../utils/confirmAlert";
-import { KnownWallets } from "../../../secure/KnownWallets";
+import { KnownWallet, KnownWallets } from "../../../secure/KnownWallets";
 import { Typography } from "../../../components/styles";
 import { warn } from "../../../utils/log";
-import { WalletSettings } from "../../../engine/state/walletSettings";
+import { useAddressBookContext } from "../../../engine/AddressBookContext";
 
 const SectionHeader = memo(({ theme, title }: { theme: ThemeType, title: string }) => {
     return (
@@ -49,7 +49,7 @@ type TransactionListItemProps = {
     spamWallets: string[],
     appState: AppState,
     bounceableFormat: boolean,
-    walletsSettings: { [key: string]: WalletSettings }
+    knownWallets: { [key: string]: KnownWallet }
 }
 
 const TransactionListItem = memo(({ item, section, index, theme, ...props }: SectionListRenderItemInfo<TransactionDescription, { title: string }> & TransactionListItemProps) => {
@@ -79,7 +79,7 @@ const TransactionListItem = memo(({ item, section, index, theme, ...props }: Sec
         && prev.appState === next.appState
         && prev.onLongPress === next.onLongPress
         && prev.bounceableFormat === next.bounceableFormat
-        && prev.walletsSettings === next.walletsSettings
+        && prev.knownWallets === next.knownWallets
 });
 TransactionListItem.displayName = 'TransactionListItem';
 
@@ -105,9 +105,12 @@ export const WalletTransactions = memo((props: {
     const theme = props.theme;
     const navigation = props.navigation;
     const { isTestnet } = useNetwork();
+    const knownWallets = KnownWallets(isTestnet);
     const [spamMinAmount,] = useSpamMinAmount();
     const [dontShowComments,] = useDontShowComments();
-    const [addressBook, updateAddressBook] = useAddressBook();
+    const addressBookContext = useAddressBookContext();
+    const addressBook = addressBookContext.state;
+    const addToDenyList = addressBookContext.addToDenyList;
     const spamWallets = useServerConfig().data?.wallets?.spam ?? [];
     const appState = useAppState();
     const [pending,] = usePendingTransactions(props.address, isTestnet);
@@ -117,34 +120,19 @@ export const WalletTransactions = memo((props: {
 
     const { showActionSheetWithOptions } = useActionSheet();
 
-    const addToDenyList = useCallback((address: string | Address, reason: string = 'spam') => {
-        let addr = '';
-
-        if (address instanceof Address) {
-            addr = address.toString({ testOnly: isTestnet });
-        } else {
-            addr = address;
-        }
-
-        return updateAddressBook((doc) => doc.denyList[addr] = { reason });
-    }, [isTestnet, updateAddressBook]);
-
     const { transactionsSectioned } = useMemo(() => {
-        const sectioned = new Map<string, TransactionDescription[]>();
-        for (const t of props.txs) {
+        const sectioned = new Map<string, { title: string, data: TransactionDescription[] }>();
+        for (let i = 0; i < props.txs.length; i++) {
+            const t = props.txs[i];
             const time = getDateKey(t.base.time);
             const section = sectioned.get(time);
             if (section) {
-                section.push(t);
+                section.data.push(t);
             } else {
-                sectioned.set(time, [t]);
+                sectioned.set(time, { title: formatDate(t.base.time), data: [t] });
             }
         }
-        const sections = Array.from(sectioned).map(([time, data]) => ({
-            title: formatDate(data[0].base.time),
-            data,
-        }));
-        return { transactionsSectioned: sections };
+        return { transactionsSectioned: Array.from(sectioned.values()) };
     }, [props.txs]);
 
     const navigateToPreview = useCallback((transaction: TransactionDescription) => {
@@ -215,7 +203,7 @@ export const WalletTransactions = memo((props: {
             || (
                 absAmount < spamMinAmount
                 && !!tx.base.operation.comment
-                && !KnownWallets(isTestnet)[opAddress]
+                && !knownWallets[opAddress]
                 && !isTestnet
             ) && kind !== 'out';
 
@@ -334,7 +322,7 @@ export const WalletTransactions = memo((props: {
                     appState={appState}
                     jettons={props.jettons}
                     bounceableFormat={bounceableFormat}
-                    walletsSettings={walletsSettings}
+                    knownWallets={knownWallets}
                 />
             )}
             onEndReached={() => props.onLoadMore()}

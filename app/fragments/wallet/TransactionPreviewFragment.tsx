@@ -40,6 +40,7 @@ import { BatchAvatars } from "../../components/avatar/BatchAvatars";
 const TransactionPreview = () => {
     const theme = useTheme();
     const { isTestnet } = useNetwork();
+    const knownWallets = KnownWallets(isTestnet);
     const route = useRoute();
     const safeArea = useSafeAreaInsets();
     const navigation = useTypedNavigation();
@@ -145,8 +146,8 @@ const TransactionPreview = () => {
 
     // Resolve built-in known wallets
     let known: KnownWallet | undefined = undefined;
-    if (KnownWallets(isTestnet)[opAddressBounceable]) {
-        known = KnownWallets(isTestnet)[opAddressBounceable];
+    if (knownWallets[opAddressBounceable]) {
+        known = knownWallets[opAddressBounceable];
     }
     if (!!contact) { // Resolve contact known wallet
         known = { name: contact.name }
@@ -161,7 +162,7 @@ const TransactionPreview = () => {
         || (
             BigMath.abs(BigInt(tx.base.parsed.amount)) < spamMinAmount
             && tx.base.parsed.body?.type === 'comment'
-            && !KnownWallets(isTestnet)[opAddressBounceable]
+            && !knownWallets[opAddressBounceable]
             && !isTestnet
         ) && tx.base.parsed.kind !== 'out';
 
@@ -250,54 +251,32 @@ const TransactionPreview = () => {
                     justifyContent: 'center', alignItems: 'center'
                 }}>
                     <PerfView style={{ backgroundColor: theme.divider, position: 'absolute', top: 0, left: 0, right: 0, height: 54 }} />
-                    {tx.outMessagesCount > 1 ? (
-                        <BatchAvatars
-                            messages={messages}
-                            size={68}
-                            icProps={{
-                                size: 28,
-                                borderWidth: 2,
-                                position: 'bottom'
-                            }}
-                            showSpambadge
-                            theme={theme}
-                            isTestnet={isTestnet}
-                            denyList={addressBook.state.denyList}
-                            contacts={addressBook.state.contacts}
-                            spamWallets={config?.wallets?.spam ?? []}
-                            ownAccounts={appState.addresses}
-                            walletsSettings={walletsSettings}
-                            backgroundColor={theme.surfaceOnBg}
-                            borderWidth={2.5}
-                        />
-                    ) : (
-                        <Avatar
-                            size={68}
-                            id={opAddressBounceable}
-                            address={opAddressBounceable}
-                            spam={spam}
-                            showSpambadge
-                            verified={verified}
-                            borderWith={2.5}
-                            borderColor={theme.surfaceOnElevation}
-                            backgroundColor={avatarColor}
-                            markContact={!!contact}
-                            icProps={{
-                                isOwn: isOwn,
-                                borderWidth: 2,
-                                position: 'bottom',
-                                size: 28
-                            }}
-                            theme={theme}
-                            isTestnet={isTestnet}
-                            hash={opAddressWalletSettings?.avatar}
-                        />
-                    )}
+                    <Avatar
+                        size={68}
+                        id={opAddressBounceable}
+                        address={opAddressBounceable}
+                        spam={spam}
+                        showSpambadge
+                        verified={verified}
+                        borderWith={2.5}
+                        borderColor={theme.surfaceOnElevation}
+                        backgroundColor={avatarColor}
+                        markContact={!!contact}
+                        icProps={{
+                            isOwn: isOwn,
+                            borderWidth: 2,
+                            position: 'bottom',
+                            size: 28
+                        }}
+                        theme={theme}
+                        knownWallets={knownWallets}
+                        hash={opAddressWalletSettings?.avatar}
+                    />
                     <PerfText
                         style={[
                             {
                                 color: theme.textPrimary,
-                                paddingTop: (spam || !!contact || verified || isOwn || !!KnownWallets(isTestnet)[opAddressBounceable]) ? 16 : 8,
+                                paddingTop: (spam || !!contact || verified || isOwn || !!knownWallets[opAddressBounceable]) ? 16 : 8,
                             },
                             Typography.semiBold17_24
                         ]}
