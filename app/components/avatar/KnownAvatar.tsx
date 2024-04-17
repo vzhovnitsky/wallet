@@ -12,6 +12,7 @@ export const KnownAvatar = memo((props: { size: number, wallet: KnownWallet }) =
                 overflow: 'hidden'
             }}
             source={props.wallet.ic}
+            fadeDuration={0}
         />
     );
 });

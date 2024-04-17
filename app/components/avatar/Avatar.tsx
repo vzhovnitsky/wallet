@@ -5,9 +5,9 @@ import { KnownWallets } from '../../secure/KnownWallets';
 import { KnownAvatar } from './KnownAvatar';
 import FastImage from 'react-native-fast-image';
 import { ReactNode, memo } from 'react';
-import { PerfText } from './basic/PerfText';
-import { PerfView } from './basic/PerfView';
-import { ThemeType } from '../engine/state/theme';
+import { PerfView } from '../basic/PerfView';
+import { ThemeType } from '../../engine/state/theme';
+import { PerfText } from '../basic/PerfText';
 
 export const avatarImages = [
     require('@assets/avatars/0.png'),
@@ -57,19 +57,21 @@ export const avatarColors = [
     '#FFA766'
 ];
 
+export type AvatarIcProps = {
+    isOwn?: boolean,
+    borderWidth?: number,
+    position?: 'top' | 'bottom' | 'left' | 'right',
+    backgroundColor?: string,
+    size?: number,
+}
+
 function resolveIc(
     params: {
         markContact?: boolean,
         isSpam?: boolean,
         verified?: boolean,
         dontShowVerified?: boolean,
-        icProps?: {
-            isOwn?: boolean,
-            borderWidth?: number,
-            position?: 'top' | 'bottom' | 'left' | 'right',
-            backgroundColor?: string,
-            size?: number,
-        },
+        icProps?: AvatarIcProps,
         icPosition: { top?: number, bottom?: number, left?: number, right?: number },
         icSize: number,
         known?: boolean,
