@@ -3,7 +3,6 @@ import React, { RefObject, createRef, useCallback, useEffect, useMemo, useState 
 import { Platform, View, Text, Alert, Keyboard, TextInput, KeyboardAvoidingView } from "react-native";
 import Animated, { runOnUI, useAnimatedRef, useSharedValue, measure, scrollTo, FadeIn, FadeOut } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Avatar } from "../../components/Avatar";
 import { ContactField } from "../../components/Contacts/ContactField";
 import { RoundButton } from "../../components/RoundButton";
 import { fragment } from "../../fragment";
@@ -16,6 +15,7 @@ import { useNetwork, useSetContact, useTheme } from "../../engine/hooks";
 import { Address } from "@ton/core";
 import { StatusBar } from "expo-status-bar";
 import { useParams } from "../../utils/useParams";
+import { Avatar } from "../../components/avatar/Avatar";
 
 export const requiredFields = [
     { key: 'lastName', value: '' },

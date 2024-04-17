@@ -2,7 +2,6 @@ import React, { useCallback, useMemo, useState } from "react";
 import { Platform, View, Text, Image, Pressable } from "react-native";
 import Animated, { } from "react-native-reanimated";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
-import { Avatar } from "../../components/Avatar";
 import { ContactField } from "../../components/Contacts/ContactField";
 import { RoundButton } from "../../components/RoundButton";
 import { fragment } from "../../fragment";
@@ -23,6 +22,7 @@ import { ContactEdit } from "../../components/Contacts/ContactEdit";
 
 import CopyIcon from '@assets/ic-copy.svg';
 import ShareIcon from '@assets/ic-share-contact.svg';
+import { Avatar } from "../../components/avatar/Avatar";
 
 export const ContactFragment = fragment(() => {
     const toaster = useToaster();
