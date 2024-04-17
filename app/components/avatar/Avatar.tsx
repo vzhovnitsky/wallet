@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Image } from 'react-native';
-import { avatarHash } from '../../utils/avatarHash';
-import { KnownWallets } from '../../secure/KnownWallets';
+import { avatarHash } from '../utils/avatarHash';
+import { KnownWallet } from '../secure/KnownWallets';
 import { KnownAvatar } from './KnownAvatar';
 import FastImage from 'react-native-fast-image';
 import { ReactNode, memo } from 'react';
@@ -166,16 +166,21 @@ export const Avatar = memo((props: {
     backgroundColor?: string,
     icProps?: AvatarIcProps,
     theme: ThemeType,
-    isTestnet: boolean,
-    hashColor?: { hash: number } | boolean
+    hashColor?: { hash: number } | boolean,
+    knownWallets: { [key: string]: KnownWallet }
 }) => {
-    const { theme, isTestnet, address, id, markContact, verified, dontShowVerified, icProps, image, showSpambadge, spam, size, hash, hashColor, borderColor, borderWith, backgroundColor } = props;
-    const imgHash = hash ?? avatarHash(id, avatarImages.length);
-    let known = address ? KnownWallets(isTestnet)[address] : undefined;
-    let imgSource = avatarImages[imgHash];
-    let color = avatarColors[avatarHash(id, avatarColors.length)];
-    let img: ReactNode;
-    let avatarBackgroundClr: string | undefined = backgroundColor ?? theme.surfaceOnElevation;
+    const theme = props.theme;
+    const known = props.address ? props.knownWallets[props.address] : undefined;
+
+    const hash = (props.hash !== undefined && props.hash !== null)
+        ? props.hash
+        : avatarHash(props.id, avatarImages.length);
+    const imgSource = avatarImages[hash];
+    const color = avatarColors[avatarHash(props.id, avatarColors.length)];
+
+
+    // resolve image
+    let img: any;
 
     if (!!known && !!known?.ic) {
         avatarBackgroundClr = theme.backgroundPrimary;
