@@ -175,6 +175,11 @@ export const Avatar = memo((props: {
     let img: ReactNode;
     let avatarBackgroundClr: string | undefined = backgroundColor ?? theme.surfaceOnElevation;
 
+    if (!!known && !!known?.ic) {
+        avatarBackgroundClr = theme.backgroundPrimary;
+    } else if (hashColor) {
+        avatarBackgroundClr = color;
+    }
 
     let icSize = icProps?.size ?? Math.floor(size * 0.43);
     let icOutline = Math.round(icSize * 0.03) > 2 ? Math.round(icSize * 0.03) : 2;
