@@ -270,6 +270,7 @@ const TransactionPreview = () => {
                             walletsSettings={walletsSettings}
                             backgroundColor={theme.surfaceOnBg}
                             borderWidth={2.5}
+                            knownWallets={knownWallets}
                         />
                     ) : (
                         <Avatar
@@ -290,7 +291,6 @@ const TransactionPreview = () => {
                                 size: 28
                             }}
                             theme={theme}
-                            isTestnet={isTestnet}
                             knownWallets={knownWallets}
                             hash={opAddressWalletSettings?.avatar}
                         />

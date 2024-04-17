@@ -3,7 +3,7 @@ import { Pressable, Text } from 'react-native';
 import { ValueComponent } from '../../../components/ValueComponent';
 import { AddressComponent } from '../../../components/address/AddressComponent';
 import { avatarColors } from '../../../components/avatar/Avatar';
-import { KnownWallet, KnownWallets } from '../../../secure/KnownWallets';
+import { KnownWallet } from '../../../secure/KnownWallets';
 import { t } from '../../../i18n/t';
 import { TypedNavigation } from '../../../utils/useTypedNavigation';
 import { PriceComponent } from '../../../components/PriceComponent';
@@ -37,9 +37,10 @@ export function PreparedMessageView(props: {
     bounceableFormat: boolean,
     walletsSettings: { [key: string]: WalletSettings },
     time: number,
-    status: 'success' | 'failed' | 'pending'
+    status: 'success' | 'failed' | 'pending',
+    knownWallets: { [key: string]: KnownWallet }
 }) {
-    const { theme, message, contacts, isTestnet, status, time, onPress, onLongPress, walletsSettings, appState } = props;
+    const { theme, message, contacts, isTestnet, status, time, onPress, onLongPress, walletsSettings, appState, knownWallets } = props;
     const operation = message.operation;
     const item = operation.items[0];
     const itemAmount = BigInt(item.amount);
@@ -73,8 +74,8 @@ export function PreparedMessageView(props: {
 
     // Resolve built-in known wallets
     let known: KnownWallet | undefined = undefined;
-    if (KnownWallets(isTestnet)[parsedAddressFriendly]) {
-        known = KnownWallets(isTestnet)[parsedAddressFriendly];
+    if (knownWallets[parsedAddressFriendly]) {
+        known = knownWallets[parsedAddressFriendly];
     }
     if (!!contact) { // Resolve contact known wallet
         known = { name: contact.name }
@@ -117,6 +118,7 @@ export function PreparedMessageView(props: {
                         walletSettings={walletSettings}
                         markContact={!!contact}
                         avatarColor={avatarColor}
+                        knownWallets={knownWallets}
                     />
                 </PerfView>
                 <PerfView style={{ flex: 1, marginRight: 4 }}>

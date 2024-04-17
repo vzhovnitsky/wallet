@@ -1,7 +1,7 @@
 import { Address } from "@ton/core";
 import { RefObject, createRef, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Keyboard, Platform, TextInput, View, Text, KeyboardAvoidingView } from "react-native";
-import { useBounceableWalletFormat, useContact, useRemoveContact, useSetContact } from "../../engine/hooks";
+import { useBounceableWalletFormat } from "../../engine/hooks";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useContractInfo } from "../../engine/hooks/metadata/useContractInfo";
 import { requiredFields } from "../../fragments/contacts/ContactNewFragment";
@@ -15,19 +15,23 @@ import { ContactField } from "./ContactField";
 import { ItemDivider } from "../ItemDivider";
 import { RoundButton } from "../RoundButton";
 import { Avatar } from "../avatar/Avatar";
+import { useAddressBookContext } from "../../engine/AddressBookContext";
+import { KnownWallet } from "../../secure/KnownWallets";
 
 export const ContactEdit = memo(({
     address,
     onDeleted,
     onSaved,
     isTestnet,
-    theme
+    theme,
+    knownWallets
 }: {
     onSaved: () => void,
     onDeleted: () => void,
     address: string,
     isTestnet: boolean,
-    theme: ThemeType
+    theme: ThemeType,
+    knownWallets: { [key: string]: KnownWallet }
 }) => {
     const parsed = useMemo(() => {
         try {
@@ -37,10 +41,12 @@ export const ContactEdit = memo(({
         }
     }, [address]);
 
-    const setContact = useSetContact();
-    const removeContact = useRemoveContact();
+    const addressBookContext = useAddressBookContext();
+
+    const setContact = addressBookContext.setContact;
+    const removeContact = addressBookContext.removeContact;
     const safeArea = useSafeAreaInsets();
-    const contact = useContact(address);
+    const contact = addressBookContext.asContact(address);
     const contractInfo = useContractInfo(address);
 
     const [bounceableFormat,] = useBounceableWalletFormat();
@@ -214,7 +220,7 @@ export const ContactEdit = memo(({
                                 borderWith={2}
                                 borderColor={theme.surfaceOnElevation}
                                 theme={theme}
-                                isTestnet={isTestnet}
+                                knownWallets={knownWallets}
                                 hashColor
                             />
                         </View>

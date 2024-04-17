@@ -58,7 +58,6 @@ export const TxAvatar = memo((
                 borderWidth: 2
             }}
             theme={theme}
-            isTestnet={isTestnet}
             knownWallets={knownWallets}
             backgroundColor={avatarColor}
             hash={walletSettings?.avatar}

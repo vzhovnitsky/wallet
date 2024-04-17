@@ -11,11 +11,13 @@ import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { ScreenHeader } from "../../components/ScreenHeader";
 import { ItemDivider } from "../../components/ItemDivider";
 import { ATextInput } from "../../components/ATextInput";
-import { useNetwork, useSetContact, useTheme } from "../../engine/hooks";
+import { useNetwork, useTheme } from "../../engine/hooks";
 import { Address } from "@ton/core";
 import { StatusBar } from "expo-status-bar";
 import { useParams } from "../../utils/useParams";
 import { Avatar } from "../../components/avatar/Avatar";
+import { useAddressBookContext } from "../../engine/AddressBookContext";
+import { KnownWallets } from "../../secure/KnownWallets";
 
 export const requiredFields = [
     { key: 'lastName', value: '' },
@@ -26,6 +28,7 @@ export const ContactNewFragment = fragment(() => {
     const navigation = useTypedNavigation();
     const theme = useTheme();
     const { isTestnet } = useNetwork();
+    const knownWallets = KnownWallets(isTestnet);
     const { address: passedAddress } = useParams<{ address?: string }>();
 
     const [address, setAddress] = useState(passedAddress ?? '');
@@ -37,8 +40,9 @@ export const ContactNewFragment = fragment(() => {
         }
     }, [address]);
 
-    const setContact = useSetContact();
+    const addressBookContext = useAddressBookContext();
     const safeArea = useSafeAreaInsets();
+    const setContact = addressBookContext.setContact;
 
     const [name, setName] = useState('');
     const [fields, setFields] = useState(requiredFields);
@@ -191,7 +195,7 @@ export const ContactNewFragment = fragment(() => {
                                 borderWith={2}
                                 borderColor={theme.surfaceOnElevation}
                                 theme={theme}
-                                isTestnet={isTestnet}
+                                knownWallets={knownWallets}
                                 hashColor
                             />
                         </View>
