@@ -7,7 +7,7 @@ import { ItemGroup } from "../../../components/ItemGroup";
 import { PriceComponent } from "../../../components/PriceComponent";
 import { extractDomain } from "../../../engine/utils/extractDomain";
 import { LedgerOrder, Order } from "../ops/Order";
-import { KnownJettonMasters, KnownJettonTickers, KnownWallet } from "../../../secure/KnownWallets";
+import { KnownWallet } from "../../../secure/KnownWallets";
 import { useTypedNavigation } from "../../../utils/useTypedNavigation";
 import { Address, fromNano, toNano } from "@ton/core";
 import { WalletSettings } from "../../../engine/state/walletSettings";
@@ -150,7 +150,7 @@ export const TransferSingleView = memo(({
         return `-${textArr.join('')} ${!jettonAmountString ? 'TON' : jetton?.symbol ?? ''}`
     }, [amount, jettonAmountString, jetton]);
 
-    const isSCAMJetton = useIsScamJetton(jettonMaster?.symbol, metadata?.jettonWallet?.master?.toString({ testOnly: isTestnet }));
+    const isSCAMJetton = useIsScamJetton(jetton?.symbol, jetton?.master?.toString({ testOnly: isTestnet }));
 
     return (
         <View style={{ flexGrow: 1 }}>

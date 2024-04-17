@@ -9,12 +9,12 @@ import { t } from "../../i18n/t";
 import { confirmAlert } from "../../utils/confirmAlert";
 import Animated, { measure, useAnimatedRef, scrollTo, runOnUI, useSharedValue } from "react-native-reanimated";
 import { useKeyboard } from "@react-native-community/hooks";
-import { Avatar } from "../Avatar";
 import { ThemeType } from "../../engine/state/theme";
 import { ATextInput } from "../ATextInput";
 import { ContactField } from "./ContactField";
 import { ItemDivider } from "../ItemDivider";
 import { RoundButton } from "../RoundButton";
+import { Avatar } from "../avatar/Avatar";
 
 export const ContactEdit = memo(({
     address,

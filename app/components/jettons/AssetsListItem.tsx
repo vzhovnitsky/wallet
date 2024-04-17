@@ -16,6 +16,7 @@ export const AssetsListItem = memo(({
     theme,
     selected,
     hideSelection,
+    icon,
     isTestnet
 }: {
     jetton: Jetton,
@@ -23,6 +24,7 @@ export const AssetsListItem = memo(({
     theme: ThemeType,
     selected?: boolean,
     hideSelection?: boolean,
+    icon?: React.ReactNode,
     isTestnet: boolean
 }) => {
     const verified = KnownJettonMasters(isTestnet)[jetton.master.toString()];
