@@ -289,13 +289,7 @@ export function TransactionView(props: {
                                 centFontStyle={{ fontSize: 15 }}
                             />
                             <Text style={{ fontSize: 15 }}>
-                                {symbolText}
-                                {isSCAMJetton && (
-                                    <Text style={{ color: theme.accentRed }}>
-                                        {' SCAM'}
-                                    </Text>
-                                )}
-
+                                {item.kind === 'token' ? `${jetton?.symbol ?? ''}` : ' TON'}
                             </Text>
                         </Text>
                     )}
