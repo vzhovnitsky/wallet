@@ -22,6 +22,7 @@ import { Address } from "@ton/core";
 import { StatusBar } from "expo-status-bar";
 import { useContractInfo } from "../../engine/hooks/metadata/useContractInfo";
 import { useAddressBookContext } from "../../engine/AddressBookContext";
+import { KnownWallets } from "../../secure/KnownWallets";
 
 import CopyIcon from '@assets/ic-copy.svg';
 import ShareIcon from '@assets/ic-share-contact.svg';
