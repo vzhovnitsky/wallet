@@ -1,3 +1,4 @@
+ВТОРОЙ
 import { memo } from "react";
 import { View, Image, Pressable, Text } from "react-native";
 import { Jetton } from "../../engine/types";
@@ -63,21 +64,25 @@ export const AssetsListItem = memo(({
                                         style={{ height: 20, width: 20 }}
                                     />
                                 </View>
-                            ) : (isSCAM && (
-                                <View style={{
-                                    justifyContent: 'center', alignItems: 'center',
-                                    height: 20, width: 20, borderRadius: 10,
-                                    position: 'absolute', right: -2, bottom: -2,
-                                    backgroundColor: theme.surfaceOnBg
-                                }}>
-                                    <Image
-                                        source={require('@assets/ic-jetton-scam.png')}
-                                        style={{ height: 20, width: 20 }}
-                                    />
-                                </View>
-                            ))}
-                        </View>
-                    )}
+                            </View>
+                        }
+                        selected={!selectedJetton}
+                        hideSelection={!callback}
+                    />
+                    {(isLedgerScreen ? ledgerJettons : visibleList).map((j) => {
+                        const selected = !!selectedJetton && j.master.equals(selectedJetton);
+                        return (
+                            <AssetsListItem
+                                key={'jt' + j.wallet.toString()}
+                                jetton={j}
+                                onSelect={() => onSelected(j)}
+                                theme={theme}
+                                hideSelection={!callback}
+                                selected={selected}
+                                isTestnet={network.isTestnet}
+                            />
+                        );
+                    })}
                 </View>
                 <View style={{ justifyContent: 'center', flexGrow: 1, flex: 1 }}>
                     <Text style={[{ flexShrink: 1, color: theme.textPrimary, marginBottom: 2 }, Typography.semiBold17_24]}>
