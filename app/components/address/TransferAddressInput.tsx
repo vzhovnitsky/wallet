@@ -1,5 +1,5 @@
 import { ForwardedRef, RefObject, forwardRef, memo, useCallback, useEffect, useMemo } from "react";
-import { Platform, Pressable, View, Image, InteractionManager } from "react-native";
+import { Platform, Pressable, View } from "react-native";
 import { ThemeType } from "../../engine/state/theme";
 import { Address } from "@ton/core";
 import { avatarColors } from "../avatar/Avatar";
@@ -14,10 +14,9 @@ import { PerfText } from "../basic/PerfText";
 import { avatarHash } from "../../utils/avatarHash";
 import { useLedgerTransport } from "../../fragments/ledger/components/TransportContext";
 import { AddressInputAvatar } from "./AddressInputAvatar";
+import { useDimensions } from "@react-native-community/hooks";
 
 import IcChevron from '@assets/ic_chevron_forward.svg';
-import { AddressInputAvatar } from "./AddressInputAvatar";
-import { useDimensions } from "@react-native-community/hooks";
 
 type TransferAddressInputProps = {
     acc: Address,

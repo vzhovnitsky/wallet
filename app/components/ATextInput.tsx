@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { KeyboardTypeOptions, ReturnKeyTypeOptions, StyleProp, View, ViewStyle, Text, TextStyle, Pressable, TouchableWithoutFeedback, Platform } from 'react-native';
 import { TextInput } from 'react-native-gesture-handler';
-import Animated, { FadeIn, FadeInUp, FadeOut, FadeOutDown, Layout, cancelAnimation, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
+import Animated, { FadeIn, FadeOut, LinearTransition, cancelAnimation, interpolate, useAnimatedStyle, useSharedValue, withTiming } from 'react-native-reanimated';
 import { ForwardedRef, RefObject, forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useTheme } from '../engine/hooks';
 import { useDimensions } from '@react-native-community/hooks';
@@ -350,13 +350,13 @@ export const ATextInput = memo(forwardRef((props: ATextInputProps, ref: Forwarde
                     }
                 </View>
             </Animated.View>
-            {/* {props.error && (
-                <Animated.View style={{ marginTop: 2, marginLeft: 16 }} layout={Layout.duration(300)}>
-                    <Text style={{ color: Theme.accentRed, fontSize: 13, lineHeight: 18, fontWeight: '400' }}>
+            {props.error && (
+                <Animated.View style={{ marginTop: 2, marginLeft: 16 }} layout={LinearTransition.duration(300)}>
+                    <Text style={{ color: theme.accentRed, fontSize: 13, lineHeight: 18, fontWeight: '400' }}>
                         {props.error}
                     </Text>
                 </Animated.View>
-            )} */}
-        </TouchableWithoutFeedback >
+            )}
+        </TouchableWithoutFeedback>
     )
 }));
