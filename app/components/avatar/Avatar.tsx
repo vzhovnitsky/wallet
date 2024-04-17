@@ -182,6 +182,29 @@ export const Avatar = memo((props: {
     // resolve image
     let img: any;
 
+    if (props.image) {
+        img = (
+            <FastImage
+                source={{ uri: props.image }}
+                style={{ width: props.size, height: props.size, borderRadius: props.size / 2, overflow: 'hidden' }}
+            />
+        );
+    } else if (!known || (!known.ic) && imgSource) {
+        const animalSize = props.size + 8
+        img = (
+            <FastImage
+                source={imgSource}
+                style={{ width: animalSize, height: animalSize, borderRadius: animalSize / 2, overflow: 'hidden' }}
+            />
+        );
+    } else {
+        img = <KnownAvatar size={props.size} wallet={known} />;
+    }
+
+
+    // resolve image
+    let img: any;
+
     if (!!known && !!known?.ic) {
         avatarBackgroundClr = theme.backgroundPrimary;
     } else if (hashColor) {
