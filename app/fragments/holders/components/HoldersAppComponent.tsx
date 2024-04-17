@@ -33,7 +33,7 @@ export function normalizePath(path: string) {
 import IcHolders from '@assets/ic_holders.svg';
 import { useDimensions } from '@react-native-community/hooks';
 
-function PulsingAccountPlaceholder(theme: ThemeType) {
+function PulsingAccountSkeleton(theme: ThemeType) {
     const safeArea = useSafeAreaInsets();
     const animation = useSharedValue(0);
 
@@ -53,7 +53,7 @@ function PulsingAccountPlaceholder(theme: ThemeType) {
         const scale = interpolate(
             animation.value,
             [0, 1],
-            [1, 1.03],
+            [1, 1.01],
             Extrapolation.CLAMP,
         )
         return {
@@ -78,30 +78,38 @@ function PulsingAccountPlaceholder(theme: ThemeType) {
                     borderBottomRightRadius: 28,
                 }}
             />
-            <Animated.View style={[
+            <View style={[
                 {
                     height: 44,
                     flexDirection: 'row',
                     alignItems: 'center',
-                    paddingHorizontal: 22,
-                    marginTop: Platform.OS === 'android' ? -24 : -12
+                    paddingHorizontal: 16,
+                    marginTop: safeArea.top - 59
                 },
-                animatedStyles
             ]}>
                 <View style={{
                     width: 32, height: 32,
-                    backgroundColor: theme.textSecondary,
+                    backgroundColor: '#1c1c1e',
                     borderRadius: 16
                 }} />
-                <View style={{ height: 36, flexGrow: 1, justifyContent: 'center', alignItems: 'center' }}>
-                    <View style={{ backgroundColor: theme.textSecondary, height: 28, width: 132, borderRadius: 20 }} />
-                </View>
-                <View style={{ width: 32, height: 32 }} />
-            </Animated.View>
+                <Animated.View
+                    style={[
+                        { height: 36, flexGrow: 1, justifyContent: 'center', alignItems: 'center' },
+                        animatedStyles
+                    ]}
+                >
+                    <View style={{ backgroundColor: '#1c1c1e', height: 28, width: 132, borderRadius: 20 }} />
+                </Animated.View>
+                <View style={{
+                    width: 32, height: 32,
+                    backgroundColor: '#1c1c1e',
+                    borderRadius: 16
+                }} />
+            </View>
             <Animated.View
                 style={[
                     {
-                        backgroundColor: theme.textSecondary,
+                        backgroundColor: '#1c1c1e',
                         height: 38,
                         width: 142,
                         borderRadius: 8,
@@ -114,7 +122,7 @@ function PulsingAccountPlaceholder(theme: ThemeType) {
             <Animated.View
                 style={[
                     {
-                        backgroundColor: theme.textSecondary,
+                        backgroundColor: '#1c1c1e',
                         height: 26,
                         width: 78,
                         borderRadius: 20,
@@ -271,34 +279,25 @@ export function HoldersPlaceholder() {
     );
 }
 
-export function WebViewLoader({ loaded, type }: { loaded: boolean, type: 'account' | 'create' | 'prepaid' }) {
+export function HoldersLoader({ loaded, type }: { loaded: boolean, type: 'account' | 'create' }) {
     const theme = useTheme();
     const navigation = useTypedNavigation();
     const safeArea = useSafeAreaInsets();
 
-    const [animationPlayed, setAnimationPlayed] = useState(loaded);
     const [showClose, setShowClose] = useState(false);
 
     const opacity = useSharedValue(1);
     const animatedStyles = useAnimatedStyle(() => {
         return {
-            position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
-            paddingTop: (type === 'account' || type === 'prepaid') ? 0 : safeArea.top,
-            backgroundColor: theme.backgroundPrimary,
-            alignItems: 'center',
-            opacity: withTiming(opacity.value, { duration: 150, easing: Easing.bezier(0.42, 0, 1, 1) }),
+            opacity: withTiming(
+                opacity.value,
+                { duration: 300, easing: Easing.bezier(0.42, 0, 1, 1) }
+            )
         };
     });
 
     useEffect(() => {
-        if (loaded) {
-            setTimeout(() => {
-                opacity.value = 0;
-                setTimeout(() => {
-                    setAnimationPlayed(true);
-                }, 150);
-            }, 250);
-        }
+        if (loaded) opacity.value = 0;
     }, [loaded]);
 
     useEffect(() => {
@@ -307,26 +306,21 @@ export function WebViewLoader({ loaded, type }: { loaded: boolean, type: 'accoun
         }, 3000);
     }, []);
 
-    if (animationPlayed) {
-        return null;
-    }
-
-    let placeholder = <HoldersPlaceholder />;
-
-    if (type === 'account') {
-        placeholder = <PulsingAccountPlaceholder {...theme} />;
-    }
-
-    if (type === 'prepaid') {
-        placeholder = <PulsingCardPlaceholder {...theme} />;
-    }
-
     return (
         <Animated.View
-            style={animatedStyles}
+            style={[
+                {
+                    position: 'absolute', top: 0, left: 0, right: 0, bottom: 0,
+                    paddingTop: type === 'account' ? 0 : safeArea.top,
+                    backgroundColor: theme.backgroundPrimary,
+                    alignItems: 'center'
+                },
+                animatedStyles
+            ]}
+            pointerEvents={loaded ? 'none' : 'auto'}
         >
             <View style={{ marginTop: 58, width: '100%', flexGrow: 1 }}>
-                {placeholder}
+                {type === 'account' ? <PulsingAccountSkeleton {...theme} /> : <HoldersPlaceholder />}
             </View>
             <ScreenHeader
                 onBackPressed={showClose ? navigation.goBack : undefined}
@@ -475,7 +469,7 @@ export const HoldersAppComponent = memo((
         return {
             ...tonConnectWebViewProps,
             injectedJavaScriptBeforeContentLoaded: injectSource,
-            
+
             useStatusBar: true,
             useMainButton: true,
             useToaster: true,
@@ -508,7 +502,7 @@ export const HoldersAppComponent = memo((
                     lockScroll: true
                 }}
                 webviewDebuggingEnabled={isTestnet}
-                loader={(p) => <WebViewLoader type={props.variant.type} {...p} />}
+                loader={(p) => <HoldersLoader type={props.variant.type} {...p} />}
             />
         </View>
     );
