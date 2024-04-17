@@ -6,7 +6,7 @@ import { WalletSettings } from "../../engine/state/walletSettings";
 import { avatarHash } from "../../utils/avatarHash";
 import { AddressContact } from "../../engine/hooks/contacts/useAddressBook";
 import { Address, Cell } from "@ton/core";
-import { KnownJettonMasters } from "../../secure/KnownWallets";
+import { KnownJettonMasters, KnownWallet } from "../../secure/KnownWallets";
 import { StoredMessage } from "../../engine/types/transactions";
 import { resolveOperation } from "../../engine/transactions/resolveOperation";
 import { parseBody } from "../../engine/transactions/parseWalletTransaction";
@@ -25,7 +25,8 @@ export const BatchAvatar = memo(({
     contacts,
     spamWallets,
     showSpambadge,
-    ownAccounts
+    ownAccounts,
+    knownWallets
 }: {
     message: StoredMessage,
     size: number,
@@ -40,7 +41,8 @@ export const BatchAvatar = memo(({
     contacts: { [key: string]: AddressContact },
     spamWallets: string[],
     showSpambadge?: boolean,
-    ownAccounts: SelectedAccount[]
+    ownAccounts: SelectedAccount[],
+    knownWallets: { [key: string]: KnownWallet }
 }) => {
     const addressString = message.info.type === 'internal' ? message.info.dest : null;
 
@@ -96,11 +98,11 @@ export const BatchAvatar = memo(({
             markContact={!!contact}
             icProps={{ ...icProps, isOwn }}
             theme={theme}
-            isTestnet={isTestnet}
             backgroundColor={avatarColor}
             hash={walletSettings?.avatar}
             verified={verified}
             showSpambadge={showSpambadge}
+            knownWallets={knownWallets}
         />
     );
 });
@@ -119,7 +121,8 @@ export const BatchAvatars = memo(({
     contacts,
     spamWallets,
     showSpambadge,
-    ownAccounts
+    ownAccounts,
+    knownWallets
 }: {
     messages: StoredMessage[],
     size: number,
@@ -134,7 +137,8 @@ export const BatchAvatars = memo(({
     contacts: { [key: string]: AddressContact },
     spamWallets: string[],
     showSpambadge?: boolean,
-    ownAccounts: SelectedAccount[]
+    ownAccounts: SelectedAccount[],
+    knownWallets: { [key: string]: KnownWallet }
 }) => {
 
     if (messages.length <= 1) {
@@ -186,6 +190,7 @@ export const BatchAvatars = memo(({
                                 spamWallets={spamWallets}
                                 showSpambadge={showSpambadge}
                                 ownAccounts={ownAccounts}
+                                knownWallets={knownWallets}
                             />
                         </PerfView>
                         <PerfView style={{ position: 'absolute', right: '10%', bottom: '10%' }}>
@@ -204,6 +209,7 @@ export const BatchAvatars = memo(({
                                 ownAccounts={ownAccounts}
                                 borderColor={backgroundColor ?? theme.backgroundPrimary}
                                 borderWidth={1}
+                                knownWallets={knownWallets}
                             />
                         </PerfView>
                     </>
@@ -226,6 +232,7 @@ export const BatchAvatars = memo(({
                                         spamWallets={spamWallets}
                                         showSpambadge={showSpambadge}
                                         ownAccounts={ownAccounts}
+                                        knownWallets={knownWallets}
                                     />
                                 </PerfView>
                             );
