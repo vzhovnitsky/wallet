@@ -86,10 +86,10 @@ import { PendingTxPreviewFragment } from './fragments/wallet/PendingTxPreviewFra
 import { DAppWebViewFragment } from './fragments/utils/DAppWebViewFragment';
 import { DevDAppWebViewFragment } from './fragments/dev/DevDAppWebViewFragment';
 import { NewAddressFormatFragment } from './fragments/NewAddressFormatFragment';
-import { BounceableFormatAboutFragment } from './fragments/utils/BounceableFormatAboutFragment';
-import { SwapFragment } from './fragments/integrations/SwapFragment';
 import { LiquidWithdrawActionFragment } from './fragments/staking/LiquidWithdrawActionFragment';
 import { LiquidStakingTransferFragment } from './fragments/staking/LiquidStakingTransferFragment';
+import { BounceableFormatAboutFragment } from './fragments/utils/BounceableFormatAboutFragment';
+import { SwapFragment } from './fragments/integrations/SwapFragment';
 
 const Stack = createNativeStackNavigator();
 Stack.Navigator.displayName = 'MainStack';
