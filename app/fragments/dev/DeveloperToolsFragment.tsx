@@ -88,7 +88,6 @@ export const DeveloperToolsFragment = fragment(() => {
         queryClient.clear();
         queryClient.invalidateQueries();
         storagePersistence.clearAll();
-        storageQuery.clearAll();
         await clearHolders(acc.address.toString({ testOnly: isTestnet }));
         await onAccountTouched(acc.address.toString({ testOnly: isTestnet }), isTestnet);
         reboot();

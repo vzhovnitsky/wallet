@@ -44,7 +44,7 @@ export const JettonProductItem = memo((props: {
 
     let name = props.jetton.name;
     let description = props.jetton.description;
-    let symbol = props.jetton.symbol ? ` ${props.jetton.symbol}` : '';
+    let symbol = props.jetton.symbol ?? '';
 
     const onPress = useCallback(() => {
         if (props.ledger) {
@@ -182,7 +182,7 @@ export const JettonProductItem = memo((props: {
                                     />
                                     {!!swapAmount && symbol.length <= 5 && (
                                         <Text style={{ color: theme.textSecondary, fontSize: 15 }}>
-                                            {symbol}
+                                            {` ${symbol}`}
                                         </Text>
                                     )}
                                 </PerfText>
@@ -201,7 +201,7 @@ export const JettonProductItem = memo((props: {
                                 ) : (symbol.length > 5
                                     ? (
                                         <Text style={{ color: theme.textSecondary, fontSize: 15 }}>
-                                            {symbol}
+                                            {` ${symbol}`}
                                         </Text>
                                     )
                                     : null
@@ -264,7 +264,7 @@ export const JettonProductItem = memo((props: {
                                 decimals={props.jetton.decimals}
                             />
                             <Text style={{ color: theme.textSecondary, fontSize: 15 }}>
-                                {symbol}
+                                {` ${symbol}`}
                             </Text>
                         </PerfText>
                         <View style={{ flexGrow: 1 }} />
