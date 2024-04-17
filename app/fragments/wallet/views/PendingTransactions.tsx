@@ -10,7 +10,6 @@ import { KnownWallet, KnownWallets } from "../../../secure/KnownWallets";
 import { t } from "../../../i18n/t";
 import { ValueComponent } from "../../../components/ValueComponent";
 import Animated, { FadeInDown, FadeOutUp } from "react-native-reanimated";
-import { useContact } from "../../../engine/hooks/contacts/useContact";
 import { AddressComponent } from "../../../components/address/AddressComponent";
 import { Address } from "@ton/core";
 import { PriceComponent } from "../../../components/PriceComponent";
@@ -21,6 +20,7 @@ import { useTypedNavigation } from "../../../utils/useTypedNavigation";
 import { useBounceableWalletFormat, useSelectedAccount, useWalletSettings } from "../../../engine/hooks";
 import { ThemeType } from "../../../engine/state/theme";
 import { Typography } from "../../../components/styles";
+import { useAddressBookContext } from "../../../engine/AddressBookContext";
 
 const PendingTransactionView = memo(({
     tx,
@@ -46,15 +46,17 @@ const PendingTransactionView = memo(({
     const targetFriendly = body?.type === 'token'
         ? body.target.toString({ testOnly: isTestnet })
         : tx.address?.toString({ testOnly: isTestnet });
-    const contact = useContact(targetFriendly);
+    const addressBookContext = useAddressBookContext();
+    const contact = addressBookContext.asContact(targetFriendly);
     const [settings,] = useWalletSettings(targetFriendly);
+    const knownWallets = KnownWallets(isTestnet);
     const bounceable = bounceableFormat ? true : (body?.type === 'token' ? body.bounceable : tx.bounceable);
 
     // Resolve built-in known wallets
     let known: KnownWallet | undefined = undefined;
     if (targetFriendly) {
-        if (KnownWallets(isTestnet)[targetFriendly]) {
-            known = KnownWallets(isTestnet)[targetFriendly];
+        if (knownWallets[targetFriendly]) {
+            known = knownWallets[targetFriendly];
         }
         if (!!contact) { // Resolve contact known wallet
             known = { name: contact.name }
@@ -110,6 +112,7 @@ const PendingTransactionView = memo(({
                             address={targetFriendly}
                             avatarId={targetFriendly ?? 'batch'}
                             style={{ backgroundColor: viewType === 'main' ? theme.surfaceOnBg : theme.backgroundPrimary }}
+                            knownWallets={knownWallets}
                         />
                     ) : (
                         <Avatar
@@ -120,7 +123,7 @@ const PendingTransactionView = memo(({
                             hash={settings?.avatar}
                             id={targetFriendly ?? 'batch'}
                             theme={theme}
-                            isTestnet={isTestnet}
+                            knownWallets={knownWallets}
                             backgroundColor={theme.backgroundPrimary}
                             hashColor
                             icProps={{ backgroundColor: viewType === 'main' ? theme.surfaceOnBg : theme.backgroundPrimary }}
