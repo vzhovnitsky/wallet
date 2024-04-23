@@ -1,6 +1,5 @@
 import axios from 'axios';
 import { z } from 'zod';
-import { getHoldersUrl } from '../../../fragments/dev/DeveloperToolsFragment';
 
 export const holdersEndpointStage = 'card-staging.whales-api.com';
 export const holdersUrlStage = 'https://tonhub-stage.holders.io';
