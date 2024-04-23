@@ -3,7 +3,7 @@ import { Jetton } from "../../engine/types";
 import { View, Image } from "react-native";
 import { WImage } from "../WImage";
 import { ThemeType } from "../../engine/state/theme";
-import { KnownJettonMasters } from "../../secure/KnownWallets";
+import { useKnownJettons } from "../../engine/hooks";
 
 import IcTonIcon from '@assets/ic-ton-acc.svg';
 
@@ -22,10 +22,12 @@ export const JettonIcon = memo(({
     backgroundColor?: string,
     isSCAM?: boolean
 }) => {
+    const knownJettons = useKnownJettons(isTestnet);
+    const knownJettonMasters = knownJettons?.masters ?? {};
 
     if (jetton.assets) {
-        const isKnown0 = jetton.assets[0].type === 'jetton' ? !!KnownJettonMasters(isTestnet)[jetton.assets[0].address] : true;
-        const isKnown1 = jetton.assets[1].type === 'jetton' ? !!KnownJettonMasters(isTestnet)[jetton.assets[1].address] : true;
+        const isKnown0 = jetton.assets[0].type === 'jetton' ? !!knownJettonMasters[jetton.assets[0].address] : true;
+        const isKnown1 = jetton.assets[1].type === 'jetton' ? !!knownJettonMasters[jetton.assets[1].address] : true;
 
         return (
             <View style={{ width: size, height: size, borderRadius: size / 2, borderWidth: 0, backgroundColor, overflow: 'hidden' }}>
@@ -91,7 +93,7 @@ export const JettonIcon = memo(({
         );
     }
 
-    const isKnown = !!KnownJettonMasters(isTestnet)[jetton.master.toString({ testOnly: isTestnet })];
+    const isKnown = !!knownJettonMasters[jetton.master.toString({ testOnly: isTestnet })];
 
     return (
         <View style={{ width: size, height: size, borderRadius: size / 2, borderWidth: 0 }}>

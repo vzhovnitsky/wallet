@@ -2,7 +2,6 @@ import { ForwardedRef, RefObject, forwardRef, memo, useCallback, useEffect, useM
 import { Platform, Pressable, View } from "react-native";
 import { ThemeType } from "../../engine/state/theme";
 import { Address } from "@ton/core";
-import { avatarColors } from "../Avatar";
 import { AddressDomainInput, AnimTextInputRef } from "./AddressDomainInput";
 import { ATextInputRef } from "../ATextInput";
 import { KnownWallet } from "../../secure/KnownWallets";
@@ -18,9 +17,9 @@ import { useDimensions } from "@react-native-community/hooks";
 import { useAddressBookContext } from "../../engine/AddressBookContext";
 import { TransactionDescription } from "../../engine/types";
 import { TypedNavigation } from "../../utils/useTypedNavigation";
-import { useAddressBookContext } from "../../engine/AddressBookContext";
 
 import IcChevron from '@assets/ic_chevron_forward.svg';
+import { avatarColors } from "../avatar/Avatar";
 
 type TransferAddressInputProps = {
     acc: Address,
@@ -145,7 +144,6 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
     );
 
     const isKnown: boolean = !!props.knownWallets[props.target];
-    const query = addressDomainInputState.input;
     const addressBookContext = useAddressBookContext();
     const contact = addressBookContext.asContact(props.target);
     const query = props.input;

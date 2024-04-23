@@ -6,11 +6,12 @@ import { WalletSettings } from "../../engine/state/walletSettings";
 import { avatarHash } from "../../utils/avatarHash";
 import { AddressContact } from "../../engine/hooks/contacts/useAddressBook";
 import { Address, Cell } from "@ton/core";
-import { KnownJettonMasters, KnownWallet } from "../../secure/KnownWallets";
+import { KnownWallet } from "../../secure/KnownWallets";
 import { StoredMessage } from "../../engine/types/transactions";
 import { resolveOperation } from "../../engine/transactions/resolveOperation";
 import { parseBody } from "../../engine/transactions/parseWalletTransaction";
 import { SelectedAccount } from "../../engine/types";
+import { useKnownJettons } from "../../engine/hooks";
 
 export const BatchAvatar = memo(({
     message,
@@ -44,6 +45,7 @@ export const BatchAvatar = memo(({
     ownAccounts: SelectedAccount[],
     knownWallets: { [key: string]: KnownWallet }
 }) => {
+    const knownJettons = useKnownJettons(isTestnet);
     const addressString = message.info.type === 'internal' ? message.info.dest : null;
 
     const address = useMemo(() => {
@@ -79,7 +81,7 @@ export const BatchAvatar = memo(({
     const friendlyTarget = operation.address;
     const target = Address.parse(friendlyTarget);
     const opAddressBounceable = target.toString({ testOnly: isTestnet });
-    const verified = !!KnownJettonMasters(isTestnet)[opAddressBounceable];
+    const verified = !!knownJettons?.masters?.[opAddressBounceable];
     const walletSettings = walletsSettings?.[opAddressBounceable];
     const avatarColorHash = walletSettings?.color ?? avatarHash(addressString, avatarColors.length);
     const avatarColor = avatarColors[avatarColorHash];

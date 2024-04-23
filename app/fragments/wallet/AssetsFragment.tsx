@@ -18,6 +18,7 @@ import { AssetsListItem } from "../../components/jettons/AssetsListItem";
 import { WImage } from "../../components/WImage";
 
 import TonIcon from '@assets/ic-ton-acc.svg';
+import { JettonIcon } from "../../components/products/JettonIcon";
 
 export const AssetsFragment = fragment(() => {
     const safeArea = useSafeAreaInsets();
@@ -199,8 +200,8 @@ export const AssetsFragment = fragment(() => {
                     )}
                     {(isLedgerScreen ? ledgerJettons : visibleList).map((j) => {
                         const selected = !!selectedJetton && j.master.equals(selectedJetton);
-                        const verified = KnownJettonMasters(network.isTestnet)[j.master.toString()];
-                        const isSCAM = !verified && KnownJettonTickers.includes(j.symbol);
+                        const verified = knownJettons?.masters[j.master.toString()];
+                        const isSCAM = !verified && knownJettons?.tickers?.includes(j.symbol);
                         return (
                             <AssetsListItem
                                 key={'jt' + j.wallet.toString()}

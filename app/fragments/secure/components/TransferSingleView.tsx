@@ -154,8 +154,8 @@ export const TransferSingleView = memo(({
     }, [amount, jettonAmountString, jetton]);
 
     const { isSCAM: isSCAMJetton } = useVerifyJetton({
-        ticker: jettonMaster?.symbol,
-        master: metadata?.jettonWallet?.master?.toString({ testOnly: isTestnet })
+        ticker: jetton?.symbol,
+        master: jetton?.master?.toString({ testOnly: isTestnet })
     });
 
     return (

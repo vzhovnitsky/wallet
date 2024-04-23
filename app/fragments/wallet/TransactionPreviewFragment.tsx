@@ -17,7 +17,7 @@ import { ToastDuration, useToaster } from '../../components/toast/ToastProvider'
 import { ScreenHeader } from "../../components/ScreenHeader";
 import { ItemGroup } from "../../components/ItemGroup";
 import { AboutIconButton } from "../../components/AboutIconButton";
-import { useAppState, useBounceableWalletFormat, useDontShowComments, useIsSpamWallet, useNetwork, usePrice, useSelectedAccount, useSpamMinAmount, useTheme, useVerifyJetton } from "../../engine/hooks";
+import { useAppState, useBounceableWalletFormat, useDontShowComments, useIsSpamWallet, useJettons, useNetwork, usePeparedMessages, usePrice, useSelectedAccount, useServerConfig, useSpamMinAmount, useTheme, useVerifyJetton, useWalletsSettings } from "../../engine/hooks";
 import { useRoute } from "@react-navigation/native";
 import { TransactionDescription } from "../../engine/types";
 import { BigMath } from "../../utils/BigMath";
@@ -76,7 +76,7 @@ const TransactionPreview = () => {
     const kind = tx.base.parsed.kind;
     const item = operation.items[0];
     const fees = BigInt(tx.base.fees);
-    const messages = tx.outMessages ?? [];
+    const messages = tx.base.outMessages ?? [];
     const opAddress = item.kind === 'token' ? operation.address : tx.base.parsed.resolvedAddress;
     const isOwn = appState.addresses.findIndex((a) => a.address.equals(Address.parse(opAddress))) >= 0;
     const parsedOpAddr = Address.parseFriendly(opAddress);
@@ -254,7 +254,7 @@ const TransactionPreview = () => {
                     justifyContent: 'center', alignItems: 'center'
                 }}>
                     <PerfView style={{ backgroundColor: theme.divider, position: 'absolute', top: 0, left: 0, right: 0, height: 54 }} />
-                    {tx.outMessagesCount > 1 ? (
+                    {tx.base.outMessagesCount > 1 ? (
                         <BatchAvatars
                             messages={messages}
                             size={68}
@@ -353,7 +353,7 @@ const TransactionPreview = () => {
                             {t('tx.failed')}
                         </PerfText>
                     ) : (
-                        tx.outMessagesCount > 1 ? (
+                        tx.base.outMessagesCount > 1 ? (
                             <PerfView style={{ justifyContent: 'center', alignItems: 'center' }}>
                                 {preparedMessages.map((message, index) => {
                                     if (!message.amountString) {
@@ -418,7 +418,7 @@ const TransactionPreview = () => {
                         )
                     )}
                 </PerfView>
-                {tx.outMessagesCount > 1 ? (
+                {tx.base.outMessagesCount > 1 ? (
                     <>
                         <PerfView style={{ marginTop: 16 }}>
                             <PreviewMessages

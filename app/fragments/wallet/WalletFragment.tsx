@@ -26,7 +26,7 @@ import { BlurView } from 'expo-blur';
 import { Typography } from '../../components/styles';
 import { useSpecialJetton } from '../../engine/hooks/jettons/useSpecialJetton';
 import { LiquidStakingFragment } from '../staking/LiquidStakingFragment';
-import { isNeocryptoAvailable } from '../../utils/isNeocryptoAvailable';
+import { WalletActions } from './views/WalletActions';
 
 function WalletComponent(props: { wallet: AccountLite | null, selectedAcc: SelectedAccount }) {
     const network = useNetwork();
@@ -58,7 +58,6 @@ function WalletComponent(props: { wallet: AccountLite | null, selectedAcc: Selec
     }, [account, stakingBalance, holdersCards, specialJetton?.toTon]);
 
     const navigateToCurrencySettings = useCallback(() => navigation.navigate('Currency'), []);
-    const onOpenBuy = useCallback(() => navigation.navigate('Buy'), []);
 
     return (
         <View style={{ flexGrow: 1, backgroundColor: theme.backgroundPrimary }}>

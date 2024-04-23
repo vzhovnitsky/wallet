@@ -2,8 +2,6 @@ import * as React from 'react';
 import { Pressable, Text } from 'react-native';
 import { ValueComponent } from '../../../components/ValueComponent';
 import { AddressComponent } from '../../../components/address/AddressComponent';
-import { Avatar, avatarColors } from '../../../components/Avatar';
-import { PendingTransactionAvatar } from '../../../components/PendingTransactionAvatar';
 import { KnownWallet, KnownWallets } from '../../../secure/KnownWallets';
 import { t } from '../../../i18n/t';
 import { TypedNavigation } from '../../../utils/useTypedNavigation';
@@ -25,6 +23,7 @@ import { getLiquidStakingAddress } from '../../../utils/KnownPools';
 import { usePeparedMessages } from '../../../engine/hooks';
 import { TxAvatar } from './TxAvatar';
 import { PreparedMessageView } from './PreparedMessageView';
+import { avatarColors } from '../../../components/avatar/Avatar';
 
 export function TransactionView(props: {
     own: Address,
@@ -67,7 +66,7 @@ export function TransactionView(props: {
     const parsedAddress = parsedOpAddr.address;
     const parsedAddressFriendly = parsedAddress.toString({ testOnly: isTestnet });
     const isOwn = (props.appState?.addresses ?? []).findIndex((a) => a.address.equals(Address.parse(opAddress))) >= 0;
-    const preparedMessages = usePeparedMessages(tx.outMessages, isTestnet);
+    const preparedMessages = usePeparedMessages(tx.base.outMessages, isTestnet);
 
     const walletSettings = props.walletsSettings[parsedAddressFriendly];
     const jetton = props.jettons.find((j) =>
@@ -252,7 +251,7 @@ export function TransactionView(props: {
                         ellipsizeMode={'middle'}
                         numberOfLines={1}
                     >
-                        {tx.outMessagesCount <= 1 && (
+                        {tx.base.outMessagesCount <= 1 && (
                             <>
                                 {known
                                     ? known.name
@@ -298,7 +297,7 @@ export function TransactionView(props: {
                             </Text>
                         </Text>
                     )}
-                    {item.kind !== 'token' && tx.outMessagesCount <= 1 && (
+                    {item.kind !== 'token' && tx.base.outMessagesCount <= 1 && (
                         <PriceComponent
                             amount={absAmount}
                             prefix={kind === 'in' ? '+' : '-'}

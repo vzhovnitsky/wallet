@@ -250,7 +250,7 @@ export const WalletTransactions = memo((props: {
         }
 
         const actionSheetOptions: ActionSheetOptions = {
-            options: tx.outMessagesCount > 1 ? [
+            options: tx.base.outMessagesCount > 1 ? [
                 t('common.cancel'),
                 t('txActions.txShare'),
             ] : [

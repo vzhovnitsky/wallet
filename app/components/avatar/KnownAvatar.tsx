@@ -13,7 +13,6 @@ export const KnownAvatar = memo((props: { size: number, wallet: KnownWallet }) =
             }}
             fadeDuration={0}
             source={props.wallet.ic}
-            fadeDuration={0}
         />
     );
 });

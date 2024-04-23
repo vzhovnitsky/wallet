@@ -135,8 +135,7 @@ export function useLinkNavigator(isTestnet: boolean) {
                                 verified: null,
                                 op: null,
                                 title: null,
-                                outMessages: base.outMessages,
-                                outMessagesCount: base.outMessagesCount
+                                masterAddressStr: jettonMaster
                             };
                         }
                     }

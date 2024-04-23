@@ -140,39 +140,14 @@ export const JettonProductItem = memo((props: {
                             padding: 20,
                             backgroundColor: theme.surfaceOnBg
                         }}>
-                            <View style={{ width: 46, height: 46, borderRadius: 23, borderWidth: 0 }}>
-                                <WImage
-                                    src={props.jetton.icon ? props.jetton.icon : undefined}
-                                    width={46}
-                                    heigh={46}
-                                    borderRadius={23}
-                                />
-                                {verified ? (
-                                    <View style={{
-                                        justifyContent: 'center', alignItems: 'center',
-                                        height: 20, width: 20, borderRadius: 10,
-                                        position: 'absolute', right: -2, bottom: -2,
-                                        backgroundColor: theme.surfaceOnBg
-                                    }}>
-                                        <Image
-                                            source={require('@assets/ic-verified.png')}
-                                            style={{ height: 20, width: 20 }}
-                                        />
-                                    </View>
-                                ) : (isSCAM && (
-                                    <View style={{
-                                        justifyContent: 'center', alignItems: 'center',
-                                        height: 20, width: 20, borderRadius: 10,
-                                        position: 'absolute', right: -2, bottom: -2,
-                                        backgroundColor: theme.surfaceOnBg
-                                    }}>
-                                        <Image
-                                            source={require('@assets/ic-jetton-scam.png')}
-                                            style={{ height: 20, width: 20 }}
-                                        />
-                                    </View>
-                                ))}
-                            </View>
+                            <JettonIcon
+                                size={46}
+                                jetton={props.jetton}
+                                theme={theme}
+                                isTestnet={isTestnet}
+                                backgroundColor={theme.surfaceOnElevation}
+                                isSCAM={isSCAM}
+                            />
                             <View style={{ marginLeft: 12, flex: 1 }}>
                                 <PerfText
                                     style={{ color: theme.textPrimary, fontSize: 17, lineHeight: 24, fontWeight: '600' }}
@@ -263,27 +238,12 @@ export const JettonProductItem = memo((props: {
                     },
                     animatedStyle
                 ]}>
-                    <View style={{ width: 46, height: 46, borderRadius: 23, borderWidth: 0 }}>
-                        <WImage
-                            src={props.jetton.icon ? props.jetton.icon : undefined}
-                            width={46}
-                            heigh={46}
-                            borderRadius={23}
-                        />
-                        {verified && (
-                            <View style={{
-                                justifyContent: 'center', alignItems: 'center',
-                                height: 20, width: 20, borderRadius: 10,
-                                position: 'absolute', right: -2, bottom: -2,
-                                backgroundColor: theme.surfaceOnBg
-                            }}>
-                                <Image
-                                    source={require('@assets/ic-verified.png')}
-                                    style={{ height: 20, width: 20 }}
-                                />
-                            </View>
-                        )}
-                    </View>
+                    <JettonIcon
+                        size={46}
+                        jetton={props.jetton}
+                        theme={theme}
+                        isTestnet={isTestnet}
+                    />
                     <View style={{ marginLeft: 12, flex: 1 }}>
                         <PerfText
                             style={{ color: theme.textPrimary, fontSize: 17, lineHeight: 24, fontWeight: '600' }}

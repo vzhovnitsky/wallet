@@ -9,7 +9,7 @@ import { useTypedNavigation } from '../../utils/useTypedNavigation';
 import { TonProductComponent } from "./TonProductComponent";
 import { SpecialJettonProduct } from "./SpecialJettonProduct";
 import { Address } from "@ton/core";
-import { TonProductComponent } from "./TonProductComponent";
+import { StakingProductComponent } from "./StakingProductComponent";
 
 export const LedgerProductsComponent = memo(({ account, testOnly }: { account: AccountLite, testOnly: boolean }) => {
     const theme = useTheme();
