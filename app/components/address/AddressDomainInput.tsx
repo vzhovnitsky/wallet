@@ -1,6 +1,6 @@
 import React, { ForwardedRef, forwardRef, memo, useCallback, useEffect, useImperativeHandle, useMemo, useRef, useState } from "react"
 import { Alert, Pressable, Image, TextInput, View, Text, Platform, } from "react-native"
-import Animated, { FadeIn, FadeOut, cancelAnimation, interpolate, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated"
+import Animated, { FadeIn, FadeOut, cancelAnimation, interpolate, setNativeProps, useAnimatedRef, useAnimatedStyle, useSharedValue, withTiming } from "react-native-reanimated"
 import { BarCodeScanner } from 'expo-barcode-scanner';
 import { Address } from "@ton/core";
 import { AddressContact } from "../../engine/hooks/contacts/useAddressBook";
@@ -16,6 +16,14 @@ import { AddressInputAction, InputActionType } from "./TransferAddressInput";
 import { resolveBounceableTag } from "../../utils/resolveBounceableTag";
 import { Typography } from "../styles";
 import { ThemeType } from "../../engine/state/theme";
+
+const AnimatedInput = Animated.createAnimatedComponent(TextInput);
+
+export type AnimTextInputRef = {
+    focus: () => void;
+    blur?: () => void;
+    setText: (text: string) => void;
+}
 
 export const AddressDomainInput = memo(forwardRef(({
     onFocus,
@@ -55,7 +63,7 @@ export const AddressDomainInput = memo(forwardRef(({
     theme: ThemeType,
     isTestnet: boolean,
     navigation: TypedNavigation,
-}, ref: ForwardedRef<ATextInputRef>) => {
+}, ref: ForwardedRef<AnimTextInputRef>) => {
     const client = useClient4(isTestnet);
     const netConfig = useConfig();
     const [resolving, setResolving] = useState<boolean>();
@@ -212,20 +220,25 @@ export const AddressDomainInput = memo(forwardRef(({
         }
     }, [textInput, netConfig]);
 
-    const tref = useRef<TextInput>(null);
+    const animatedRef = useAnimatedRef<TextInput>();
+
     useImperativeHandle(ref, () => ({
         focus: () => {
-            tref.current!.focus();
+            animatedRef.current!.focus();
         },
         blur: () => {
-            tref.current!.blur();
+            animatedRef.current!.blur();
+        },
+        setText: (text: string) => {
+            animatedRef.current!.setNativeProps({ text });
         }
     }), []);
 
     const valueNotEmptyShared = useSharedValue(0);
     const labelHeightCoeff = useSharedValue(1);
     const valueNotEmpty = (textInput?.length || 0) > 0;
-    const xTranslate = Math.round((screenWidth ?? 0) * 0.1) + 2;
+    const screenWidthValue = screenWidth ?? 0;
+    const xTranslate = Math.round(screenWidthValue * 0.1) + Math.round(screenWidthValue / 2 * 0.01);
 
     const labelAnimStyle = useAnimatedStyle(() => {
         return {
@@ -289,8 +302,8 @@ export const AddressDomainInput = memo(forwardRef(({
             <View style={{ width: '100%', flex: 1, flexShrink: 1 }}>
                 <Animated.View style={labelShiftStyle} />
                 <View style={{ flexDirection: 'row', alignItems: 'center' }}>
-                    <TextInput
-                        ref={tref}
+                    <AnimatedInput
+                        ref={animatedRef}
                         style={{
                             color: theme.textPrimary,
                             marginHorizontal: 0, marginVertical: 0,
@@ -299,11 +312,9 @@ export const AddressDomainInput = memo(forwardRef(({
                             fontSize: 17, fontWeight: '400',
                             textAlignVertical: 'center',
                             flexShrink: 1,
+                            flexGrow: suffix ? 0 : 1
                         }}
-                        selectionColor={Platform.select({
-                            ios: theme.accent,
-                            android: 'rgba(0, 0, 0, 0.3)',
-                        })}
+                        selectionColor={theme.accent}
                         cursorColor={theme.textPrimary}
                         autoFocus={autoFocus}
                         placeholderTextColor={theme.textSecondary}
@@ -315,7 +326,6 @@ export const AddressDomainInput = memo(forwardRef(({
                         multiline
                         blurOnSubmit={false}
                         editable={!resolving}
-                        value={textInput}
                         onChangeText={(value) => {
                             // Remove leading and trailing spaces
                             value = value.trim();

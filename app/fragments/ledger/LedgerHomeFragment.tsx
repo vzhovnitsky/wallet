@@ -19,8 +19,8 @@ import { StakingFragment } from "../staking/StakingFragment";
 import { StakingPoolsFragment } from "../staking/StakingPoolsFragment";
 import { useFocusEffect } from "@react-navigation/native";
 import { BlurView } from "expo-blur";
+import { useSpecialJetton } from "../../engine/hooks/jettons/useSpecialJetton";
 import { LiquidStakingFragment } from "../staking/LiquidStakingFragment";
-import { useUSDT } from "../../engine/hooks/jettons/useUSDT";
 
 export const LedgerHomeFragment = fragment(() => {
     const theme = useTheme();
@@ -42,7 +42,7 @@ export const LedgerHomeFragment = fragment(() => {
 
     const account = useAccountLite(address!, { refetchOnMount: true })!;
     const staking = useStaking(address!);
-    const usdt = useUSDT(address!);
+    const specialJetton = useSpecialJetton(address!);
 
     const stakingBalance = useMemo(() => {
         if (!staking) {
@@ -55,8 +55,8 @@ export const LedgerHomeFragment = fragment(() => {
         const accountWithStaking = (account ? BigInt(account.balance) : 0n)
             + (stakingBalance || 0n);
 
-        return accountWithStaking + (usdt?.toTon ?? 0n);
-    }, [account, stakingBalance, usdt.toTon]);
+        return accountWithStaking + (specialJetton?.toTon ?? 0n);
+    }, [account, stakingBalance, specialJetton?.toTon]);
 
     // Navigation
     const navigateToCurrencySettings = useCallback(() => navigation.navigate('Currency'), []);

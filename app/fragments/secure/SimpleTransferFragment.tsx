@@ -12,7 +12,7 @@ import { useTypedNavigation } from '../../utils/useTypedNavigation';
 import { AsyncLock } from 'teslabot';
 import { getCurrentAddress } from '../../storage/appState';
 import { t } from '../../i18n/t';
-import { KnownJettonMasters, KnownWallets } from '../../secure/KnownWallets';
+import { KnownWallets } from '../../secure/KnownWallets';
 import { fragment } from '../../fragment';
 import { LedgerOrder, Order, createJettonOrder, createLedgerJettonOrder, createSimpleLedgerOrder, createSimpleOrder } from './ops/Order';
 import { useLinkNavigator } from "../../useLinkNavigator";
@@ -22,7 +22,7 @@ import { ReactNode, RefObject, createRef, useCallback, useEffect, useMemo, useRe
 import { formatAmount, formatCurrency, formatInputAmount } from '../../utils/formatCurrency';
 import { ValueComponent } from '../../components/ValueComponent';
 import { useRoute } from '@react-navigation/native';
-import { useAccountLite, useAccountTransactions, useClient4, useCommitCommand, useConfig, useIsScamJetton, useJettonWallet, useJettons, useNetwork, usePrice, useSelectedAccount, useTheme } from '../../engine/hooks';
+import { useAccountLite, useAccountTransactions, useClient4, useCommitCommand, useConfig, useJettonMaster, useJettonWallet, useNetwork, usePrice, useSelectedAccount, useTheme, useVerifyJetton } from '../../engine/hooks';
 import { useLedgerTransport } from '../ledger/components/TransportContext';
 import { fromBnWithDecimals, toBnWithDecimals } from '../../utils/withDecimals';
 import { fetchSeqno } from '../../engine/api/fetchSeqno';
@@ -30,7 +30,7 @@ import { getLastBlock } from '../../engine/accountWatcher';
 import { MessageRelaxed, loadStateInit, comment, internal, external, fromNano, Cell, Address, toNano, SendMode, storeMessage, storeMessageRelaxed } from '@ton/core';
 import { estimateFees } from '../../utils/estimateFees';
 import { resolveLedgerPayload } from '../ledger/utils/resolveLedgerPayload';
-import { TransferAddressInput, addressInputReducer } from '../../components/address/TransferAddressInput';
+import { AddressInputAction, AddressInputState, TransferAddressInput, addressInputReducer } from '../../components/address/TransferAddressInput';
 import { ItemDivider } from '../../components/ItemDivider';
 import { AboutIconButton } from '../../components/AboutIconButton';
 import { StatusBar } from 'expo-status-bar';
@@ -40,6 +40,7 @@ import { JettonIcon } from '../../components/products/JettonIcon';
 
 import IcTonIcon from '@assets/ic-ton-acc.svg';
 import IcChevron from '@assets/ic_chevron_forward.svg';
+import { AnimTextInputRef } from '../../components/address/AddressDomainInput';
 
 export type SimpleTransferParams = {
     target?: string | null,
@@ -85,8 +86,7 @@ export const SimpleTransferFragment = fragment(() => {
 
     const accountLite = useAccountLite(isLedger ? ledgerAddress : acc!.address);
 
-    const [addressDomainInputState, dispatchAddressDomainInput] = useReducer(
-        addressInputReducer(),
+    const [addressDomainInputState, setAddressDomainInputState] = useState<AddressInputState>(
         {
             input: params?.target || '',
             target: params?.target || '',
@@ -183,14 +183,10 @@ export const SimpleTransferFragment = fragment(() => {
         );
     }, [price, currency, estimation]);
 
-    const isVerified = useMemo(() => {
-        if (!jettonState || !jettonState.wallet.master) {
-            return true;
-        }
-        return !!KnownJettonMasters(network.isTestnet)[jettonState.wallet.master];
-    }, [jettonState]);
-    
-    const isSCAM = useIsScamJetton(jettonState?.master?.symbol, jettonState?.wallet?.master);
+    const { isSCAM, verified: isVerified } = useVerifyJetton({
+        ticker: jettonState?.master?.symbol,
+        master: jettonState?.wallet?.master
+    });
 
     const balance = useMemo(() => {
         let value: bigint;
@@ -843,7 +839,7 @@ export const SimpleTransferFragment = fragment(() => {
                     onLayout={(e) => setAddressInputHeight(e.nativeEvent.layout.height)}
                 >
                     <TransferAddressInput
-                        ref={refs[0]}
+                        ref={refs[0] as RefObject<AnimTextInputRef>}
                         acc={ledgerAddress ?? acc!.address}
                         theme={theme}
                         target={target}
@@ -853,7 +849,7 @@ export const SimpleTransferFragment = fragment(() => {
                         isTestnet={network.isTestnet}
                         index={0}
                         onFocus={onFocus}
-                        dispatch={dispatchAddressDomainInput}
+                        setAddressDomainInputState={setAddressDomainInputState}
                         onSubmit={onSubmit}
                         onQRCodeRead={onQRCodeRead}
                         isSelected={selected === 'address'}

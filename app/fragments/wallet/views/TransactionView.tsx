@@ -2,8 +2,9 @@ import * as React from 'react';
 import { Pressable, Text } from 'react-native';
 import { ValueComponent } from '../../../components/ValueComponent';
 import { AddressComponent } from '../../../components/address/AddressComponent';
+import { Avatar, avatarColors } from '../../../components/Avatar';
+import { PendingTransactionAvatar } from '../../../components/PendingTransactionAvatar';
 import { KnownWallet, KnownWallets } from '../../../secure/KnownWallets';
-import { avatarColors } from '../../../components/avatar/Avatar';
 import { t } from '../../../i18n/t';
 import { TypedNavigation } from '../../../utils/useTypedNavigation';
 import { PriceComponent } from '../../../components/PriceComponent';
@@ -17,7 +18,7 @@ import { PerfText } from '../../../components/basic/PerfText';
 import { AppState } from '../../../storage/appState';
 import { PerfView } from '../../../components/basic/PerfView';
 import { Typography } from '../../../components/styles';
-import { useIsScamJetton } from '../../../engine/hooks';
+import { useVerifyJetton, useWalletSettings } from '../../../engine/hooks';
 import { avatarHash } from '../../../utils/avatarHash';
 import { WalletSettings } from '../../../engine/state/walletSettings';
 import { getLiquidStakingAddress } from '../../../utils/KnownPools';
@@ -136,8 +137,12 @@ export function TransactionView(props: {
         ? (spam ? theme.textPrimary : theme.accentGreen)
         : theme.textPrimary;
 
-    const jettonMaster = tx.metadata?.jettonWallet?.master;
-    const isSCAMJetton = useIsScamJetton(tx.masterMetadata?.symbol, jettonMaster?.toString({ testOnly: isTestnet }));
+    const jettonMaster = tx.masterAddressStr ?? tx.metadata?.jettonWallet?.master?.toString({ testOnly: isTestnet });
+
+    const { isSCAM: isSCAMJetton } = useVerifyJetton({
+        ticker: item.kind === 'token' ? tx.masterMetadata?.symbol : undefined,
+        master: jettonMaster
+    });
 
     const symbolText = `${(item.kind === 'token')
         ? `${jetton?.symbol ? ` ${jetton.symbol}` : ''}`

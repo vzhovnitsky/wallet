@@ -1,4 +1,4 @@
-import React, { } from "react"
+import React, { memo } from "react"
 import { Text, View } from "react-native"
 import { t } from "../../i18n/t";
 import { LedgerJettonsProductComponent } from "./LedgerJettonsProductComponent";
@@ -6,12 +6,12 @@ import { useTheme } from "../../engine/hooks";
 import { Typography } from "../styles";
 import { AccountLite } from '../../engine/hooks/accounts/useAccountLite';
 import { useTypedNavigation } from '../../utils/useTypedNavigation';
-import { StakingProductComponent } from "./StakingProductComponent";
-import { USDTProduct } from "./USDTProduct";
+import { TonProductComponent } from "./TonProductComponent";
+import { SpecialJettonProduct } from "./SpecialJettonProduct";
 import { Address } from "@ton/core";
 import { TonProductComponent } from "./TonProductComponent";
 
-export const LedgerProductsComponent = React.memo(({ account, testOnly }: { account: AccountLite, testOnly: boolean }) => {
+export const LedgerProductsComponent = memo(({ account, testOnly }: { account: AccountLite, testOnly: boolean }) => {
     const theme = useTheme();
     const navigation = useTypedNavigation();
 
@@ -32,22 +32,31 @@ export const LedgerProductsComponent = React.memo(({ account, testOnly }: { acco
                     </Text>
                 </View>
 
-                <TonProductComponent
-                    key={'ton-native'}
-                    balance={account.balance}
-                    theme={theme}
-                    navigation={navigation}
-                    isLedger
-                />
-                
-                <USDTProduct
-                    key={'usdt-native'}
-                    theme={theme}
-                    navigation={navigation}
-                    isLedger
-                    address={Address.parse(account.address)}
-                    testOnly={testOnly}
-                />
+                <View style={{
+                    marginHorizontal: 16, marginBottom: 16,
+                    backgroundColor: theme.surfaceOnBg,
+                    borderRadius: 20
+                }}>
+                    <TonProductComponent
+                        key={'ton-native'}
+                        balance={account.balance}
+                        theme={theme}
+                        navigation={navigation}
+                        address={Address.parse(account.address)}
+                        testOnly={testOnly}
+                        isLedger={true}
+                    />
+
+                    <SpecialJettonProduct
+                        key={'special-jettton'}
+                        theme={theme}
+                        navigation={navigation}
+                        address={Address.parse(account.address)}
+                        testOnly={testOnly}
+                        divider={'top'}
+                        isLedger={true}
+                    />
+                </View>
 
                 <View style={{ marginTop: 4 }}>
                     <StakingProductComponent isLedger key={'pool'} />

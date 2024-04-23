@@ -9,7 +9,7 @@ import { formatDate, formatTime } from "../../utils/dates";
 import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { Avatar, avatarColors } from "../../components/avatar/Avatar";
 import { t } from "../../i18n/t";
-import { KnownJettonMasters, KnownWallet, KnownWallets } from "../../secure/KnownWallets";
+import { KnownWallet, KnownWallets } from "../../secure/KnownWallets";
 import { RoundButton } from "../../components/RoundButton";
 import { PriceComponent } from "../../components/PriceComponent";
 import { copyText } from "../../utils/copyText";
@@ -17,7 +17,7 @@ import { ToastDuration, useToaster } from '../../components/toast/ToastProvider'
 import { ScreenHeader } from "../../components/ScreenHeader";
 import { ItemGroup } from "../../components/ItemGroup";
 import { AboutIconButton } from "../../components/AboutIconButton";
-import { useAppState, useBounceableWalletFormat, useDontShowComments, useIsScamJetton, useJettons, useNetwork, usePeparedMessages, usePrice, useSelectedAccount, useServerConfig, useSpamMinAmount, useTheme, useWalletsSettings } from "../../engine/hooks";
+import { useAppState, useBounceableWalletFormat, useDontShowComments, useIsSpamWallet, useNetwork, usePrice, useSelectedAccount, useSpamMinAmount, useTheme, useVerifyJetton } from "../../engine/hooks";
 import { useRoute } from "@react-navigation/native";
 import { TransactionDescription } from "../../engine/types";
 import { BigMath } from "../../utils/BigMath";
@@ -90,9 +90,6 @@ const TransactionPreview = () => {
 
     const avatarColorHash = opAddressWalletSettings?.color ?? avatarHash(opAddress, avatarColors.length);
     const avatarColor = avatarColors[avatarColorHash];
-
-    const verified = !!tx.verified
-        || !!KnownJettonMasters(isTestnet)[opAddressBounceable];
 
     const contact = addressBook.asContact(opAddressBounceable);
     const isSpam = addressBook.isDenyAddress(opAddressBounceable);
@@ -218,8 +215,14 @@ const TransactionPreview = () => {
             : theme.accentGreen
         : theme.textPrimary
 
-    const jettonMaster = tx.metadata?.jettonWallet?.master;
-    const isSCAMJetton = useIsScamJetton(jetton?.symbol, jettonMaster?.toString({ testOnly: isTestnet }));
+    const jettonMaster = tx.masterAddressStr ?? tx.metadata?.jettonWallet?.master?.toString({ testOnly: isTestnet });
+
+    const { isSCAM: isSCAMJetton, verified: verifiedJetton } = useVerifyJetton({
+        ticker: item.kind === 'token' ? jetton?.symbol : undefined,
+        master: jettonMaster
+    });
+
+    const verified = !!tx.verified || verifiedJetton;
 
     return (
         <PerfView

@@ -8,62 +8,78 @@ import { Typography } from "../styles";
 import { PriceComponent } from "../PriceComponent";
 import { ValueComponent } from "../ValueComponent";
 import { Address } from "@ton/core";
-import { useUSDT } from "../../engine/hooks/jettons/useUSDT";
+import { useSpecialJetton } from "../../engine/hooks/jettons/useSpecialJetton";
+import { WImage } from "../WImage";
+import { ItemDivider } from "../ItemDivider";
+import { useBounceableWalletFormat } from "../../engine/hooks";
 
-export const USDTProduct = memo(({
+export const SpecialJettonProduct = memo(({
     theme,
     navigation,
     isLedger,
     address,
-    testOnly
+    testOnly,
+    divider
 }: {
     theme: ThemeType,
     navigation: TypedNavigation,
     isLedger?: boolean,
     address: Address,
-    testOnly: boolean
+    testOnly: boolean,
+    divider?: 'top' | 'bottom'
 }) => {
     const { onPressIn, onPressOut, animatedStyle } = useAnimatedPressedInOut();
-    const usdt = useUSDT(address);
+    const specialJetton = useSpecialJetton(address);
+    const content = specialJetton?.masterContent;
+    const balance = specialJetton?.balance ?? 0n;
+    const [bounceableFormat,] = useBounceableWalletFormat();
+    const ledgerAddressStr = address?.toString({ bounceable: bounceableFormat, testOnly });
 
-    const balance = usdt?.balance ?? 0n;
+    const onPress = useCallback(() => {
+        const jetton = specialJetton ? { master: specialJetton?.master, data: specialJetton?.masterContent } : undefined;
 
-    const onTonPress = useCallback(() => {
-        if (!usdt) {
+        if (balance === 0n) {
+            if (isLedger) {
+                navigation.navigate('LedgerReceive', { addr: ledgerAddressStr, ledger: true, jetton });
+            } else {
+                navigation.navigate('Receive', { jetton });
+            }
             return;
         }
-        if (isLedger) {
-            navigation.navigateLedgerTransfer({
 
-            });
+        if (!specialJetton || !specialJetton.wallet) {
             return;
         }
-        navigation.navigateSimpleTransfer({
+
+        const tx = {
             amount: null,
             target: null,
             comment: null,
-            jetton: usdt.wallet,
+            jetton: specialJetton.wallet,
             stateInit: null,
             job: null,
             callback: null
-        });
+        }
 
-    }, [usdt, isLedger]);
+        if (isLedger) {
+            navigation.navigateLedgerTransfer(tx);
+            return;
+        }
 
-    if (!testOnly) {
-        return null;
-    }
+        navigation.navigateSimpleTransfer(tx);
+
+    }, [specialJetton, isLedger, ledgerAddressStr, balance]);
 
     return (
         <Pressable
-            disabled={!usdt}
             onPressIn={onPressIn}
             onPressOut={onPressOut}
             style={({ pressed }) => {
-                return { flex: 1, paddingHorizontal: 16, marginBottom: 16, opacity: pressed ? 0.8 : 1 }
+                return { flex: 1, opacity: pressed ? 0.8 : 1 }
             }}
-            onPress={onTonPress}
+            onPress={onPress}
         >
+            {divider === 'top' && <ItemDivider marginVertical={0} />}
             <Animated.View style={[
                 {
                     flexDirection: 'row', flexGrow: 1,
@@ -82,13 +98,12 @@ export const USDTProduct = memo(({
                     justifyContent: 'center',
                     alignItems: 'center'
                 }}>
-                    <Text
-                        style={[{ color: theme.white }, Typography.medium13_18]}
-                        ellipsizeMode="tail"
-                        numberOfLines={1}
-                    >
-                        {'USDT'}
-                    </Text>
+                    <WImage
+                        requireSource={require('@assets/known/ic-usdt.png')}
+                        width={46}
+                        heigh={46}
+                        borderRadius={23}
+                    />
                     <View style={{
                         justifyContent: 'center', alignItems: 'center',
                         height: 20, width: 20, borderRadius: 10,
@@ -107,23 +122,31 @@ export const USDTProduct = memo(({
                         ellipsizeMode="tail"
                         numberOfLines={1}
                     >
-                        {'USDT'}
+                        {content?.name ?? 'TetherUSD₮'}
                     </Text>
                     <Text
                         numberOfLines={1}
                         ellipsizeMode={'tail'}
                         style={{ fontSize: 15, fontWeight: '400', lineHeight: 20, color: theme.textSecondary }}
                     >
-                        {'The Open Network'}
+                        {content?.description ?? 'Tether Token for Tether USD'}
                     </Text>
                 </View>
                 <View style={{ flexGrow: 1, alignItems: 'flex-end' }}>
                     <Text style={[{ color: theme.textPrimary }, Typography.semiBold17_24]}>
-                        <ValueComponent value={balance} precision={2} centFontStyle={{ color: theme.textSecondary }} />
-                        <Text style={{ color: theme.textSecondary, fontSize: 15 }}>{' USDT'}</Text>
+                        <ValueComponent
+                            value={balance}
+                            precision={2}
+                            decimals={content?.decimals ?? 6}
+                            centFontStyle={{ color: theme.textSecondary }}
+                        />
+                        <Text
+                            style={{ color: theme.textSecondary, fontSize: 15 }}>
+                            {` ${content?.symbol ?? 'USD₮'}`}
+                        </Text>
                     </Text>
                     <PriceComponent
-                        amount={balance}
+                        amount={specialJetton?.nano ?? 0n}
                         style={{
                             backgroundColor: 'transparent',
                             paddingHorizontal: 0, paddingVertical: 0,
@@ -133,9 +156,11 @@ export const USDTProduct = memo(({
                         textStyle={[{ color: theme.textSecondary }, Typography.regular15_20]}
                         theme={theme}
                         priceUSD={1}
+                        hideCentsIfNull
                     />
                 </View>
             </Animated.View>
+            {divider === 'bottom' && <ItemDivider marginVertical={0} />}
         </Pressable>
     );
 });

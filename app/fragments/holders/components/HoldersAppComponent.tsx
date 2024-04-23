@@ -66,7 +66,7 @@ function PulsingAccountPlaceholder(theme: ThemeType) {
             <View
                 style={{
                     backgroundColor: theme.backgroundUnchangeable,
-                    height: Platform.OS === 'android'? 296 : 324,
+                    height: Platform.OS === 'android' ? 296 : 324,
                     position: 'absolute',
                     top: -30 - 36 - safeArea.top,
                     left: -4,
@@ -92,7 +92,6 @@ function PulsingAccountPlaceholder(theme: ThemeType) {
                     backgroundColor: '#1c1c1e',
                     borderRadius: 16
                 }} />
-
                 <Animated.View
                     style={[
                         { height: 36, flexGrow: 1, justifyContent: 'center', alignItems: 'center' },
@@ -182,7 +181,7 @@ function PulsingAccountSkeleton(theme: ThemeType) {
             <View
                 style={{
                     backgroundColor: theme.backgroundUnchangeable,
-                    height: Platform.OS === 'android'? 296 : 324,
+                    height: Platform.OS === 'android' ? 296 : 324,
                     position: 'absolute',
                     top: -30 - 36 - safeArea.top,
                     left: -4,
@@ -474,6 +473,7 @@ export const HoldersAppComponent = memo((
     const accountsStatus = useHoldersAccounts(acc.address.toString({ testOnly: isTestnet })).data;
     const [currency,] = usePrimaryCurrency();
     const selectedAccount = useSelectedAccount();
+    const url = holdersUrl(isTestnet);
 
     const source = useMemo(() => {
         let route = '';
@@ -538,7 +538,7 @@ export const HoldersAppComponent = memo((
     //
     // Injection
     //
-    const { ref: webViewRef, isConnected, disconnect, ...tonConnectWebViewProps } = useDAppBridge(holdersUrl, navigation);
+    const { ref: webViewRef, isConnected, disconnect, ...tonConnectWebViewProps } = useDAppBridge(url, navigation);
 
     const injectSource = useMemo(() => {
         if (!selectedAccount) {

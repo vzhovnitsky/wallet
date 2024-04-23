@@ -7,13 +7,14 @@ import { ItemGroup } from "../../../components/ItemGroup";
 import { PriceComponent } from "../../../components/PriceComponent";
 import { extractDomain } from "../../../engine/utils/extractDomain";
 import { LedgerOrder, Order } from "../ops/Order";
-import { KnownWallet, KnownWallets } from "../../../secure/KnownWallets";
+import { KnownWallets } from "../../../secure/KnownWallets";
+import { KnownWallet } from "../../../secure/KnownWallets";
 import { useTypedNavigation } from "../../../utils/useTypedNavigation";
 import { Address, fromNano, toNano } from "@ton/core";
 import { WalletSettings } from "../../../engine/state/walletSettings";
-import { useAppState, useNetwork, useBounceableWalletFormat, usePrice, useSelectedAccount, useTheme, useWalletsSettings, useIsScamJetton } from "../../../engine/hooks";
+import { useAppState, useNetwork, useBounceableWalletFormat, usePrice, useSelectedAccount, useTheme, useWalletsSettings, useVerifyJetton } from "../../../engine/hooks";
 import { AddressComponent } from "../../../components/address/AddressComponent";
-import { holdersUrl } from "../../../engine/api/holders/fetchAccountState";
+import { holdersUrl as resolveHoldersUrl } from "../../../engine/api/holders/fetchAccountState";
 import { useLedgerTransport } from "../../ledger/components/TransportContext";
 import { Jetton, StoredOperation } from "../../../engine/types";
 import { AboutIconButton } from "../../../components/AboutIconButton";
@@ -79,6 +80,7 @@ export const TransferSingleView = memo(({
     const [walletsSettings,] = useWalletsSettings();
     const [price, currency] = usePrice();
     const [bounceableFormat,] = useBounceableWalletFormat();
+    const holdersUrl = resolveHoldersUrl(isTestnet);
 
     const targetString = target.address.toString({ testOnly: isTestnet });
     const targetWalletSettings = walletsSettings[targetString];
@@ -151,7 +153,10 @@ export const TransferSingleView = memo(({
         return `-${textArr.join('')} ${!jettonAmountString ? 'TON' : jetton?.symbol ?? ''}`
     }, [amount, jettonAmountString, jetton]);
 
-    const isSCAMJetton = useIsScamJetton(jetton?.symbol, jetton?.master?.toString({ testOnly: isTestnet }));
+    const { isSCAM: isSCAMJetton } = useVerifyJetton({
+        ticker: jettonMaster?.symbol,
+        master: metadata?.jettonWallet?.master?.toString({ testOnly: isTestnet })
+    });
 
     return (
         <View style={{ flexGrow: 1 }}>
