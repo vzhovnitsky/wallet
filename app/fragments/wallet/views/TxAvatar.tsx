@@ -13,7 +13,6 @@ export const TxAvatar = memo((
         spam,
         isOwn,
         theme,
-        isTestnet,
         walletSettings,
         markContact,
         avatarColor,
@@ -25,7 +24,6 @@ export const TxAvatar = memo((
         spam: boolean,
         isOwn: boolean,
         theme: ThemeType,
-        isTestnet: boolean,
         walletSettings?: WalletSettings,
         markContact?: boolean,
         avatarColor: string,
@@ -38,6 +36,7 @@ export const TxAvatar = memo((
                 kind={kind}
                 address={parsedAddressFriendly}
                 avatarId={parsedAddressFriendly}
+                theme={theme}
                 knownWallets={knownWallets}
             />
         );

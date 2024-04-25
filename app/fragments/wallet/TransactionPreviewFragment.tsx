@@ -17,7 +17,7 @@ import { ToastDuration, useToaster } from '../../components/toast/ToastProvider'
 import { ScreenHeader } from "../../components/ScreenHeader";
 import { ItemGroup } from "../../components/ItemGroup";
 import { AboutIconButton } from "../../components/AboutIconButton";
-import { useAppState, useBounceableWalletFormat, useDontShowComments, useIsSpamWallet, useJettons, useNetwork, usePeparedMessages, usePrice, useSelectedAccount, useServerConfig, useSpamMinAmount, useTheme, useVerifyJetton, useWalletsSettings } from "../../engine/hooks";
+import { useAppState, useBounceableWalletFormat, useContractMetadatas, useDontShowComments, useKnownJettons, useNetwork, usePeparedMessages, usePrice, useSelectedAccount, useServerConfig, useSpamMinAmount, useTheme, useVerifyJetton, useWalletsSettings } from "../../engine/hooks";
 import { useRoute } from "@react-navigation/native";
 import { TransactionDescription } from "../../engine/types";
 import { BigMath } from "../../utils/BigMath";
@@ -53,6 +53,7 @@ const TransactionPreview = () => {
     const [spamMinAmount,] = useSpamMinAmount();
     const [dontShowComments,] = useDontShowComments();
     const [bounceableFormat,] = useBounceableWalletFormat();
+    const knownJettonMasters = useKnownJettons(isTestnet)?.masters ?? {};
 
     const isLedger = route.name === 'LedgerTransactionPreview';
 
@@ -274,6 +275,7 @@ const TransactionPreview = () => {
                             backgroundColor={theme.surfaceOnBg}
                             borderWidth={2.5}
                             knownWallets={knownWallets}
+                            knownJettonMasters={knownJettonMasters}
                         />
                     ) : (
                         <Avatar
@@ -389,8 +391,8 @@ const TransactionPreview = () => {
                                             `${amountText[0]}${amountText[1]}${item.kind === 'ton'
                                                 ? ' TON'
                                                 : (jetton?.symbol ? ' ' + jetton?.symbol : '')}`
-                                            + (isSCAMJetton ? ' • ' : '')
                                         }
+                                        {isSCAMJetton && (' • ')}
                                     </Text>
                                     {isSCAMJetton && (
                                         <Text style={[{ color: theme.accentRed }, Typography.semiBold27_32]}>
@@ -398,7 +400,7 @@ const TransactionPreview = () => {
                                         </Text>
                                     )}
                                 </View>
-                                {item.kind === 'ton' && (
+                                {item.kind === 'ton' && tx.base.outMessagesCount <= 1 && (
                                     <PriceComponent
                                         style={{
                                             backgroundColor: theme.transparent,
@@ -418,135 +420,137 @@ const TransactionPreview = () => {
                         )
                     )}
                 </PerfView>
-                {tx.base.outMessagesCount > 1 ? (
-                    <>
-                        <PerfView style={{ marginTop: 16 }}>
-                            <PreviewMessages
-                                outMessages={preparedMessages}
-                                theme={theme}
-                                addressBook={addressBook.state}
-                            />
-                        </PerfView>
-                        <ItemGroup style={{ marginTop: 16 }}>
-                            <TxInfo
-                                lt={tx.base.lt}
-                                address={address?.toString({ testOnly: isTestnet }) || ''}
-                                hash={tx.base.hash}
-                                toaster={toaster}
-                                theme={theme}
-                                isTestnet={isTestnet}
-                            />
-                        </ItemGroup>
-                        <PerfView style={{
-                            backgroundColor: theme.surfaceOnElevation,
-                            padding: 20, borderRadius: 20,
-                            marginTop: 16,
-                            flexDirection: 'row',
-                            justifyContent: 'space-between', alignItems: 'center'
-                        }}>
-                            <PerfView>
-                                <PerfText
-                                    style={[{ color: theme.textSecondary, marginBottom: 2 }, Typography.regular13_18]}>
-                                    {t('txPreview.blockchainFee')}
-                                </PerfText>
-                                <PerfText style={[{ color: theme.textPrimary }, Typography.regular17_24]}>
-                                    {tx.base.fees
-                                        ? <>
-                                            {`${formatAmount(fromNano(fees))}`}
-                                            <PerfText style={{ color: theme.textSecondary }}>
-                                                {` ${feesPrise}`}
-                                            </PerfText>
-                                        </>
-                                        : '...'
-                                    }
-                                </PerfText>
+                {
+                    tx.base.outMessagesCount > 1 ? (
+                        <>
+                            <PerfView style={{ marginTop: 16 }}>
+                                <PreviewMessages
+                                    outMessages={preparedMessages}
+                                    theme={theme}
+                                    addressBook={addressBook.state}
+                                />
                             </PerfView>
-                            <AboutIconButton
-                                title={t('txPreview.blockchainFee')}
-                                description={t('txPreview.blockchainFeeDescription')}
-                                style={{ height: 24, width: 24, position: undefined, marginRight: 8 }}
-                                size={24}
-                            />
-                        </PerfView>
-                    </>
-                ) : (
-                    <>
-                        {!(dontShowComments && isSpam) && (!!operation.comment) && (
                             <ItemGroup style={{ marginTop: 16 }}>
-                                <PerfView style={{ paddingHorizontal: 10, justifyContent: 'center' }}>
-                                    <PerfText style={[{ color: theme.textSecondary }, Typography.regular15_20]}>
-                                        {t('common.message')}
-                                    </PerfText>
-                                    <PerfView style={{ alignItems: 'flex-start' }}>
-                                        <PerfText style={[{ color: theme.textPrimary }, Typography.regular17_24]}>
-                                            {operation.comment}
-                                        </PerfText>
-                                    </PerfView>
-                                </PerfView>
+                                <TxInfo
+                                    lt={tx.base.lt}
+                                    address={address?.toString({ testOnly: isTestnet }) || ''}
+                                    hash={tx.base.hash}
+                                    toaster={toaster}
+                                    theme={theme}
+                                    isTestnet={isTestnet}
+                                />
                             </ItemGroup>
-                        )}
-                        <ItemGroup style={{ marginVertical: 16 }}>
-                            <PreviewFrom
-                                onCopyAddress={onCopyAddress}
-                                from={participants.from}
-                                kind={kind}
-                                theme={theme}
-                                isTestnet={isTestnet}
-                                bounceableFormat={bounceableFormat}
-                            />
-                            {(!!participants.to.address && !!participants.from.address) && (
-                                <PerfView style={{ height: 1, alignSelf: 'stretch', backgroundColor: theme.divider, marginVertical: 16, marginHorizontal: 10 }} />
-                            )}
-                            <PreviewTo
-                                onCopyAddress={onCopyAddress}
-                                to={participants.to}
-                                kind={kind}
-                                theme={theme}
-                                testOnly={isTestnet}
-                                bounceableFormat={bounceableFormat}
-                            />
-                            <PerfView style={{ height: 1, alignSelf: 'stretch', backgroundColor: theme.divider, marginVertical: 16, marginHorizontal: 10 }} />
-                            <TxInfo
-                                lt={tx.base.lt}
-                                address={address?.toString({ testOnly: isTestnet }) || ''}
-                                hash={tx.base.hash}
-                                toaster={toaster}
-                                theme={theme}
-                                isTestnet={isTestnet}
-                            />
-                        </ItemGroup>
-                        <PerfView style={{
-                            backgroundColor: theme.surfaceOnElevation,
-                            padding: 20, borderRadius: 20,
-                            flexDirection: 'row',
-                            justifyContent: 'space-between', alignItems: 'center'
-                        }}>
-                            <PerfView>
-                                <PerfText
-                                    style={[{ color: theme.textSecondary, marginBottom: 2 }, Typography.regular13_18]}>
-                                    {t('txPreview.blockchainFee')}
-                                </PerfText>
-                                <PerfText style={[{ color: theme.textPrimary }, Typography.regular17_24]}>
-                                    {tx.base.fees
-                                        ? <>
-                                            {`${formatAmount(fromNano(fees))}`}
-                                            <PerfText style={{ color: theme.textSecondary }}>
-                                                {` ${feesPrise}`}
-                                            </PerfText>
-                                        </>
-                                        : '...'
-                                    }
-                                </PerfText>
+                            <PerfView style={{
+                                backgroundColor: theme.surfaceOnElevation,
+                                padding: 20, borderRadius: 20,
+                                marginTop: 16,
+                                flexDirection: 'row',
+                                justifyContent: 'space-between', alignItems: 'center'
+                            }}>
+                                <PerfView>
+                                    <PerfText
+                                        style={[{ color: theme.textSecondary, marginBottom: 2 }, Typography.regular13_18]}>
+                                        {t('txPreview.blockchainFee')}
+                                    </PerfText>
+                                    <PerfText style={[{ color: theme.textPrimary }, Typography.regular17_24]}>
+                                        {tx.base.fees
+                                            ? <>
+                                                {`${formatAmount(fromNano(fees))}`}
+                                                <PerfText style={{ color: theme.textSecondary }}>
+                                                    {` ${feesPrise}`}
+                                                </PerfText>
+                                            </>
+                                            : '...'
+                                        }
+                                    </PerfText>
+                                </PerfView>
+                                <AboutIconButton
+                                    title={t('txPreview.blockchainFee')}
+                                    description={t('txPreview.blockchainFeeDescription')}
+                                    style={{ height: 24, width: 24, position: undefined, marginRight: 8 }}
+                                    size={24}
+                                />
                             </PerfView>
-                            <AboutIconButton
-                                title={t('txPreview.blockchainFee')}
-                                description={t('txPreview.blockchainFeeDescription')}
-                                style={{ height: 24, width: 24, position: undefined, marginRight: 8 }}
-                                size={24}
-                            />
-                        </PerfView>
-                    </>
-                )}
+                        </>
+                    ) : (
+                        <>
+                            {!(dontShowComments && isSpam) && (!!operation.comment) && (
+                                <ItemGroup style={{ marginTop: 16 }}>
+                                    <PerfView style={{ paddingHorizontal: 10, justifyContent: 'center' }}>
+                                        <PerfText style={[{ color: theme.textSecondary }, Typography.regular15_20]}>
+                                            {t('common.message')}
+                                        </PerfText>
+                                        <PerfView style={{ alignItems: 'flex-start' }}>
+                                            <PerfText style={[{ color: theme.textPrimary }, Typography.regular17_24]}>
+                                                {operation.comment}
+                                            </PerfText>
+                                        </PerfView>
+                                    </PerfView>
+                                </ItemGroup>
+                            )}
+                            <ItemGroup style={{ marginVertical: 16 }}>
+                                <PreviewFrom
+                                    onCopyAddress={onCopyAddress}
+                                    from={participants.from}
+                                    kind={kind}
+                                    theme={theme}
+                                    isTestnet={isTestnet}
+                                    bounceableFormat={bounceableFormat}
+                                />
+                                {(!!participants.to.address && !!participants.from.address) && (
+                                    <PerfView style={{ height: 1, alignSelf: 'stretch', backgroundColor: theme.divider, marginVertical: 16, marginHorizontal: 10 }} />
+                                )}
+                                <PreviewTo
+                                    onCopyAddress={onCopyAddress}
+                                    to={participants.to}
+                                    kind={kind}
+                                    theme={theme}
+                                    testOnly={isTestnet}
+                                    bounceableFormat={bounceableFormat}
+                                />
+                                <PerfView style={{ height: 1, alignSelf: 'stretch', backgroundColor: theme.divider, marginVertical: 16, marginHorizontal: 10 }} />
+                                <TxInfo
+                                    lt={tx.base.lt}
+                                    address={address?.toString({ testOnly: isTestnet }) || ''}
+                                    hash={tx.base.hash}
+                                    toaster={toaster}
+                                    theme={theme}
+                                    isTestnet={isTestnet}
+                                />
+                            </ItemGroup>
+                            <PerfView style={{
+                                backgroundColor: theme.surfaceOnElevation,
+                                padding: 20, borderRadius: 20,
+                                flexDirection: 'row',
+                                justifyContent: 'space-between', alignItems: 'center'
+                            }}>
+                                <PerfView>
+                                    <PerfText
+                                        style={[{ color: theme.textSecondary, marginBottom: 2 }, Typography.regular13_18]}>
+                                        {t('txPreview.blockchainFee')}
+                                    </PerfText>
+                                    <PerfText style={[{ color: theme.textPrimary }, Typography.regular17_24]}>
+                                        {tx.base.fees
+                                            ? <>
+                                                {`${formatAmount(fromNano(fees))}`}
+                                                <PerfText style={{ color: theme.textSecondary }}>
+                                                    {` ${feesPrise}`}
+                                                </PerfText>
+                                            </>
+                                            : '...'
+                                        }
+                                    </PerfText>
+                                </PerfView>
+                                <AboutIconButton
+                                    title={t('txPreview.blockchainFee')}
+                                    description={t('txPreview.blockchainFeeDescription')}
+                                    style={{ height: 24, width: 24, position: undefined, marginRight: 8 }}
+                                    size={24}
+                                />
+                            </PerfView>
+                        </>
+                    )
+                }
             </ScrollView>
             {
                 tx.base.parsed.kind === 'out' && (tx.base.parsed.body?.type !== 'payload') && !isLedger && (

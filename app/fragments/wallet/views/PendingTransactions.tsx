@@ -113,6 +113,7 @@ const PendingTransactionView = memo(({
                             avatarId={targetFriendly ?? 'batch'}
                             style={{ backgroundColor: viewType === 'main' ? theme.surfaceOnBg : theme.backgroundPrimary }}
                             knownWallets={knownWallets}
+                            theme={theme}
                         />
                     ) : (
                         <Avatar

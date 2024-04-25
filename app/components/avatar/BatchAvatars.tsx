@@ -6,12 +6,11 @@ import { WalletSettings } from "../../engine/state/walletSettings";
 import { avatarHash } from "../../utils/avatarHash";
 import { AddressContact } from "../../engine/hooks/contacts/useAddressBook";
 import { Address, Cell } from "@ton/core";
-import { KnownWallet } from "../../secure/KnownWallets";
 import { StoredMessage } from "../../engine/types/transactions";
 import { resolveOperation } from "../../engine/transactions/resolveOperation";
 import { parseBody } from "../../engine/transactions/parseWalletTransaction";
 import { SelectedAccount } from "../../engine/types";
-import { useKnownJettons } from "../../engine/hooks";
+import { KnownWallet } from "../../secure/KnownWallets";
 
 export const BatchAvatar = memo(({
     message,
@@ -27,6 +26,7 @@ export const BatchAvatar = memo(({
     spamWallets,
     showSpambadge,
     ownAccounts,
+    knownJettonMasters,
     knownWallets
 }: {
     message: StoredMessage,
@@ -43,6 +43,7 @@ export const BatchAvatar = memo(({
     spamWallets: string[],
     showSpambadge?: boolean,
     ownAccounts: SelectedAccount[],
+    knownJettonMasters: { [key: string]: any },
     knownWallets: { [key: string]: KnownWallet }
 }) => {
     const knownJettons = useKnownJettons(isTestnet);
@@ -81,7 +82,7 @@ export const BatchAvatar = memo(({
     const friendlyTarget = operation.address;
     const target = Address.parse(friendlyTarget);
     const opAddressBounceable = target.toString({ testOnly: isTestnet });
-    const verified = !!knownJettons?.masters?.[opAddressBounceable];
+    const verified = !!knownJettonMasters[opAddressBounceable];
     const walletSettings = walletsSettings?.[opAddressBounceable];
     const avatarColorHash = walletSettings?.color ?? avatarHash(addressString, avatarColors.length);
     const avatarColor = avatarColors[avatarColorHash];
@@ -124,6 +125,7 @@ export const BatchAvatars = memo(({
     spamWallets,
     showSpambadge,
     ownAccounts,
+    knownJettonMasters,
     knownWallets
 }: {
     messages: StoredMessage[],
@@ -140,6 +142,7 @@ export const BatchAvatars = memo(({
     spamWallets: string[],
     showSpambadge?: boolean,
     ownAccounts: SelectedAccount[],
+    knownJettonMasters: { [key: string]: any },
     knownWallets: { [key: string]: KnownWallet }
 }) => {
 
@@ -192,6 +195,7 @@ export const BatchAvatars = memo(({
                                 spamWallets={spamWallets}
                                 showSpambadge={showSpambadge}
                                 ownAccounts={ownAccounts}
+                                knownJettonMasters={knownJettonMasters}
                                 knownWallets={knownWallets}
                             />
                         </PerfView>
@@ -211,6 +215,7 @@ export const BatchAvatars = memo(({
                                 ownAccounts={ownAccounts}
                                 borderColor={backgroundColor ?? theme.backgroundPrimary}
                                 borderWidth={1}
+                                knownJettonMasters={knownJettonMasters}
                                 knownWallets={knownWallets}
                             />
                         </PerfView>
@@ -234,6 +239,7 @@ export const BatchAvatars = memo(({
                                         spamWallets={spamWallets}
                                         showSpambadge={showSpambadge}
                                         ownAccounts={ownAccounts}
+                                        knownJettonMasters={knownJettonMasters}
                                         knownWallets={knownWallets}
                                     />
                                 </PerfView>

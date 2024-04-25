@@ -1,13 +1,13 @@
 import * as React from 'react';
 import { Image } from 'react-native';
+import { avatarHash } from '../../utils/avatarHash';
 import { KnownAvatar } from './KnownAvatar';
 import FastImage from 'react-native-fast-image';
 import { ReactNode, memo } from 'react';
-import { KnownWallet } from '../../secure/KnownWallets';
-import { ThemeType } from '../../engine/state/theme';
-import { avatarHash } from '../../utils/avatarHash';
-import { PerfView } from '../basic/PerfView';
 import { PerfText } from '../basic/PerfText';
+import { PerfView } from '../basic/PerfView';
+import { ThemeType } from '../../engine/state/theme';
+import { KnownWallet } from '../../secure/KnownWallets';
 
 export const avatarImages = [
     require('@assets/avatars/0.png'),
@@ -63,7 +63,7 @@ export type AvatarIcProps = {
     position?: 'top' | 'bottom' | 'left' | 'right',
     backgroundColor?: string,
     size?: number,
-}
+};
 
 function resolveIc(
     params: {
@@ -78,7 +78,7 @@ function resolveIc(
         icOutline: number
     },
     theme: ThemeType
-): ReactNode | null {
+): React.ReactNode | null {
     const { markContact, verified, dontShowVerified, icProps, isSpam, icPosition, icSize, known, icOutline } = params;
 
     if (isSpam) {

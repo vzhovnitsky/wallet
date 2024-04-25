@@ -114,11 +114,10 @@ export function PreparedMessageView(props: {
                         spam={false}
                         isOwn={isOwn}
                         theme={theme}
-                        isTestnet={isTestnet}
                         walletSettings={walletSettings}
                         markContact={!!contact}
                         avatarColor={avatarColor}
-                        knownWallets={knownWallets}
+                        knownWallets={props.knownWallets}
                     />
                 </PerfView>
                 <PerfView style={{ flex: 1, marginRight: 4 }}>

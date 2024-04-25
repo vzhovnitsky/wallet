@@ -2,7 +2,8 @@ import * as React from 'react';
 import { Pressable, Text } from 'react-native';
 import { ValueComponent } from '../../../components/ValueComponent';
 import { AddressComponent } from '../../../components/address/AddressComponent';
-import { KnownWallet, KnownWallets } from '../../../secure/KnownWallets';
+import { avatarColors } from '../../../components/avatar/Avatar';
+import { KnownWallet } from '../../../secure/KnownWallets';
 import { t } from '../../../i18n/t';
 import { TypedNavigation } from '../../../utils/useTypedNavigation';
 import { PriceComponent } from '../../../components/PriceComponent';
@@ -16,11 +17,10 @@ import { PerfText } from '../../../components/basic/PerfText';
 import { AppState } from '../../../storage/appState';
 import { PerfView } from '../../../components/basic/PerfView';
 import { Typography } from '../../../components/styles';
-import { useVerifyJetton, useWalletSettings } from '../../../engine/hooks';
 import { avatarHash } from '../../../utils/avatarHash';
 import { WalletSettings } from '../../../engine/state/walletSettings';
 import { getLiquidStakingAddress } from '../../../utils/KnownPools';
-import { usePeparedMessages } from '../../../engine/hooks';
+import { usePeparedMessages, useVerifyJetton } from '../../../engine/hooks';
 import { TxAvatar } from './TxAvatar';
 import { PreparedMessageView } from './PreparedMessageView';
 import { avatarColors } from '../../../components/avatar/Avatar';
@@ -44,6 +44,7 @@ export function TransactionView(props: {
     walletsSettings: { [key: string]: WalletSettings },
     jettons: Jetton[],
     bounceableFormat: boolean,
+    walletsSettings: { [key: string]: WalletSettings }
     knownWallets: { [key: string]: KnownWallet }
 }) {
     const {
@@ -132,20 +133,6 @@ export function TransactionView(props: {
             && !isTestnet
         ) && kind !== 'out';
 
-    const amountColor = (kind === 'in')
-        ? (spam ? theme.textPrimary : theme.accentGreen)
-        : theme.textPrimary;
-
-    const jettonMaster = tx.masterAddressStr ?? tx.metadata?.jettonWallet?.master?.toString({ testOnly: isTestnet });
-
-    const { isSCAM: isSCAMJetton } = useVerifyJetton({
-        ticker: item.kind === 'token' ? tx.masterMetadata?.symbol : undefined,
-        master: jettonMaster
-    });
-
-    const symbolText = `${(item.kind === 'token')
-        ? `${jetton?.symbol ? ` ${jetton.symbol}` : ''}`
-        : ' TON'}${isSCAMJetton ? ' • ' : ''}`;
 
     if (preparedMessages.length > 1) {
         return (
@@ -171,6 +158,20 @@ export function TransactionView(props: {
             </>
         );
     }
+    const amountColor = (kind === 'in')
+        ? (spam ? theme.textPrimary : theme.accentGreen)
+        : theme.textPrimary;
+
+    const jettonMaster = tx.masterAddressStr ?? tx.metadata?.jettonWallet?.master?.toString({ testOnly: isTestnet });
+
+    const { isSCAM: isSCAMJetton } = useVerifyJetton({
+        ticker: item.kind === 'token' ? tx.masterMetadata?.symbol : undefined,
+        master: jettonMaster
+    });
+
+    const symbolText = `${(item.kind === 'token')
+        ? `${tx.masterMetadata?.symbol ? ` ${tx.masterMetadata?.symbol}` : ''}`
+        : ' TON'}${isSCAMJetton ? ' • ' : ''}`;
 
     return (
         <Pressable
@@ -202,7 +203,6 @@ export function TransactionView(props: {
                         spam={spam}
                         isOwn={isOwn}
                         theme={theme}
-                        isTestnet={isTestnet}
                         walletSettings={walletSettings}
                         markContact={!!contact}
                         avatarColor={avatarColor}
@@ -280,21 +280,27 @@ export function TransactionView(props: {
                             style={[{ color: amountColor, marginRight: 2 }, Typography.semiBold17_24]}
                             numberOfLines={1}
                         >
-                            {kind === 'in' ? '+' : '-'}
-                            <ValueComponent
-                                value={absAmount}
-                                decimals={item.kind === 'token' ? tx.masterMetadata?.decimals : undefined}
-                                precision={3}
-                                centFontStyle={{ fontSize: 15 }}
-                            />
-                            <Text style={{ fontSize: 15 }}>
-                                {symbolText}
-                                {isSCAMJetton && (
-                                    <Text style={{ color: theme.accentRed }}>
-                                        {' SCAM'}
+                            {tx.base.outMessagesCount > 1 ? (
+                                `${tx.base.outMessagesCount} ${t('common.messages').toLowerCase()}`
+                            ) : (
+                                <>
+                                    {kind === 'in' ? '+' : '-'}
+                                    <ValueComponent
+                                        value={absAmount}
+                                        decimals={item.kind === 'token' ? tx.masterMetadata?.decimals : undefined}
+                                        precision={3}
+                                        centFontStyle={{ fontSize: 15 }}
+                                    />
+                                    <Text style={{ fontSize: 15 }}>
+                                        {symbolText}
+                                        {isSCAMJetton && (
+                                            <Text style={{ color: theme.accentRed }}>
+                                                {' SCAM'}
+                                            </Text>
+                                        )}
                                     </Text>
-                                )}
-                            </Text>
+                                </>
+                            )}
                         </Text>
                     )}
                     {item.kind !== 'token' && tx.base.outMessagesCount <= 1 && (
