@@ -25,8 +25,13 @@ export function protectNavigation(url: string, app: string) {
     ) {
         return true;
     }
-    if (pageDomain.endsWith('verify.walletconnect.org')) {
+    // To account for verygoodvault redirects
+    if (
+        pageDomain === 'js.verygoodvault.com'
+        || pageDomain.endsWith('.js.verygoodvault.com')
+    ) {
         return true;
     }
+
     return false;
 }
