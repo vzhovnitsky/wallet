@@ -95,18 +95,18 @@ export const LiquidStakingTransferFragment = fragment(() => {
     const liquidStaking = useLiquidStaking().data;
     const member = useLiquidStakingMember(memberAddress)?.data;
 
-    const initAmount = useMemo(() => {
-        if (params?.action === 'top_up' && params.amount) {
-            const depositRate = liquidStaking?.rateDeposit ?? 0n;
-            const ton = BigInt(params.amount);
-            return reduceAmountState(0n, depositRate, 'top_up')({ ton: '', wsTon: '' }, { type: 'ton', amount: fromNano(ton) });
-        }
+    let initAmount = {
+        ton: '',
+        wsTon: ''
+    }
 
-        return {
-            ton: '',
-            wsTon: ''
-        }
-    }, []);
+    if (params?.action === 'top_up' && params.amount) {
+        initAmount = reduceAmountState(
+            liquidStaking?.rateWithdraw ?? 0n,
+            liquidStaking?.rateDeposit ?? 0n,
+            'top_up'
+        )(initAmount, { type: 'ton', amount: fromNano(params.amount ?? 0n) });
+    }
 
     const [amount, dispatchAmount] = useReducer(
         reduceAmountState(
