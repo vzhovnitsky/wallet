@@ -20,7 +20,6 @@ import { TransactionDescription } from "../../engine/types";
 import { TypedNavigation } from "../../utils/useTypedNavigation";
 
 import IcChevron from '@assets/ic_chevron_forward.svg';
-import { avatarColors } from "../avatar/Avatar";
 
 type TransferAddressInputProps = {
     acc: Address,

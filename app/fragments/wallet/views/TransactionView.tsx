@@ -23,7 +23,6 @@ import { getLiquidStakingAddress } from '../../../utils/KnownPools';
 import { usePeparedMessages, useVerifyJetton } from '../../../engine/hooks';
 import { TxAvatar } from './TxAvatar';
 import { PreparedMessageView } from './PreparedMessageView';
-import { avatarColors } from '../../../components/avatar/Avatar';
 
 export function TransactionView(props: {
     own: Address,
@@ -44,7 +43,6 @@ export function TransactionView(props: {
     walletsSettings: { [key: string]: WalletSettings },
     jettons: Jetton[],
     bounceableFormat: boolean,
-    walletsSettings: { [key: string]: WalletSettings }
     knownWallets: { [key: string]: KnownWallet }
 }) {
     const {

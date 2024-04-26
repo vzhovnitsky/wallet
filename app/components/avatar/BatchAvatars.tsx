@@ -46,7 +46,6 @@ export const BatchAvatar = memo(({
     knownJettonMasters: { [key: string]: any },
     knownWallets: { [key: string]: KnownWallet }
 }) => {
-    const knownJettons = useKnownJettons(isTestnet);
     const addressString = message.info.type === 'internal' ? message.info.dest : null;
 
     const address = useMemo(() => {
