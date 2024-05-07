@@ -18,11 +18,11 @@ import { LedgerOrder, Order, createJettonOrder, createLedgerJettonOrder, createS
 import { useLinkNavigator } from "../../useLinkNavigator";
 import { useParams } from '../../utils/useParams';
 import { ScreenHeader } from '../../components/ScreenHeader';
-import { ReactNode, RefObject, createRef, useCallback, useEffect, useMemo, useReducer, useRef, useState } from 'react';
+import { ReactNode, RefObject, createRef, useCallback, useEffect, useMemo, useRef, useState } from 'react';
 import { formatAmount, formatCurrency, formatInputAmount } from '../../utils/formatCurrency';
 import { ValueComponent } from '../../components/ValueComponent';
 import { useRoute } from '@react-navigation/native';
-import { useAccountLite, useAccountTransactions, useClient4, useCommitCommand, useConfig, useJettonMaster, useJettonWallet, useJettons, useNetwork, usePrice, useSelectedAccount, useTheme, useVerifyJetton } from '../../engine/hooks';
+import { useAccountLite, useAccountTransactions, useClient4, useCommitCommand, useConfig, useJettonWallet, useJettons, useNetwork, usePrice, useSelectedAccount, useTheme, useVerifyJetton } from '../../engine/hooks';
 import { useLedgerTransport } from '../ledger/components/TransportContext';
 import { fromBnWithDecimals, toBnWithDecimals } from '../../utils/withDecimals';
 import { fetchSeqno } from '../../engine/api/fetchSeqno';
@@ -30,17 +30,17 @@ import { getLastBlock } from '../../engine/accountWatcher';
 import { MessageRelaxed, loadStateInit, comment, internal, external, fromNano, Cell, Address, toNano, SendMode, storeMessage, storeMessageRelaxed } from '@ton/core';
 import { estimateFees } from '../../utils/estimateFees';
 import { resolveLedgerPayload } from '../ledger/utils/resolveLedgerPayload';
-import { AddressInputState, TransferAddressInput, addressInputReducer } from '../../components/address/TransferAddressInput';
+import { AddressInputState, TransferAddressInput } from '../../components/address/TransferAddressInput';
 import { ItemDivider } from '../../components/ItemDivider';
 import { AboutIconButton } from '../../components/AboutIconButton';
 import { StatusBar } from 'expo-status-bar';
 import { ScrollView } from 'react-native-gesture-handler';
 import { TransferHeader } from '../../components/transfer/TransferHeader';
 import { JettonIcon } from '../../components/products/JettonIcon';
+import { AnimTextInputRef } from '../../components/address/AddressDomainInput';
 
 import IcTonIcon from '@assets/ic-ton-acc.svg';
 import IcChevron from '@assets/ic_chevron_forward.svg';
-import { AnimTextInputRef } from '../../components/address/AddressDomainInput';
 
 export type SimpleTransferParams = {
     target?: string | null,

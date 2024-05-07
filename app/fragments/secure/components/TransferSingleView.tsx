@@ -38,6 +38,7 @@ export const TransferSingleView = memo(({
     jettonAmountString,
     target,
     fees,
+    metadata,
     jetton,
     doSend,
     walletSettings,
@@ -60,6 +61,7 @@ export const TransferSingleView = memo(({
         bounceable?: boolean | undefined;
     },
     fees: bigint,
+    metadata: ContractMetadata | null,
     jetton: Jetton | null,
     doSend?: () => Promise<void>,
     walletSettings: WalletSettings | null,

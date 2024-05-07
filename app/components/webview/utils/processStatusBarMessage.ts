@@ -22,6 +22,9 @@ export function processStatusBarMessage(
                 }
                 break;
             case 'setStatusBarBackgroundColor':
+                if (Platform.OS !== 'android') {
+                    return true;
+                }
                 const backgroundColor = parsed.data.args[0];
                 if (Platform.OS === 'android') {
                     setStatusBarBackgroundColor(backgroundColor, true);

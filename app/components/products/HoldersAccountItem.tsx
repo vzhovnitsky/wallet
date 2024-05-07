@@ -1,12 +1,12 @@
 import React, { memo, useCallback, useMemo, useRef } from "react";
-import { View, Pressable, StyleProp, ViewStyle } from "react-native";
+import { View, Pressable, StyleProp, ViewStyle, Text } from "react-native";
 import { t } from "../../i18n/t";
 import { ValueComponent } from "../ValueComponent";
 import { PriceComponent } from "../PriceComponent";
 import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import Animated from "react-native-reanimated";
 import { useAnimatedPressedInOut } from "../../utils/useAnimatedPressedInOut";
-import { useHoldersAccountStatus, useIsConnectAppReady, useSelectedAccount, useTheme } from "../../engine/hooks";
+import { useIsConnectAppReady, useTheme } from "../../engine/hooks";
 import { HoldersAccountState, holdersUrl } from "../../engine/api/holders/fetchAccountState";
 import { GeneralHoldersAccount, GeneralHoldersCard } from "../../engine/api/holders/fetchAccounts";
 import { PerfText } from "../basic/PerfText";
@@ -14,6 +14,7 @@ import { Typography } from "../styles";
 import { ScrollView, Swipeable, TouchableOpacity } from "react-native-gesture-handler";
 import { HoldersAccountCard } from "./HoldersAccountCard";
 import { Platform } from "react-native";
+import { HoldersAccountStatus } from "../../engine/hooks/holders/useHoldersAccountStatus";
 
 import IcTonIcon from '@assets/ic-ton-acc.svg';
 
@@ -27,13 +28,13 @@ export const HoldersAccountItem = memo((props: {
     hidden?: boolean,
     style?: StyleProp<ViewStyle>,
     isTestnet: boolean,
-    hideCardsIfEmpty?: boolean
+    hideCardsIfEmpty?: boolean,
+    holdersAccStatus?: HoldersAccountStatus
 }) => {
     const swipableRef = useRef<Swipeable>(null);
     const theme = useTheme();
     const navigation = useTypedNavigation();
-    const selected = useSelectedAccount();
-    const holdersAccStatus = useHoldersAccountStatus(selected!.address).data;
+    const holdersAccStatus = props.holdersAccStatus;
     const url = holdersUrl(props.isTestnet);
     const isHoldersReady = useIsConnectAppReady(url);
 
@@ -143,12 +144,12 @@ export const HoldersAccountItem = memo((props: {
                             </View>
                             {!!props.account.balance && (
                                 <View style={{ flexGrow: 1, alignItems: 'flex-end' }}>
-                                    <PerfText style={[{ color: theme.textPrimary }, Typography.semiBold17_24]}>
+                                    <Text style={[{ color: theme.textPrimary }, Typography.semiBold17_24]}>
                                         <ValueComponent value={props.account.balance} precision={2} centFontStyle={{ color: theme.textSecondary }} />
                                         <PerfText style={{ color: theme.textSecondary }}>
                                             {' TON'}
                                         </PerfText>
-                                    </PerfText>
+                                    </Text>
                                     <PriceComponent
                                         amount={BigInt(props.account.balance)}
                                         style={{
@@ -198,3 +199,4 @@ export const HoldersAccountItem = memo((props: {
         </Swipeable >
     );
 });
+HoldersAccountItem.displayName = 'HoldersAccountItem';

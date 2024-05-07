@@ -16,7 +16,6 @@ import { Address } from "@ton/core";
 import { StatusBar } from "expo-status-bar";
 import { useParams } from "../../utils/useParams";
 import { Avatar } from "../../components/avatar/Avatar";
-import { useAddressBookContext } from "../../engine/AddressBookContext";
 import { KnownWallets } from "../../secure/KnownWallets";
 
 export const requiredFields = [

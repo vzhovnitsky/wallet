@@ -443,7 +443,7 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
                 withdrawFee: 'Withdraw Fee',
                 withdrawRequestFee: 'Withdraw request Fee',
                 withdrawCompleteFee: 'Withdrawal completion request Fee',
-                depositFeeDescription: 'TON amount that will be deducted from deposit amout to cover the deposit action fees, unused amount will be returned to your wallet balance',
+                depositFeeDescription: 'TON amount that will be deducted from deposit amount to cover the deposit action fees, unused amount will be returned to your wallet balance',
                 withdrawFeeDescription: 'TON transfer amount needed to cover the withdraw action fees, unused amount will be returned to your wallet balance',
                 withdrawCompleteDescription: 'TON transfer amount needed to cover the withdraw completion action fees, unused amount will be returned to your wallet balance',
                 blockchainFee: 'Blockhain fee',
@@ -484,10 +484,10 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
                 basicAccount: 'Basic account',
                 proAccount: 'Pro account',
                 noCards: 'No cards',
-                prepaidCard: 'TonHub Prepaid *{{lastFourDigits}}',
+                prepaidCard: 'Tonhub Prepaid *{{lastFourDigits}}',
                 prepaidCardDescription: 'Reloadable card for everyday use',
-                hiddenCards: "Скрытые карты",
-                hiddenAccounts: "Скрытые счета",
+                hiddenCards: 'Hidden cards',
+                hiddenAccounts: 'Hidden accounts'
             },
             pageTitles: {
                 general: 'Tonhub Cards',

@@ -13,14 +13,13 @@ import { copyText } from "../../utils/copyText";
 import { ItemDivider } from "../../components/ItemDivider";
 import Share from 'react-native-share';
 import { ToastDuration, useToaster } from "../../components/toast/ToastProvider";
-import { useBounceableWalletFormat, useNetwork, useTheme } from "../../engine/hooks";
+import { useBounceableWalletFormat, useContact, useNetwork, useTheme } from "../../engine/hooks";
 import { Address } from "@ton/core";
 import { StatusBar } from "expo-status-bar";
 import { useContractInfo } from "../../engine/hooks/metadata/useContractInfo";
 import { requiredFields } from "./ContactNewFragment";
 import { ContactEdit } from "../../components/Contacts/ContactEdit";
 import { Avatar } from "../../components/avatar/Avatar";
-import { useAddressBookContext } from "../../engine/AddressBookContext";
 import { KnownWallets } from "../../secure/KnownWallets";
 
 import CopyIcon from '@assets/ic-copy.svg';
@@ -44,8 +43,7 @@ export const ContactFragment = fragment(() => {
     }, [address]);
 
     const safeArea = useSafeAreaInsets();
-    const addressBookContext = useAddressBookContext();
-    const contact = addressBookContext.asContact(params.address);
+    const contact = useContact(params.address);
     const contractInfo = useContractInfo(params.address ?? '');
 
     const [bounceableFormat,] = useBounceableWalletFormat();
@@ -142,6 +140,7 @@ export const ContactFragment = fragment(() => {
                                         borderWith={2}
                                         borderColor={theme.surfaceOnElevation}
                                         theme={theme}
+                                        knownWallets={knownWallets}
                                         hashColor
                                         knownWallets={knownWallets}
                                     />

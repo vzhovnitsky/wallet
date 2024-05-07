@@ -208,16 +208,6 @@ export const AssetsFragment = fragment(() => {
                                 jetton={j}
                                 onSelect={() => onSelected(j)}
                                 theme={theme}
-                                icon={
-                                    <JettonIcon
-                                        size={46}
-                                        jetton={j}
-                                        theme={theme}
-                                        isTestnet={network.isTestnet}
-                                        backgroundColor={theme.elevation}
-                                        isSCAM={isSCAM}
-                                    />
-                                }
                                 hideSelection={!callback}
                                 selected={selected}
                                 isTestnet={network.isTestnet}

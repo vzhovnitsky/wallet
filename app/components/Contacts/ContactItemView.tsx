@@ -4,12 +4,11 @@ import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { Avatar } from "../avatar/Avatar";
 import { useAnimatedPressedInOut } from "../../utils/useAnimatedPressedInOut";
 import Animated from "react-native-reanimated";
+import { useBounceableWalletFormat, useContact, useDenyAddress, useTheme } from "../../engine/hooks";
 import { Address } from "@ton/core";
 import { AddressComponent } from "../address/AddressComponent";
 import { useContractInfo } from "../../engine/hooks/metadata/useContractInfo";
 import { KnownWallet } from "../../secure/KnownWallets";
-import { useBounceableWalletFormat, useTheme } from "../../engine/hooks";
-import { useAddressBookContext } from "../../engine/AddressBookContext";
 
 export const ContactItemView = memo(({
     addressFriendly,
@@ -25,9 +24,8 @@ export const ContactItemView = memo(({
     const navigation = useTypedNavigation();
     const theme = useTheme();
     const address = useMemo(() => Address.parse(addressFriendly), [addressFriendly]);
-    const addressBookContext = useAddressBookContext();
-    const contact = addressBookContext.asContact(addressFriendly);
-    const isSpam = addressBookContext.isDenyAddress(address.toString({ testOnly }));
+    const contact = useContact(addressFriendly);
+    const isSpam = useDenyAddress(address.toString({ testOnly }));
     const contractInfo = useContractInfo(addressFriendly);
     const [bounceableFormat,] = useBounceableWalletFormat();
     const known = knownWallets[address.toString({ testOnly })];

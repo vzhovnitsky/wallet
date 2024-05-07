@@ -14,6 +14,7 @@ import { PriceComponent } from '../PriceComponent';
 import { fromNano, toNano } from '@ton/core';
 import { JettonIcon } from './JettonIcon';
 import { Typography } from '../styles';
+import { PerfView } from '../basic/PerfView';
 
 export const JettonProductItem = memo((props: {
     jetton: Jetton,
@@ -128,8 +129,8 @@ export const JettonProductItem = memo((props: {
                         )
                     }}
                 >
-                    <TouchableHighlight
-                        style={{ flexGrow: 1 }}
+                    <Pressable
+                        style={({ pressed }) => ({ flexGrow: 1, opacity: pressed ? 0.8 : 1 })}
                         onPressIn={onPressIn}
                         onPressOut={onPressOut}
                         onPress={onPress}
@@ -166,10 +167,9 @@ export const JettonProductItem = memo((props: {
                                                 <PerfText style={{ color: theme.accentRed }}>
                                                     {'SCAM'}
                                                 </PerfText>
-                                                {props.jetton.description ? ' • ' : ''}
+                                                {description ? ' • ' : ''}
                                             </>
                                         )}
-                                        {props.jetton.description}
                                         {description}
                                     </PerfText>
                                 </PerfText>
@@ -209,19 +209,20 @@ export const JettonProductItem = memo((props: {
                                 )}
                             </View>
                         </View>
-                    </TouchableHighlight>
+                    </Pressable>
                 </Swipeable>
                 {!props.last && !props.card && (
-                    <View
+                    <PerfView
                         style={{
                             backgroundColor: theme.divider,
                             height: 1,
                             position: 'absolute',
-                            bottom: 0, left: 36, right: 36
+                            bottom: 0,
+                            left: 36, right: 36
                         }}
                     />
                 )}
-            </Animated.View >
+            </Animated.View>
         ) : (
             <Pressable
                 onPressIn={onPressIn}
@@ -238,12 +239,7 @@ export const JettonProductItem = memo((props: {
                     },
                     animatedStyle
                 ]}>
-                    <JettonIcon
-                        size={46}
-                        jetton={props.jetton}
-                        theme={theme}
-                        isTestnet={isTestnet}
-                    />
+                    <JettonIcon size={46} jetton={props.jetton} theme={theme} isTestnet={isTestnet} />
                     <View style={{ marginLeft: 12, flex: 1 }}>
                         <PerfText
                             style={{ color: theme.textPrimary, fontSize: 17, lineHeight: 24, fontWeight: '600' }}
@@ -281,3 +277,4 @@ export const JettonProductItem = memo((props: {
         )
     );
 });
+JettonProductItem.displayName = 'JettonProductItem';

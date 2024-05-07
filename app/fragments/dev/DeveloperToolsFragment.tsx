@@ -28,11 +28,9 @@ import { useHoldersAccounts } from '../../engine/hooks';
 import { useHoldersAccountStatus } from '../../engine/hooks';
 import { KeyboardAvoidingView } from 'react-native';
 import { ScreenHeader } from '../../components/ScreenHeader';
-import { useToaster } from '../../components/toast/ToastProvider';
 import { queryClient } from '../../engine/clients';
-import { Item } from '../../components/Item';
 import { getCountryCodes } from '../../utils/isNeocryptoAvailable';
-import { holdersUrl as resolveHoldersUrl } from '../../engine/api/holders/fetchAccountState';
+import { Item } from '../../components/Item';
 
 export const DeveloperToolsFragment = fragment(() => {
     const theme = useTheme();

@@ -18,6 +18,7 @@ import { useDimensions } from "@react-native-community/hooks";
 import { useAddressBookContext } from "../../engine/AddressBookContext";
 import { TransactionDescription } from "../../engine/types";
 import { TypedNavigation } from "../../utils/useTypedNavigation";
+import { useAddressBookContext } from "../../engine/AddressBookContext";
 
 import IcChevron from '@assets/ic_chevron_forward.svg';
 
@@ -144,6 +145,7 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
     );
 
     const isKnown: boolean = !!props.knownWallets[props.target];
+    const query = addressDomainInputState.input;
     const addressBookContext = useAddressBookContext();
     const contact = addressBookContext.asContact(props.target);
     const query = props.input;

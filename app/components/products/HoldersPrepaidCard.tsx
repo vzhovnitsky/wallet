@@ -1,11 +1,11 @@
 import React, { memo, useCallback, useMemo, useRef } from "react";
-import { View, Pressable, StyleProp, ViewStyle } from "react-native";
+import { View, Pressable, StyleProp, ViewStyle, Text } from "react-native";
 import { t } from "../../i18n/t";
 import { ValueComponent } from "../ValueComponent";
 import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import Animated from "react-native-reanimated";
 import { useAnimatedPressedInOut } from "../../utils/useAnimatedPressedInOut";
-import { useHoldersAccountStatus, useIsConnectAppReady, useSelectedAccount, useTheme } from "../../engine/hooks";
+import { useIsConnectAppReady, useTheme } from "../../engine/hooks";
 import { HoldersAccountState, holdersUrl } from "../../engine/api/holders/fetchAccountState";
 import { GeneralHoldersCard, PrePaidHoldersCard } from "../../engine/api/holders/fetchAccounts";
 import { PerfText } from "../basic/PerfText";
@@ -14,6 +14,7 @@ import { Swipeable, TouchableOpacity } from "react-native-gesture-handler";
 import { toNano } from "@ton/core";
 import { CurrencySymbols } from "../../utils/formatCurrency";
 import { HoldersAccountCard } from "./HoldersAccountCard";
+import { HoldersAccountStatus } from "../../engine/hooks/holders/useHoldersAccountStatus";
 
 export const HoldersPrepaidCard = memo((props: {
     card: PrePaidHoldersCard,
@@ -24,14 +25,14 @@ export const HoldersPrepaidCard = memo((props: {
     single?: boolean,
     hidden?: boolean,
     style?: StyleProp<ViewStyle>,
-    isTestnet: boolean
+    isTestnet: boolean,
+    holdersAccStatus?: HoldersAccountStatus
 }) => {
     const card = props.card;
     const swipableRef = useRef<Swipeable>(null);
     const theme = useTheme();
     const navigation = useTypedNavigation();
-    const selected = useSelectedAccount();
-    const holdersAccStatus = useHoldersAccountStatus(selected!.address).data;
+    const holdersAccStatus = props.holdersAccStatus;
     const url = holdersUrl(props.isTestnet);
     const isHoldersReady = useIsConnectAppReady(url);
 
@@ -134,12 +135,12 @@ export const HoldersPrepaidCard = memo((props: {
                                 </PerfText>
                             </View>
                             <View style={{ flexGrow: 1, alignItems: 'flex-end' }}>
-                                <PerfText style={[{ color: theme.textPrimary }, Typography.semiBold17_24]}>
+                                <Text style={[{ color: theme.textPrimary }, Typography.semiBold17_24]}>
                                     <ValueComponent value={toNano(card.fiatBalance)} precision={2} centFontStyle={{ color: theme.textSecondary }} />
                                     <PerfText style={{ color: theme.textSecondary }}>
                                         {` ${CurrencySymbols[card.fiatCurrency].symbol}`}
                                     </PerfText>
-                                </PerfText>
+                                </Text>
                             </View>
                         </View>
                     </View>

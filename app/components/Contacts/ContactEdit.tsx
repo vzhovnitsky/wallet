@@ -15,7 +15,6 @@ import { ContactField } from "./ContactField";
 import { ItemDivider } from "../ItemDivider";
 import { RoundButton } from "../RoundButton";
 import { Avatar } from "../avatar/Avatar";
-import { useAddressBookContext } from "../../engine/AddressBookContext";
 import { KnownWallet } from "../../secure/KnownWallets";
 
 export const ContactEdit = memo(({
@@ -88,11 +87,6 @@ export const ContactEdit = memo(({
                 return;
             }
         }
-
-        console.log('ContactEdit.onAction, saving contact', {
-            name,
-            fields
-        });
 
         await setContact(
             parsed.address.toString({ testOnly: isTestnet, bounceable: parsed.isBounceable }),
@@ -220,8 +214,8 @@ export const ContactEdit = memo(({
                                 borderWith={2}
                                 borderColor={theme.surfaceOnElevation}
                                 theme={theme}
-                                knownWallets={knownWallets}
                                 hashColor
+                                knownWallets={knownWallets}
                             />
                         </View>
                     </View>
