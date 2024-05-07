@@ -26,12 +26,14 @@ import { TransferSkeleton } from '../../components/skeletons/TransferSkeleton';
 import { ScreenHeader } from '../../components/ScreenHeader';
 import { confirmAlert } from '../../utils/confirmAlert';
 import { ReAnimatedCircularProgress } from '../../components/CircularProgress/ReAnimatedCircularProgress';
+import { JettonMasterState } from '../../engine/metadata/fetchJettonMasterContent';
 import { TonTransport } from '@ton-community/ton-ledger';
 import { useAccountLite, useClient4, useConfig, useContact, useDenyAddress, useIsSpamWallet, useJettons, useNetwork, useTheme } from '../../engine/hooks';
 import { useLedgerTransport } from './components/TransportContext';
 import { useWalletSettings } from '../../engine/hooks/appstate/useWalletSettings';
 import { fromBnWithDecimals } from '../../utils/withDecimals';
 import { Address, Cell, SendMode, WalletContractV4, beginCell, external, internal, storeMessage, storeMessageRelaxed } from '@ton/ton';
+import { fetchJettonMaster } from '../../engine/getters/getJettonMaster';
 import { estimateFees } from '../../utils/estimateFees';
 import { TransferSingleView } from '../secure/components/TransferSingleView';
 import { RoundButton } from '../../components/RoundButton';
@@ -263,6 +265,7 @@ const LedgerTransferLoaded = memo((props: ConfirmLoadedProps & ({ setTransferSta
                 contentContainerStyle={{ paddingBottom: 56 }}
             >
                 <TransferSingleView
+                    metadata={metadata}
                     operation={operation}
                     order={order}
                     amount={order.amountAll ? (account?.balance ?? 0n) : order.amount}

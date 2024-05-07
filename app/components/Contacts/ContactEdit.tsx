@@ -1,7 +1,7 @@
 import { Address } from "@ton/core";
 import { RefObject, createRef, memo, useCallback, useEffect, useMemo, useState } from "react";
 import { Alert, Keyboard, Platform, TextInput, View, Text, KeyboardAvoidingView } from "react-native";
-import { useBounceableWalletFormat } from "../../engine/hooks";
+import { useBounceableWalletFormat, useContact, useRemoveContact, useSetContact } from "../../engine/hooks";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { useContractInfo } from "../../engine/hooks/metadata/useContractInfo";
 import { requiredFields } from "../../fragments/contacts/ContactNewFragment";
@@ -40,12 +40,10 @@ export const ContactEdit = memo(({
         }
     }, [address]);
 
-    const addressBookContext = useAddressBookContext();
-
-    const setContact = addressBookContext.setContact;
-    const removeContact = addressBookContext.removeContact;
+    const setContact = useSetContact();
+    const removeContact = useRemoveContact();
     const safeArea = useSafeAreaInsets();
-    const contact = addressBookContext.asContact(address);
+    const contact = useContact(address);
     const contractInfo = useContractInfo(address);
 
     const [bounceableFormat,] = useBounceableWalletFormat();

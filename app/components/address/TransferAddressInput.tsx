@@ -15,7 +15,6 @@ import { avatarHash } from "../../utils/avatarHash";
 import { useLedgerTransport } from "../../fragments/ledger/components/TransportContext";
 import { AddressInputAvatar } from "./AddressInputAvatar";
 import { useDimensions } from "@react-native-community/hooks";
-import { useAddressBookContext } from "../../engine/AddressBookContext";
 import { TransactionDescription } from "../../engine/types";
 import { TypedNavigation } from "../../utils/useTypedNavigation";
 import { useAddressBookContext } from "../../engine/AddressBookContext";
@@ -148,7 +147,6 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
     const query = addressDomainInputState.input;
     const addressBookContext = useAddressBookContext();
     const contact = addressBookContext.asContact(props.target);
-    const query = props.input;
     const appState = useAppState();
     const theme = props.theme;
     const dimentions = useDimensions();
@@ -338,11 +336,7 @@ export const TransferAddressInput = memo(forwardRef((props: TransferAddressInput
                 <AddressSearch
                     theme={theme}
                     onSelect={(item) => {
-                        const friendly = item.addr.address.toString({
-                            testOnly: props.isTestnet,
-                            bounceable: item.known ? true : item.addr.isBounceable
-                        });
-                        
+                        const friendly = item.addr.address.toString({ testOnly: props.isTestnet, bounceable: item.addr.isBounceable });
                         let name = item.type !== 'unknown' ? item.title : friendly;
 
                         if (item.isLedger) {

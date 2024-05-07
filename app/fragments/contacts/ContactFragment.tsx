@@ -142,7 +142,6 @@ export const ContactFragment = fragment(() => {
                                         theme={theme}
                                         knownWallets={knownWallets}
                                         hashColor
-                                        knownWallets={knownWallets}
                                     />
                                 </View>
                                 <Text style={{

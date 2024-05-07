@@ -6,13 +6,15 @@ import { fragment } from '../../fragment';
 import { storagePersistence } from '../../storage/storage';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { useTypedNavigation } from '../../utils/useTypedNavigation';
+import * as Application from 'expo-application';
 import { t } from '../../i18n/t';
 import { WalletKeys } from '../../storage/walletKeys';
 import { warn } from '../../utils/log';
 import Clipboard from '@react-native-clipboard/clipboard';
 import * as Haptics from 'expo-haptics';
 import { useKeysAuth } from '../../components/secure/AuthWalletKeys';
-import { useCallback, useMemo } from 'react';
+import { useCallback, useMemo, useState } from 'react';
+import { useOfflineApp } from '../../engine/hooks';
 import { useTheme } from '../../engine/hooks';
 import { useNetwork } from '../../engine/hooks';
 import { useSetNetwork } from '../../engine/hooks';
@@ -39,7 +41,7 @@ export const DeveloperToolsFragment = fragment(() => {
     const authContext = useKeysAuth();
     const navigation = useTypedNavigation();
     const safeArea = useSafeAreaInsets();
-    const toaster = useToaster();
+    const offlineApp = useOfflineApp();
     const countryCodes = getCountryCodes();
 
     const acc = useMemo(() => getCurrentAddress(), []);
@@ -49,7 +51,8 @@ export const DeveloperToolsFragment = fragment(() => {
 
     const [counter, setCounter] = useCloudValue<{ counter: number }>('counter', (t) => t.counter = 0);
 
-    const holdersUrl = resolveHoldersUrl(isTestnet);
+    const [offlineAppReady, setOfflineAppReady] = useState<{ version: string } | false>();
+    const [prevOfflineVersion, setPrevOfflineVersion] = useState<{ version: string } | false>();
 
     const [themeStyle, setThemeStyle] = useThemeStyle();
     const [lang, setLang] = useLanguage();
@@ -161,9 +164,18 @@ export const DeveloperToolsFragment = fragment(() => {
                         <View style={{ marginHorizontal: 16, width: '100%' }}>
                             <ItemButton title={"Counter"} hint={counter.counter.toString()} onPress={() => setCounter((value) => value.counter++)} />
                         </View>
-                        <View style={{ marginHorizontal: 16, width: '100%' }}>
-                            <ItemButton title={t('devTools.switchNetwork')} onPress={switchNetwork} hint={isTestnet ? 'Testnet' : 'Mainnet'} />
-                        </View>
+
+                        {!(
+                            Application.applicationId === 'com.tonhub.app.testnet' ||
+                            Application.applicationId === 'com.tonhub.app.debug.testnet' ||
+                            Application.applicationId === 'com.tonhub.wallet.testnet' ||
+                            Application.applicationId === 'com.tonhub.wallet.testnet.debug'
+                        ) && (
+                                <View style={{ marginHorizontal: 16, width: '100%' }}>
+                                    <ItemButton title={t('devTools.switchNetwork')} onPress={switchNetwork} hint={isTestnet ? 'Testnet' : 'Mainnet'} />
+                                </View>
+                            )}
+
                         <View style={{ width: '100%', marginBottom: 16 }}>
                             <Item title={"Store code"} hint={countryCodes.storeFrontCode ?? 'Not availible'} />
                             <Item title={"Country code"} hint={countryCodes.countryCode} />
@@ -177,9 +189,18 @@ export const DeveloperToolsFragment = fragment(() => {
                         justifyContent: 'center',
                         alignItems: 'center',
                         flexShrink: 1,
-                        padding: 20
                     }}>
-                        <Item title={'Holders URL'} hint={holdersUrl} />
+                        <View style={{ marginHorizontal: 16, width: '100%' }}>
+                            <ItemButton title={t('devTools.holdersOfflineApp')} hint={offlineApp.version ? offlineApp.version : 'Not loaded'} />
+                        </View>
+
+                        <View style={{ marginHorizontal: 16, width: '100%' }}>
+                            <ItemButton title={'Offline integrity:'} hint={offlineAppReady ? 'Ready' : 'Not ready'} />
+                        </View>
+
+                        <View style={{ marginHorizontal: 16, width: '100%' }}>
+                            <ItemButton title={t('devTools.holdersOfflineApp') + ' (Prev.)'} hint={prevOfflineVersion ? `Ready: ${prevOfflineVersion.version}` : 'Not ready'} />
+                        </View>
                     </View>
                     <View style={{
                         marginTop: 16,

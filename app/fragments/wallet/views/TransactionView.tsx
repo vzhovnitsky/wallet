@@ -41,6 +41,7 @@ export function TransactionView(props: {
     spamWallets: string[],
     appState?: AppState,
     bounceableFormat: boolean,
+    walletsSettings: { [key: string]: WalletSettings }
     knownWallets: { [key: string]: KnownWallet }
 }) {
     const {

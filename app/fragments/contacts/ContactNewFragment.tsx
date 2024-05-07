@@ -11,7 +11,7 @@ import { useTypedNavigation } from "../../utils/useTypedNavigation";
 import { ScreenHeader } from "../../components/ScreenHeader";
 import { ItemDivider } from "../../components/ItemDivider";
 import { ATextInput } from "../../components/ATextInput";
-import { useNetwork, useTheme } from "../../engine/hooks";
+import { useNetwork, useSetContact, useTheme } from "../../engine/hooks";
 import { Address } from "@ton/core";
 import { StatusBar } from "expo-status-bar";
 import { useParams } from "../../utils/useParams";
@@ -39,9 +39,8 @@ export const ContactNewFragment = fragment(() => {
         }
     }, [address]);
 
-    const addressBookContext = useAddressBookContext();
+    const setContact = useSetContact();
     const safeArea = useSafeAreaInsets();
-    const setContact = addressBookContext.setContact;
 
     const [name, setName] = useState('');
     const [fields, setFields] = useState(requiredFields);
