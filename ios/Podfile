@@ -48,6 +48,20 @@ target 'WhalesApp' do
   pod 'OpenSSL-Universal', :modular_headers => true, :configurations => ['Release', 'Release Testnet']
 
   post_install do |installer|
+    # Workaround for Flipper on XCode 15.3
+    installer.pods_project.targets.each do |target|
+      if target.name == 'Flipper'
+        file_path = 'Pods/Flipper/xplat/Flipper/FlipperTransportTypes.h'
+        contents = File.read(file_path)
+        unless contents.include?('#include <functional>')
+          File.open(file_path, 'w') do |file|
+            file.puts('#include <functional>')
+            file.puts(contents)
+          end
+        end
+      end
+    end
+
     react_native_post_install(
       installer,
       :mac_catalyst_enabled => false
@@ -72,22 +86,6 @@ target 'WhalesApp' do
           config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.4'
         end
       end
-
-      # Workaround for Flipper on XCode 15.3
-      if target.name == 'Flipper'
-        file_path = 'Pods/Flipper/xplat/Flipper/FlipperTransportTypes.h'
-        if (File.exist?(file_path))
-          contents = File.read(file_path)
-          if (!contents.include?('#include <functional>'))
-            mod_content = contents.gsub("#pragma once", "#pragma once\n#include <functional>")
-            File.chmod(0755, file_path)
-            File.open(file_path, 'w') do |file|
-              file.puts(mod_content)
-            end
-          end
-        end
-      end
-
     end
   end
 
