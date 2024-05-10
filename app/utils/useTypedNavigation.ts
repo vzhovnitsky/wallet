@@ -10,6 +10,7 @@ import { HoldersAppParams } from '../fragments/holders/HoldersAppFragment';
 import { useMemo } from 'react';
 import { DAppWebViewFragmentParams } from '../fragments/utils/DAppWebViewFragment';
 import { LiquidStakingTransferParams } from '../fragments/staking/LiquidStakingTransferFragment';
+import { ProductsListFragmentParams } from '../fragments/wallet/ProductsListFragment';
 import { StakingFragmentParams } from '../fragments/staking/StakingFragment';
 import { HomeFragmentProps } from '../fragments/HomeFragment';
 
@@ -183,8 +184,8 @@ export class TypedNavigation {
         this.navigate('DAppWebView', params);
     }
 
-    navigateAndReplaceHome(params?: HomeFragmentProps) {
-        this.navigateAndReplaceAll('Home', params);
+    navigateProductsList(params: ProductsListFragmentParams) {
+        this.navigate(params.isLedger ? 'LedgerProductsList' : 'ProductsList', params);
     }
 }
 
