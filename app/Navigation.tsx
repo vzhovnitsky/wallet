@@ -35,6 +35,7 @@ import { SpamFilterFragment } from './fragments/SpamFilterFragment';
 import { ReviewFragment } from './fragments/apps/ReviewFragment';
 import { DeleteAccountFragment } from './fragments/DeleteAccountFragment';
 import { LogoutFragment } from './fragments/LogoutFragment';
+import { ContactFragment } from './fragments/contacts/ContactFragment';
 import { ContactsFragment } from './fragments/contacts/ContactsFragment';
 import { CurrencyFragment } from './fragments/CurrencyFragment';
 import { StakingCalculatorFragment } from './fragments/staking/StakingCalculatorFragment';
@@ -85,10 +86,12 @@ import { PendingTxPreviewFragment } from './fragments/wallet/PendingTxPreviewFra
 import { DAppWebViewFragment } from './fragments/utils/DAppWebViewFragment';
 import { DevDAppWebViewFragment } from './fragments/dev/DevDAppWebViewFragment';
 import { NewAddressFormatFragment } from './fragments/NewAddressFormatFragment';
+import { BounceableFormatAboutFragment } from './fragments/utils/BounceableFormatAboutFragment';
 import { LiquidWithdrawActionFragment } from './fragments/staking/LiquidWithdrawActionFragment';
 import { LiquidStakingTransferFragment } from './fragments/staking/LiquidStakingTransferFragment';
 import { ContactNewFragment } from './fragments/contacts/ContactNewFragment';
 import { SearchEngineFragment } from './fragments/SearchEngineFragment';
+import { SwapFragment } from './fragments/integrations/SwapFragment';
 
 const Stack = createNativeStackNavigator();
 Stack.Navigator.displayName = 'MainStack';
