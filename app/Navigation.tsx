@@ -90,6 +90,8 @@ import { BounceableFormatAboutFragment } from './fragments/utils/BounceableForma
 import { LiquidWithdrawActionFragment } from './fragments/staking/LiquidWithdrawActionFragment';
 import { LiquidStakingTransferFragment } from './fragments/staking/LiquidStakingTransferFragment';
 import { ContactNewFragment } from './fragments/contacts/ContactNewFragment';
+import { SearchEngineFragment } from './fragments/SearchEngineFragment';
+import { SwapFragment } from './fragments/integrations/SwapFragment';
 import { ProductsListFragment } from './fragments/wallet/ProductsListFragment';
 
 const Stack = createNativeStackNavigator();
@@ -214,6 +216,7 @@ const navigation = (safeArea: EdgeInsets) => [
     lockedModalScreen('Buy', NeocryptoFragment, safeArea),
     modalScreen('Assets', AssetsFragment, safeArea),
     transparentModalScreen('Products', ProductsFragment, safeArea),
+    modalScreen('Swap', SwapFragment, safeArea),
     modalScreen('ProductsList', ProductsListFragment, safeArea),
 
     // dApps

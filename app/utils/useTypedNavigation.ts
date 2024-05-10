@@ -184,6 +184,10 @@ export class TypedNavigation {
         this.navigate('DAppWebView', params);
     }
 
+    navigateAndReplaceHome(params?: HomeFragmentProps) {
+        this.navigateAndReplaceAll('Home', params);
+    }
+    
     navigateProductsList(params: ProductsListFragmentParams) {
         this.navigate(params.isLedger ? 'LedgerProductsList' : 'ProductsList', params);
     }
