@@ -105,7 +105,8 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         telegram: 'Telegram',
         rateApp: 'Rate app',
         deleteAccount: 'Delete account',
-        theme: 'Theme'
+        theme: 'Theme',
+        searchEngine: 'Search engine',
     },
     theme: {
         title: 'Theme',
@@ -1020,6 +1021,11 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
             placeholder: 'Search',
             invalidUrl: 'Invalid URL',
             urlNotReachable: 'URL is not reachable',
+            suggestions: {
+                web: 'Search in {{engine}}',
+                ddg: 'DuckDuckGo',
+                google: 'Google',
+            }
         }
     }
 };
