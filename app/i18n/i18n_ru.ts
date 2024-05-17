@@ -106,7 +106,8 @@ const schema: PrepareSchema<LocalizationSchema, '_0' | '_1' | '_2'> = {
         "telegram": "Telegram",
         "rateApp": "Оценить приложение",
         "deleteAccount": "Удалить аккаунт",
-        "theme": "Тема"
+        "theme": "Тема",
+        "searchEngine": "Поисковая система",
     },
     "theme": {
         "title": "Тема",
@@ -998,12 +999,35 @@ const schema: PrepareSchema<LocalizationSchema, '_0' | '_1' | '_2'> = {
         "bannerTitle": 'Обновите ваш адрес',
         "bannerDescription": 'С EQ на UQ',
     },
-    "swap": {
-        "title": 'DeDust.io — AMM DEX на The Open Network',
-        "description": 'Вы собираетесь использовать сервис Dedust.io, который управляется независимой стороной, не связанной с Tonhub\nДля продолжения вам необходимо согласиться с Условиями использования и Политикой конфиденциальности',
-        "termsAndPrivacy": 'Я прочитал и согласен с ',
-        "dontShowTitle": 'Больше не показывать для DeDust.io',
-    },
+    "browser": {
+        "listings": {
+            "categories": {
+                "other": "Другое",
+                "exchange": "Обмены",
+                "defi": "DeFi",
+                "nft": "NFT",
+                "games": "Игры",
+                "social": "Социальные",
+                "utils": "Утилиты",
+                "services": "Сервисы"
+            },
+            "title": "Рекомендации",
+        },
+        "refresh": "Обновить",
+        "back": "Назад",
+        "forward": "Вперед",
+        "share": "Поделиться",
+        "search": {
+            "placeholder": "Поиск",
+            "invalidUrl": "Неверный URL",
+            "urlNotReachable": "URL недоступен",
+            "suggestions": {
+                "web": "Поиск в {{engine}}",
+                "ddg": "DuckDuckGo",
+                "google": "Google",
+            }
+        }
+    }
 };
 
 export default schema;

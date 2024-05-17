@@ -1,5 +1,5 @@
-import React, { useCallback, useMemo, useState } from "react";
-import { View, Text, Image, Platform, Pressable, Alert } from "react-native";
+import React, { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { View, Text, Image, Platform, Pressable, Alert, ScrollView } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import WebView from "react-native-webview";
 import { LoadingIndicator } from "../../components/LoadingIndicator";
@@ -12,8 +12,7 @@ import { useBounceableWalletFormat, useTheme } from '../../engine/hooks';
 import { useNetwork } from "../../engine/hooks/network/useNetwork";
 import { ScreenHeader } from "../../components/ScreenHeader";
 import { StatusBar } from "expo-status-bar";
-import { ConfirmLegal } from "../../components/ConfirmLegal";
-import { sharedStoragePersistence } from "../../storage/storage";
+import { trackScreen } from "../../analytics/mixpanel";
 
 const skipLegalNeocrypto = 'skip_legal_neocrypto';
 const logo = require('../../../assets/known/neocrypto_logo.png');
@@ -48,6 +47,12 @@ export const NeocryptoFragment = fragment(() => {
     const onOpenBuy = useCallback(() => {
         setAccepted(true);
     }, []);
+
+    useEffect(() => {
+        if (accepted) {
+            trackScreen('buy', { source: 'neocrypto' });
+        }
+    }, [accepted]);
 
     if (isTestnet) {
         return (

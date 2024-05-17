@@ -106,7 +106,8 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         telegram: 'Telegram',
         rateApp: 'Rate app',
         deleteAccount: 'Delete account',
-        theme: 'Theme'
+        theme: 'Theme',
+        searchEngine: 'Search engine',
     },
     theme: {
         title: 'Theme',
@@ -998,12 +999,35 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         bannerTitle: 'Update your address',
         bannerDescription: 'From EQ to UQ',
     },
-    swap: {
-        title: 'DeDust.io — AMM DEX on The Open Network',
-        description: 'You are about to use a Dedust.io service operated by an independent party not affiliated with Tonhub\nYou must agree to the Terms of Use and Privacy Policy to continue',
-        termsAndPrivacy: 'I have read and agree to the ',
-        dontShowTitle: 'Don\'t show it again for DeDust.io',
-    },
+    browser: {
+        listings: {
+            categories: {
+                other: 'Other',
+                exchange: 'Exchanges',
+                defi: 'DeFi',
+                nft: 'NFT',
+                games: 'Games',
+                social: 'Social',
+                utils: 'Utilities',
+                services: 'Services'
+            },
+            title: 'For you'
+        },
+        refresh: 'Reload',
+        back: 'Back',
+        forward: 'Forward',
+        share: 'Share',
+        search: {
+            placeholder: 'Search',
+            invalidUrl: 'Invalid URL',
+            urlNotReachable: 'URL is not reachable',
+            suggestions: {
+                web: 'Search in {{engine}}',
+                ddg: 'DuckDuckGo',
+                google: 'Google',
+            }
+        }
+    }
 };
 
 export default schema;
