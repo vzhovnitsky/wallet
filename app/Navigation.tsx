@@ -92,6 +92,7 @@ import { LiquidStakingTransferFragment } from './fragments/staking/LiquidStaking
 import { ContactNewFragment } from './fragments/contacts/ContactNewFragment';
 import { SearchEngineFragment } from './fragments/SearchEngineFragment';
 import { ProductsListFragment } from './fragments/wallet/ProductsListFragment';
+import { SwapFragment } from './fragments/integrations/SwapFragment';
 
 const Stack = createNativeStackNavigator();
 Stack.Navigator.displayName = 'MainStack';
