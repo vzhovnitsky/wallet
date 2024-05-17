@@ -38,6 +38,7 @@ import { ScrollView } from 'react-native-gesture-handler';
 import { TransferHeader } from '../../components/transfer/TransferHeader';
 import { JettonIcon } from '../../components/products/JettonIcon';
 import { AnimTextInputRef } from '../../components/address/AddressDomainInput';
+import { Typography } from '../../components/styles';
 
 import IcTonIcon from '@assets/ic-ton-acc.svg';
 import IcChevron from '@assets/ic_chevron_forward.svg';
@@ -99,8 +100,9 @@ export const SimpleTransferFragment = fragment(() => {
     const [commentString, setComment] = useState(params?.comment || '');
     const [amount, setAmount] = useState(params?.amount ? fromNano(params.amount) : '');
     const [stateInit, setStateInit] = useState<Cell | null>(params?.stateInit || null);
-    const [estimation, setEstimation] = useState<bigint | null>(null);
     const [selectedJetton, setJetton] = useState<Address | null>(params?.jetton || null);
+    const estimationRef = useRef<bigint | null>(null);
+    const [estimation, setEstimation] = useState<bigint | null>(estimationRef.current);
 
     const jettonWallet = useJettonWallet(selectedJetton?.toString({ testOnly: network.isTestnet }), true);
     const jetton = useJettons(isLedger ? ledgerAddress!.toString({ testOnly: network.isTestnet }) : acc!.addressString)
@@ -259,18 +261,12 @@ export const SimpleTransferFragment = fragment(() => {
             return null;
         }
 
-        if (
-            (!!known && known.requireMemo)
-            && (!commentString || commentString.length === 0)
-        ) {
-            return null;
-        }
+        const estim = estimationRef.current ?? toNano('0.1');
 
         if (isLedger && ledgerAddress) {
             // Resolve jetton order
             if (jettonState) {
-                const txForwardAmount = toNano('0.05')
-                    + (estimation ?? toNano('0.1'));
+                const txForwardAmount = toNano('0.05') + estim;
                 return createLedgerJettonOrder({
                     wallet: jettonState.walletAddress,
                     target: target,
@@ -298,8 +294,7 @@ export const SimpleTransferFragment = fragment(() => {
 
         // Resolve jetton order
         if (jettonState) {
-            const txForwardAmount = toNano('0.05')
-                + (estimation ?? toNano('0.1'));
+            const txForwardAmount = toNano('0.05') + estim;
 
             return createJettonOrder({
                 wallet: jettonState.walletAddress,
@@ -326,14 +321,7 @@ export const SimpleTransferFragment = fragment(() => {
             app: params?.app
         });
 
-    }, [
-        validAmount, target, domain, commentString, stateInit, jettonState,
-        params?.app,
-        acc,
-        ledgerAddress,
-        estimation,
-        known
-    ]);
+    }, [validAmount, target, domain, commentString, stateInit, jettonState, params?.app, acc, ledgerAddress]);
 
     // Estimate fee
     const config = useConfig();
@@ -347,9 +335,10 @@ export const SimpleTransferFragment = fragment(() => {
                 }
 
                 // Load app state
-                const currentAddress = getCurrentAddress();
+                const currentAcc = getCurrentAddress();
+                const address = ledgerAddress ?? currentAcc.address;
 
-                let seqno = await fetchSeqno(client, await getLastBlock(), ledgerAddress ?? currentAddress.address);
+                let seqno = await fetchSeqno(client, await getLastBlock(), address);
 
                 // Parse order
                 let intMessage: MessageRelaxed;
@@ -375,14 +364,14 @@ export const SimpleTransferFragment = fragment(() => {
                     const body = comment(commentString);
 
                     intMessage = internal({
-                        to: currentAddress.address,
+                        to: address,
                         value: 0n,
                         init: internalStateInit,
                         bounce: false,
                         body,
                     });
 
-                    const state = await backoff('transfer', () => client.getAccount(block.last.seqno, currentAddress.address));
+                    const state = await backoff('transfer', () => client.getAccount(block.last.seqno, address));
                     storageStats = state.account.storageStat ? [state.account.storageStat] : [];
                 } else {
                     if (order.type === 'order') {
@@ -414,20 +403,21 @@ export const SimpleTransferFragment = fragment(() => {
                         const body = order.payload ? resolveLedgerPayload(order.payload) : comment(commentString);
 
                         intMessage = internal({
-                            to: currentAddress.address,
+                            to: address,
                             value: 0n,
                             init: internalStateInit,
                             bounce: false,
                             body,
                         });
 
-                        const state = await backoff('transfer', () => client.getAccount(block.last.seqno, currentAddress.address));
+                        const state = await backoff('transfer', () => client.getAccount(block.last.seqno, address));
                         storageStats = state.account.storageStat ? [state.account.storageStat] : [];
                     }
                 }
 
                 // Load contract
-                const contract = await contractFromPublicKey(currentAddress.publicKey);
+                const pubKey = ledgerContext.addr?.publicKey ?? currentAcc.publicKey;
+                const contract = await contractFromPublicKey(pubKey);
 
                 // Create transfer
                 let transfer = contract.createTransfer({
@@ -458,6 +448,7 @@ export const SimpleTransferFragment = fragment(() => {
 
                     let local = estimateFees(config, inMsg.endCell(), [outMsg.endCell()], storageStats);
                     setEstimation(local);
+                    estimationRef.current = local;
                 }
             });
         });
@@ -1049,12 +1040,7 @@ export const SimpleTransferFragment = fragment(() => {
                                 autoCapitalize={'sentences'}
                                 label={!!known ? t('transfer.commentRequired') : t('transfer.comment')}
                                 style={{ paddingHorizontal: 16 }}
-                                inputStyle={{
-                                    flexShrink: 1,
-                                    fontSize: 17,
-                                    fontWeight: '400', color: theme.textPrimary,
-                                    textAlignVertical: 'center',
-                                }}
+                                inputStyle={[{ flexShrink: 1, color: theme.textPrimary, textAlignVertical: 'center' }, Typography.regular17_24]}
                                 multiline
                                 error={commentError}
                             />
