@@ -106,7 +106,8 @@ const schema: PrepareSchema<LocalizationSchema, '_0' | '_1' | '_2'> = {
         "telegram": "Telegram",
         "rateApp": "Оценить приложение",
         "deleteAccount": "Удалить аккаунт",
-        "theme": "Тема"
+        "theme": "Тема",
+        "searchEngine": "Поисковая система",
     },
     "theme": {
         "title": "Тема",

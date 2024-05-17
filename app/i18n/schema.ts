@@ -108,7 +108,8 @@ export type LocalizationSchema = {
         telegram: string,
         rateApp: string,
         deleteAccount: string,
-        theme: string
+        theme: string,
+        searchEngine: string,
     },
     theme: {
         title: string,
