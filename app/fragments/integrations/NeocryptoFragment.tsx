@@ -13,6 +13,8 @@ import { useNetwork } from "../../engine/hooks/network/useNetwork";
 import { ScreenHeader } from "../../components/ScreenHeader";
 import { StatusBar } from "expo-status-bar";
 import { trackScreen } from "../../analytics/mixpanel";
+import { sharedStoragePersistence } from "../../storage/storage";
+import { ConfirmLegal } from "../../components/ConfirmLegal";
 
 const skipLegalNeocrypto = 'skip_legal_neocrypto';
 const logo = require('../../../assets/known/neocrypto_logo.png');
