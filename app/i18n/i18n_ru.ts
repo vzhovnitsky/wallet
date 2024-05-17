@@ -106,8 +106,7 @@ const schema: PrepareSchema<LocalizationSchema, '_0' | '_1' | '_2'> = {
         "telegram": "Telegram",
         "rateApp": "Оценить приложение",
         "deleteAccount": "Удалить аккаунт",
-        "theme": "Тема",
-        "searchEngine": "Поисковая система",
+        "theme": "Тема"
     },
     "theme": {
         "title": "Тема",
@@ -998,6 +997,12 @@ const schema: PrepareSchema<LocalizationSchema, '_0' | '_1' | '_2'> = {
         "newAddress": "Новый адрес",
         "bannerTitle": 'Обновите ваш адрес',
         "bannerDescription": 'С EQ на UQ',
+    },
+    "swap": {
+        "title": 'DeDust.io — AMM DEX на The Open Network',
+        "description": 'Вы собираетесь использовать сервис Dedust.io, который управляется независимой стороной, не связанной с Tonhub\nДля продолжения вам необходимо согласиться с Условиями использования и Политикой конфиденциальности',
+        "termsAndPrivacy": 'Я прочитал и согласен с ',
+        "dontShowTitle": 'Больше не показывать для DeDust.io',
     },
     "browser": {
         "listings": {

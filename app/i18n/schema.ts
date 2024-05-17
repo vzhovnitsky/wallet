@@ -67,7 +67,7 @@ export type LocalizationSchema = {
         checkInternetConnection: string,
         reload: string,
         errorOccurred: string,
-        recent: string, 
+        recent: string,
         ok: string,
         attention: string,
         save: string,
@@ -108,8 +108,7 @@ export type LocalizationSchema = {
         telegram: string,
         rateApp: string,
         deleteAccount: string,
-        theme: string,
-        searchEngine: string
+        theme: string
     },
     theme: {
         title: string,
@@ -1000,6 +999,12 @@ export type LocalizationSchema = {
         newAddress: string,
         bannerTitle: string,
         bannerDescription: string,
+    },
+    swap: {
+        title: string,
+        description: string,
+        termsAndPrivacy: string,
+        dontShowTitle: string,
     },
     browser: {
         listings: {

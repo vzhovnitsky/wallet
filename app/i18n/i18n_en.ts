@@ -106,8 +106,7 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         telegram: 'Telegram',
         rateApp: 'Rate app',
         deleteAccount: 'Delete account',
-        theme: 'Theme',
-        searchEngine: 'Search engine',
+        theme: 'Theme'
     },
     theme: {
         title: 'Theme',
@@ -998,6 +997,12 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         newAddress: 'New address',
         bannerTitle: 'Update your address',
         bannerDescription: 'From EQ to UQ',
+    },
+    swap: {
+        title: 'DeDust.io — AMM DEX on The Open Network',
+        description: 'You are about to use a Dedust.io service operated by an independent party not affiliated with Tonhub\nYou must agree to the Terms of Use and Privacy Policy to continue',
+        termsAndPrivacy: 'I have read and agree to the ',
+        dontShowTitle: 'Don\'t show it again for DeDust.io',
     },
     browser: {
         listings: {
