@@ -15,8 +15,9 @@ import { ScrollView, Swipeable, TouchableOpacity } from "react-native-gesture-ha
 import { HoldersAccountCard } from "./HoldersAccountCard";
 import { Platform } from "react-native";
 import { HoldersAccountStatus } from "../../engine/hooks/holders/useHoldersAccountStatus";
+import { HoldersAppParams } from "../../fragments/holders/HoldersAppFragment";
 import { WImage } from "../WImage";
-import { fromBnWithDecimals, toBnWithDecimals } from "../../utils/withDecimals";
+import { toBnWithDecimals } from "../../utils/withDecimals";
 import { toNano } from "@ton/core";
 
 import IcTonIcon from '@assets/ic-ton-acc.svg';
