@@ -1016,6 +1016,35 @@ const schema: PrepareSchema<LocalizationSchema, '' | '_plural'> = {
         termsAndPrivacy: 'I have read and agree to the ',
         dontShowTitle: 'Don\'t show it again for DeDust.io',
     },
+    browser: {
+        listings: {
+            categories: {
+                other: 'Other',
+                exchange: 'Exchanges',
+                defi: 'DeFi',
+                nft: 'NFT',
+                games: 'Games',
+                social: 'Social',
+                utils: 'Utilities',
+                services: 'Services'
+            },
+            title: 'For you'
+        },
+        refresh: 'Reload',
+        back: 'Back',
+        forward: 'Forward',
+        share: 'Share',
+        search: {
+            placeholder: 'Search',
+            invalidUrl: 'Invalid URL',
+            urlNotReachable: 'URL is not reachable',
+            suggestions: {
+                web: 'Search in {{engine}}',
+                ddg: 'DuckDuckGo',
+                google: 'Google',
+            }
+        }
+    }
 };
 
 export default schema;

@@ -67,7 +67,7 @@ export type LocalizationSchema = {
         checkInternetConnection: string,
         reload: string,
         errorOccurred: string,
-        recent: string, 
+        recent: string,
         ok: string,
         attention: string,
         save: string,
@@ -109,7 +109,7 @@ export type LocalizationSchema = {
         rateApp: string,
         deleteAccount: string,
         theme: string,
-        searchEngine: string
+        searchEngine: string,
     },
     theme: {
         title: string,
@@ -1018,6 +1018,35 @@ export type LocalizationSchema = {
         termsAndPrivacy: string,
         dontShowTitle: string,
     },
+    browser: {
+        listings: {
+            categories: {
+                other: string,
+                exchange: string,
+                defi: string,
+                nft: string,
+                games: string,
+                social: string,
+                utils: string,
+                services: string,
+            },
+            title: string
+        },
+        refresh: string,
+        back: string,
+        forward: string,
+        share: string,
+        search: {
+            placeholder: string,
+            invalidUrl: string,
+            urlNotReachable: string,
+            suggestions: {
+                web: string,
+                ddg: string,
+                google: string
+            }
+        }
+    }
 };
 
 export type LocalizedResources = Paths<LocalizationSchema, string>;

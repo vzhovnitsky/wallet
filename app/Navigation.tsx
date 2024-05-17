@@ -91,7 +91,6 @@ import { LiquidWithdrawActionFragment } from './fragments/staking/LiquidWithdraw
 import { LiquidStakingTransferFragment } from './fragments/staking/LiquidStakingTransferFragment';
 import { ContactNewFragment } from './fragments/contacts/ContactNewFragment';
 import { SearchEngineFragment } from './fragments/SearchEngineFragment';
-import { SwapFragment } from './fragments/integrations/SwapFragment';
 import { ProductsListFragment } from './fragments/wallet/ProductsListFragment';
 
 const Stack = createNativeStackNavigator();
