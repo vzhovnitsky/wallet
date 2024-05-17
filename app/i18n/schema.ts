@@ -701,7 +701,18 @@ export type LocalizationSchema = {
         upgradeOk: string,
         cashback: string,
         tokenSent: string,
-        tokenReceived: string
+        tokenReceived: string,
+        holders: {
+            topUpTitle: string,
+            accountTopUp: string,
+            accountJettonTopUp: string,
+            limitsChange: string,
+            limitsTitle: string,
+            limitsOneTime: string,
+            limitsDaily: string,
+            limitsMonthly: string,
+            accountLimitsChange: string,
+        }
     },
     jetton: {
         token: string,
